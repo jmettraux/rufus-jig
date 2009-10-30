@@ -22,51 +22,16 @@
 # Made in Japan.
 #++
 
+#
+# namespacing...
 
-module Rufus::Couch
+module Rufus; module Jig; end; end
 
-  module HttpCommon
+require 'rufus/jig/http'
+require 'rufus/jig/json'
 
-    def expand_options (opts)
+module Rufus::Jig
 
-      opts['Content-Type'] ||= 'application/json'
-
-      opts
-    end
-  end
-end
-
-
-if defined?(Patron) # gem install patron
-
-  class Rufus::Couch::Http
-    include Rufus::Couch::HttpCommon
-
-    def initialize (host, port)
-
-      @patron = Patron.session.new
-      @patron.base_url = "#{host}:#{port}"
-      @patron.headers['User-Agent'] = "#{self.class} #{Rufus::Couch::VERSION}"
-    end
-
-    def get (path, opts={})
-
-      opts = expand_options(opts)
-
-      r = @patron.get(path, opts)
-
-      r.body
-    end
-  end
-
-elsif defined?(RestClient) # gem install rest_client
-
-  class Rufus::Couch::Http
-    include Rufus::Couch::HttpCommon
-  end
-
-else
-
-  raise "found no HTTP client, please install gem 'patron' or 'rest_client'"
+  VERSION = '0.0.1'
 end
 

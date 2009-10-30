@@ -1,7 +1,7 @@
 
-= rufus-couch
+= rufus-jig
 
-well, some thin veneer over an http client (preferably Patron) and a json library (preferably Yajl-Ruby).
+Dancing a jig with JSON and an HTTP client.
 
 
 == authors
@@ -17,3 +17,4 @@ http://rufus.rubyforge.org
 == license
 
 MIT
+

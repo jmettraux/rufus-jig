@@ -23,7 +23,7 @@
 #++
 
 
-module Rufus::Couch
+module Rufus::Jig
 
   #
   # Lifted from http://github.com/jmettraux/ruote
