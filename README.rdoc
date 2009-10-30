@@ -1,0 +1,19 @@
+
+= rufus-couch
+
+well, some thin veneer over an http client (preferably Patron) and a json library (preferably Yajl-Ruby).
+
+
+== authors
+
+* John Mettraux, jmettraux@gmail.com, http://jmettraux.wordpress.com
+
+
+== the rest of Rufus
+
+http://rufus.rubyforge.org
+
+
+== license
+
+MIT
