@@ -1,0 +1,7 @@
+
+[ ] get('/x', :cached => true) (with :cache => true ?) ? not really transparent
+
+[ ] PUT
+[ ] DELETE
+[ ] POST
+
