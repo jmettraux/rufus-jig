@@ -47,3 +47,13 @@ get '/document_with_etag' do
   end
 end
 
+post '/stuff' do
+
+  p 'env'
+
+  response.status = 201
+  response['Location'] = '/stuff/that'
+
+  'created.'
+end
+

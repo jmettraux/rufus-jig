@@ -8,7 +8,7 @@
 require File.join(File.dirname(__FILE__), 'base')
 
 
-class UtHttpTest < Test::Unit::TestCase
+class UtHttpGetTest < Test::Unit::TestCase
 
   def setup
 

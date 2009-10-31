@@ -58,9 +58,7 @@ module Rufus::Jig
         b = Rufus::Jig::Json.decode(b)
       end
 
-      if etag = r.headers['Etag']
-        @cache[path] = b
-      end
+      @cache[path] = b if etag = r.headers['Etag']
 
       b
     end
@@ -85,13 +83,20 @@ if defined?(Patron) # gem install patron
 
   class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
-    def initialize (host, port, options={})
+    def initialize (host, port, opts={})
 
-      super(host, port, options)
+      super(host, port, opts)
 
       @patron = Patron::Session.new
       @patron.base_url = "#{host}:#{port}"
-      @patron.headers['User-Agent'] = "#{self.class} #{Rufus::Jig::VERSION}"
+
+      @patron.headers['User-Agent'] =
+        opts[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION}"
+    end
+
+    def post (path, data, opts={})
+
+      @patron.post(path, data, opts)
     end
 
     protected
@@ -102,12 +107,9 @@ if defined?(Patron) # gem install patron
     end
   end
 
-elsif defined?(RestClient) # gem install rest_client
-
-  raise NotImplementedError.new
-
 else
 
-  raise "found no HTTP client, please install gem 'patron' or 'rest_client'"
+  # TODO : use Net:HTTP
+
 end
 
