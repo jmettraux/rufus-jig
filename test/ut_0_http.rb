@@ -38,12 +38,14 @@ class UtHttpTest < Test::Unit::TestCase
 
     r = @h.get('/document_with_etag')
 
+    etag = @h.last_response.headers['Etag']
+
     assert_equal Hash, r.class
     assert_equal 'Peugeot', r['car']
 
     assert_equal 200, @h.last_response.status
 
-    r = @h.get('/document_with_etag')
+    r = @h.get('/document_with_etag', :etag => etag)
 
     assert_equal Hash, r.class
     assert_equal 'Peugeot', r['car']

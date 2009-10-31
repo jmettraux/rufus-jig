@@ -32,9 +32,18 @@ end
 
 get '/document_with_etag' do
 
-  content_type 'application/json'
-  response['Etag'] = '"123456123456"'
+  etag = '"123456123456"'
 
-  '{"car":"Peugeot"}'
+  if env['HTTP_IF_NONE_MATCH'] == etag
+
+    halt 304, 'not modified'
+
+  else
+
+    content_type 'application/json'
+    response['Etag'] = '"123456123456"'
+
+    '{"car":"Peugeot"}'
+  end
 end
 

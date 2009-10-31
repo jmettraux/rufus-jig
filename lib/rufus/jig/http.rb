@@ -42,14 +42,15 @@ module Rufus::Jig
 
     def get (path, opts={})
 
+      cached = opts[:etag] ? @cache[path] : nil
+
       opts = expand_options(opts)
 
       r = do_get(path, opts)
 
       @last_response = r
 
-      if r.status == 304
-      end
+      return cached if r.status == 304
 
       b = r.body
 
@@ -58,7 +59,7 @@ module Rufus::Jig
       end
 
       if etag = r.headers['Etag']
-        @cache[path] = [ etag, b ]
+        @cache[path] = b
       end
 
       b
@@ -69,6 +70,10 @@ module Rufus::Jig
     def expand_options (opts)
 
       opts['Accept'] ||= (opts.delete(:accept) || 'application/json')
+
+      if et = opts.delete(:etag)
+        opts['If-None-Match'] = et
+      end
 
       opts
     end
