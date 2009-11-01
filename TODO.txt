@@ -4,10 +4,9 @@
 [o] POST
 [o] :prefix
 [o] :raw
+[o] POST/PUT cache if etag is given back (couch)
 
 [ ] get('/x', :cached => true) (with :cache => true ?) ? not really transparent
-
-[ ] POST/PUT cache if etag is given back (couch)
 
 [ ] long polling/continuous change (patron ?)
 [ ] HEAD

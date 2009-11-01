@@ -13,6 +13,8 @@ class UtHttpPostTest < Test::Unit::TestCase
   def setup
 
     @h = Rufus::Jig::Http.new('127.0.0.1', 4567)
+
+    @h.delete('/documents')
   end
 
   def test_post
@@ -28,6 +30,26 @@ class UtHttpPostTest < Test::Unit::TestCase
     assert_not_nil l
 
     assert_equal({ 'msg' => 'hello' }, @h.get(l))
+  end
+
+  def test_post_and_decode_body
+
+    b = @h.post(
+      '/documents?mirror=true', '{"msg":"hello world"}', :content_type => :json)
+
+    assert_equal({ 'msg' => 'hello world' }, b)
+
+    assert_equal 0, @h.cache.size
+  end
+
+  def test_post_and_cache
+
+    b = @h.post(
+      '/documents?etag=true', '{"msg":"hello world"}', :content_type => :json)
+
+    assert_equal({ 'msg' => 'hello world' }, b)
+
+    assert_equal 1, @h.cache.size
   end
 end
 

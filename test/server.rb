@@ -65,13 +65,6 @@ end
 
 DOCS = {}
 
-#post '/stuff' do
-#  p 'env'
-#  response.status = 201
-#  response['Location'] = '/stuff/that'
-#  'created.'
-#end
-
 get '/documents' do
 
   content_type 'application/json'
@@ -89,7 +82,13 @@ post '/documents' do
   response.status = 201
   response['Location'] = "/documents/#{did}"
 
-  'created.'
+  if params[:mirror] || params[:etag]
+    response['Etag'] = "\"#{did}\"" if params[:etag]
+    content_type request.content_type
+    doc
+  else
+    'created.'
+  end
 end
 
 put '/documents/:id' do
@@ -100,7 +99,13 @@ put '/documents/:id' do
 
   response.status = 201
 
-  'created.'
+  if params[:mirror] || params[:etag]
+    response['Etag'] = "\"#{params[:id]}\"" if params[:etag]
+    content_type request.content_type
+    doc
+  else
+    'created.'
+  end
 end
 
 get '/documents/:id' do

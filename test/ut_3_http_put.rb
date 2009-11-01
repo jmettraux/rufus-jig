@@ -54,5 +54,27 @@ class UtHttpPutTest < Test::Unit::TestCase
 
     assert_equal({ 'msg' => 'hello' }, @h.get('/documents/abcd'))
   end
+
+  def test_put_and_decode_body
+
+    b = @h.put(
+      '/documents/yyyy?mirror=true',
+      '{"msg":"hello world"}',
+      :content_type => :json)
+
+    assert_equal({ 'msg' => 'hello world' }, b)
+    assert_equal 0, @h.cache.size
+  end
+
+  def test_put_and_cache
+
+    b = @h.put(
+      '/documents/yyyy?etag=true',
+      '{"msg":"hello world"}',
+      :content_type => :json)
+
+    assert_equal({ 'msg' => 'hello world' }, b)
+    assert_equal 1, @h.cache.size
+  end
 end
 
