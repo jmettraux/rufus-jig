@@ -23,3 +23,14 @@ require 'test/unit'
 #  sleep 1
 #end
 
+begin
+  Rufus::Jig::Http.new('127.0.0.1', 4567).get('/document')
+rescue
+  puts
+  puts "test server not running, please run :"
+  puts
+  puts "  ruby test/server.rb"
+  puts
+  exit(1)
+end
+

@@ -23,15 +23,30 @@
 #++
 
 
-module Rufus
-module Jig
+module Rufus::Jig
 
-  require 'rufus/jig/http'
-  require 'rufus/jig/json'
+  class CouchThing
 
-  VERSION = '0.0.1'
+    # the jig client, the CouchThing uses
+    #
+    attr_reader :http
 
-  autoload :CouchThing, 'rufus/jig/couch'
-end
+    def initialize (host, port, path='/', opts={})
+
+      @http = Rufus::Jig::Http.new(host, port, opts.merge(:prefix => path))
+    end
+
+    def spawn (path)
+
+      CouchThing.new(
+        @http.host, @http.port,
+        @http.opts.merge(:prefix => "#{@http.opts[:prefix]}#{path}"))
+    end
+
+    def get (path=nil)
+
+      @http.get(path || '')
+    end
+  end
 end
 
