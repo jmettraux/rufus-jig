@@ -98,6 +98,10 @@ class UtHttpGetTest < Test::Unit::TestCase
     assert_equal 304, @h.last_response.status
 
     assert_equal 1, @h.cache.size
+
+    r = @h.get('/document_with_etag', :etag => etag, :raw => true)
+
+    assert_equal 304, r.status
   end
 end
 

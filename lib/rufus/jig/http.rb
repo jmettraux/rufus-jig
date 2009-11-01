@@ -75,8 +75,6 @@ module Rufus::Jig
     def delete (path, opts={})
 
       request(:delete, path, nil, opts)
-
-      # TODO : remove from cache if successful
     end
 
     protected
@@ -189,9 +187,10 @@ module Rufus::Jig
     def decode_body (response, opts)
 
       b = response.body
+      ct = response.headers['Content-Type']
 
-      if response.headers['Content-Type'].match(/^application\/json/)
-        Rufus::Jig::Json.decode(b) rescue b
+      if ct && ct.match(/^application\/json/)
+        Rufus::Jig::Json.decode(b)
       else
         b
       end
