@@ -3,6 +3,9 @@
 
 Dancing a jig with JSON and an HTTP client.
 
+* conditional GET
+* auto-{en|de}coding of JSON content
+
 
 == authors
 

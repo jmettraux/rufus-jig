@@ -78,6 +78,33 @@ module Rufus::Jig
       b
     end
 
+    def post (path, data, opts={})
+
+      opts = rehash_options(opts)
+      data = repack_data(data, opts)
+
+      do_post(add_prefix(path), data, opts)
+
+      # TODO : cache if successful and Etag
+    end
+
+    def put (path, data, opts={})
+
+      opts = rehash_options(opts)
+      data = repack_data(data, opts)
+
+      do_put(add_prefix(path), data, opts)
+
+      # TODO : cache if successful and Etag
+    end
+
+    def delete (path, opts={})
+
+      do_delete(add_prefix(path), opts)
+
+      # TODO : remove from cache if successful
+    end
+
     protected
 
     # Should work with GET and POST/PUT options
@@ -88,6 +115,9 @@ module Rufus::Jig
 
       if ct = opts.delete(:content_type)
         opts['Content-Type'] = ct
+      end
+      if opts['Content-Type'] == :json
+        opts['Content-Type'] = 'application/json'
       end
 
       if et = opts.delete(:etag)
@@ -104,6 +134,16 @@ module Rufus::Jig
       else
         path
       end
+    end
+
+    def repack_data (data, opts)
+
+      return data if data.is_a?(String)
+
+      return Rufus::Jig::Json.encode(data) \
+        if (opts['Content-Type'] || '').match(/^application\/json/)
+
+      data.to_s
     end
   end
 end
@@ -124,26 +164,26 @@ if defined?(Patron) # gem install patron
         opts[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION}"
     end
 
-    def post (path, data, opts={})
-
-      @patron.post(add_prefix(path), data, rehash_options(opts))
-    end
-
-    def put (path, data, opts={})
-
-      @patron.put(add_prefix(path), data, rehash_options(opts))
-    end
-
-    def delete (path, opts={})
-
-      @patron.delete(add_prefix(path), opts)
-    end
-
     protected
 
     def do_get (path, opts)
 
       @patron.get(path, opts)
+    end
+
+    def do_post (path, data, opts)
+
+      @patron.post(path, data, opts)
+    end
+
+    def do_put (path, data, opts)
+
+      @patron.put(path, data, opts)
+    end
+
+    def do_delete (path, opts)
+
+      @patron.delete(path, opts)
     end
   end
 
