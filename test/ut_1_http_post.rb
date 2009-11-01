@@ -17,14 +17,14 @@ class UtHttpPostTest < Test::Unit::TestCase
 
   def test_post
 
-    r = @h.post('/documents', 'data', :content_type => 'text/plain')
+    r = @h.post('/documents', '{"msg":"hello"}', :content_type => 'application/json')
 
     l = r.headers['Location']
 
     assert_equal 201, r.status
     assert_not_nil l
 
-    assert_equal 'data', @h.get(l)
+    assert_equal({ 'msg' => 'hello' }, @h.get(l))
   end
 end
 

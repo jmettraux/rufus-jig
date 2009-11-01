@@ -27,6 +27,17 @@ require 'rufus/lru' # gem install rufus-lru
 
 module Rufus::Jig
 
+  class HttpError < RuntimeError
+
+    attr_reader :status
+
+    def initialize (status, message)
+
+      @status = status
+      super(message)
+    end
+  end
+
   class HttpCore
 
     attr_reader :last_response
@@ -44,13 +55,15 @@ module Rufus::Jig
 
       cached = opts[:etag] ? @cache[path] : nil
 
-      opts = expand_options(opts)
+      opts = rehash_options(opts)
 
       r = do_get(path, opts)
 
       @last_response = r
 
       return cached if r.status == 304
+      return nil if r.status == 404
+      raise HttpError.new(r.status, r.body) if r.status >= 500 && r.status < 600
 
       b = r.body
 
@@ -65,9 +78,15 @@ module Rufus::Jig
 
     protected
 
-    def expand_options (opts)
+    # Should work with GET and POST/PUT options
+    #
+    def rehash_options (opts)
 
       opts['Accept'] ||= (opts.delete(:accept) || 'application/json')
+
+      if ct = opts.delete(:content_type)
+        opts['Content-Type'] = ct
+      end
 
       if et = opts.delete(:etag)
         opts['If-None-Match'] = et
@@ -96,7 +115,12 @@ if defined?(Patron) # gem install patron
 
     def post (path, data, opts={})
 
-      @patron.post(path, data, opts)
+      @patron.post(path, data, rehash_options(opts))
+    end
+
+    def delete (path, opts={})
+
+      @patron.delete(path, opts)
     end
 
     protected

@@ -29,6 +29,22 @@ class UtHttpGetTest < Test::Unit::TestCase
     assert_equal 0, @h.cache.size
   end
 
+  def test_get_404
+
+    r = @h.get('/missing')
+
+    assert_nil r
+  end
+
+  def test_get_500
+
+    assert_raise Rufus::Jig::HttpError do
+      @h.get('/server_error')
+    end
+
+    assert 500, @h.last_response.status
+  end
+
   def test_get_with_accept
 
     r = @h.get('/document_accept', :accept => 'text/plain')
