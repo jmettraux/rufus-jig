@@ -4,6 +4,10 @@
 
 require 'rubygems'
 require 'sinatra'
+require 'json'
+
+#
+# basic
 
 get '/document' do
 
@@ -47,13 +51,48 @@ get '/document_with_etag' do
   end
 end
 
-post '/stuff' do
+#
+# /documents
 
-  p 'env'
+DOCS = {}
+
+#post '/stuff' do
+#  p 'env'
+#  response.status = 201
+#  response['Location'] = '/stuff/that'
+#  'created.'
+#end
+
+get '/documents' do
+
+  content_type 'application/json'
+
+  DOCS.to_json
+end
+
+post '/documents' do
+
+  did = (Time.now.to_f * 1000).to_i.to_s
+  doc = env['rack.input'].read
+
+  DOCS[did] = [ request.content_type, doc ]
 
   response.status = 201
-  response['Location'] = '/stuff/that'
+  response['Location'] = "/documents/#{did}"
 
   'created.'
+end
+
+get '/documents/:id' do
+
+  if doc = DOCS[params[:id]]
+
+    content_type doc.first
+
+    doc.last
+  else
+
+    halt 404, 'not found'
+  end
 end
 

@@ -17,9 +17,14 @@ class UtHttpPostTest < Test::Unit::TestCase
 
   def test_post
 
-    r = @h.post('/stuff', 'data')
+    r = @h.post('/documents', 'data', :content_type => 'text/plain')
+
+    l = r.headers['Location']
 
     assert_equal 201, r.status
+    assert_not_nil l
+
+    assert_equal 'data', @h.get(l)
   end
 end
 
