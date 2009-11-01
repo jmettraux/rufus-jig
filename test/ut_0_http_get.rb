@@ -70,7 +70,7 @@ class UtHttpGetTest < Test::Unit::TestCase
 
     assert_equal 200, @h.last_response.status
 
-    assert_equal({"/document_with_etag"=>{"car"=>"Peugeot"}}, @h.cache)
+    assert_equal({"/document_with_etag"=>["\"123456123456\"", {"car"=>"Peugeot"}]}, @h.cache)
 
     r = @h.get('/document_with_etag', :etag => etag)
 

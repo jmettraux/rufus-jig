@@ -25,7 +25,7 @@ class UtHttpPrefixTest < Test::Unit::TestCase
 
     assert_equal 'C', r
 
-    assert_equal({ '/a/b/c' => 'C' }, @h.cache)
+    assert_equal({"/a/b/c"=>["\"123456123456\"", "C"]}, @h.cache)
   end
 
   def test_put

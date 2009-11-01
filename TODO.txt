@@ -8,3 +8,7 @@
 
 [ ] POST/PUT cache if etag is given back (couch)
 
+[ ] long polling/continuous change (patron ?)
+
+[ ] :with_reponse option to GET/PUT/... :raw is better
+

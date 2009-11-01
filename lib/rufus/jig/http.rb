@@ -55,7 +55,7 @@ module Rufus::Jig
 
       path = add_prefix(path)
 
-      cached = opts[:etag] ? @cache[path] : nil
+      cached = from_cache(path, opts)
 
       opts = rehash_options(opts)
 
@@ -63,39 +63,48 @@ module Rufus::Jig
 
       @last_response = r
 
-      return cached if r.status == 304
+      return cached.last if r.status == 304
       return nil if r.status == 404
+
       raise HttpError.new(r.status, r.body) if r.status >= 500 && r.status < 600
 
-      b = r.body
+      b = decode_body(r, opts)
 
-      if r.headers['Content-Type'].match(/^application\/json/)
-        b = Rufus::Jig::Json.decode(b)
-      end
-
-      @cache[path] = b if etag = r.headers['Etag']
+      cache_if_possible(path, r, b)
 
       b
     end
 
+    def from_cache (path, opts)
+
+      if et = opts[:etag]
+
+        cached = @cache[path]
+
+        if cached && cached.first != et
+          #
+          # cached version is perhaps stale
+          #
+          cached = nil
+          opts.delete(:etag)
+        end
+
+        cached
+
+      else
+
+        nil
+      end
+    end
+
     def post (path, data, opts={})
 
-      opts = rehash_options(opts)
-      data = repack_data(data, opts)
-
-      do_post(add_prefix(path), data, opts)
-
-      # TODO : cache if successful and Etag
+      push(:post, path, data, opts)
     end
 
     def put (path, data, opts={})
 
-      opts = rehash_options(opts)
-      data = repack_data(data, opts)
-
-      do_put(add_prefix(path), data, opts)
-
-      # TODO : cache if successful and Etag
+      push(:put, path, data, opts)
     end
 
     def delete (path, opts={})
@@ -106,6 +115,18 @@ module Rufus::Jig
     end
 
     protected
+
+    # POST or PUT
+    #
+    def push (method, path, data, opts)
+
+      opts = rehash_options(opts)
+      data = repack_data(data, opts)
+
+      send("do_#{method}", add_prefix(path), data, opts)
+
+      # TODO : cache if successful and Etag
+    end
 
     # Should work with GET and POST/PUT options
     #
@@ -144,6 +165,24 @@ module Rufus::Jig
         if (opts['Content-Type'] || '').match(/^application\/json/)
 
       data.to_s
+    end
+
+    def cache_if_possible (path, response, body)
+
+      if et = response.headers['Etag']
+        @cache[path] = [ et, body ]
+      end
+    end
+
+    def decode_body (r, opts)
+
+      # TODO : on :raw, don't touch
+
+      if r.headers['Content-Type'].match(/^application\/json/)
+        Rufus::Jig::Json.decode(r.body)
+      else
+        r.body
+      end
     end
   end
 end
