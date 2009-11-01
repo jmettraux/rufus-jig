@@ -6,8 +6,10 @@ require 'rubygems'
 require 'sinatra'
 require 'json'
 
+
 #
-# basic
+# BASIC
+#
 
 get '/document' do
 
@@ -56,8 +58,10 @@ get '/server_error' do
   halt 500, 'internal server error'
 end
 
+
 #
-# /documents
+# DOCUMENTS
+#
 
 DOCS = {}
 
@@ -130,5 +134,34 @@ delete '/documents' do
   DOCS.clear
 
   'ok'
+end
+
+
+#
+# PREFIX
+#
+
+get '/a/b/c' do
+
+  content_type 'text/plain'
+  response['Etag'] = '"123456123456"'
+  'C'
+end
+
+put '/a/b/c' do
+
+  response.status = 201
+  'put'
+end
+
+post '/a/b/c' do
+
+  response.status = 201
+  'post'
+end
+
+delete '/a/b/c' do
+
+  'delete'
 end
 

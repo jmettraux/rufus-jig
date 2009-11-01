@@ -53,6 +53,8 @@ module Rufus::Jig
 
     def get (path, opts={})
 
+      path = add_prefix(path)
+
       cached = opts[:etag] ? @cache[path] : nil
 
       opts = rehash_options(opts)
@@ -94,6 +96,15 @@ module Rufus::Jig
 
       opts
     end
+
+    def add_prefix (path)
+
+      if prefix = @opts[:prefix]
+        "#{prefix}#{path}"
+      else
+        path
+      end
+    end
   end
 end
 
@@ -115,17 +126,17 @@ if defined?(Patron) # gem install patron
 
     def post (path, data, opts={})
 
-      @patron.post(path, data, rehash_options(opts))
+      @patron.post(add_prefix(path), data, rehash_options(opts))
     end
 
     def put (path, data, opts={})
 
-      @patron.put(path, data, rehash_options(opts))
+      @patron.put(add_prefix(path), data, rehash_options(opts))
     end
 
     def delete (path, opts={})
 
-      @patron.delete(path, opts)
+      @patron.delete(add_prefix(path), opts)
     end
 
     protected

@@ -1,7 +1,10 @@
 
+[o] PUT
+[o] DELETE
+[o] POST
+[o] :prefix
+
 [ ] get('/x', :cached => true) (with :cache => true ?) ? not really transparent
 
-[ ] PUT
-[ ] DELETE
-[ ] POST
+[ ] POST/PUT cache if etag is given back (couch)
 
