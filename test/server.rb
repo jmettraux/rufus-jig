@@ -80,12 +80,21 @@ post '/documents' do
   did = (Time.now.to_f * 1000).to_i.to_s
   doc = env['rack.input'].read
 
-  p request.content_type
-
   DOCS[did] = [ request.content_type, doc ]
 
   response.status = 201
   response['Location'] = "/documents/#{did}"
+
+  'created.'
+end
+
+put '/documents/:id' do
+
+  doc = env['rack.input'].read
+
+  DOCS[params[:id]] = [ request.content_type, doc ]
+
+  response.status = 201
 
   'created.'
 end
@@ -114,5 +123,12 @@ delete '/documents/:id' do
 
     halt 404, { 'error' => 'not found', 'id' => params[:id] }.to_json
   end
+end
+
+delete '/documents' do
+
+  DOCS.clear
+
+  'ok'
 end
 

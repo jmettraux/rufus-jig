@@ -118,6 +118,11 @@ if defined?(Patron) # gem install patron
       @patron.post(path, data, rehash_options(opts))
     end
 
+    def put (path, data, opts={})
+
+      @patron.put(path, data, rehash_options(opts))
+    end
+
     def delete (path, opts={})
 
       @patron.delete(path, opts)
