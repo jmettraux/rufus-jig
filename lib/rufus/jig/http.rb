@@ -48,6 +48,14 @@ module Rufus::Jig
     #
     attr_reader :cache
 
+    # the options for the http client
+    #
+    attr_reader :opts
+
+    # host and port, vanilla
+    #
+    attr_reader :host, :port
+
     def initialize (host, port, opts)
 
       @host = host

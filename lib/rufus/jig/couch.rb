@@ -31,21 +31,59 @@ module Rufus::Jig
     #
     attr_reader :http
 
-    def initialize (host, port, path='/', opts={})
+    def initialize (host, port, path='/')
 
-      @http = Rufus::Jig::Http.new(host, port, opts.merge(:prefix => path))
+      @http = Rufus::Jig::Http.new(host, port, :prefix => path)
+    end
+
+    # Returns a new CouchThing instance pointing to the couch itself
+    #
+    def couch
+
+      CouchThing.new(
+        @http.host, @http.port,
+        '/')
+    end
+
+    # Returns a new CouchThing instance pointing to the couch database holding
+    # the current CouchThing.
+    #
+    def database
+
+      CouchThing.new(
+        @http.host, @http.port,
+        '/' + @http.opts[:prefix].split('/')[1])
     end
 
     def spawn (path)
 
       CouchThing.new(
         @http.host, @http.port,
-        @http.opts.merge(:prefix => "#{@http.opts[:prefix]}#{path}"))
+        "#{@http.opts[:prefix]}#{path}")
     end
 
-    def get (path=nil)
+    def get (path='', opts={})
 
-      @http.get(path || '')
+      @http.get(path, opts)
+    end
+
+    def delete (path='', opts={})
+
+      @http.delete(path, opts)
+    end
+
+    def put (path='', data='', opts={})
+
+      # TODO : rev thing
+
+      @http.put(path, data, opts)
+    end
+
+    def post (path='', data='', opts={})
+
+      # TODO : rev thing
+
+      @http.post(path, data, opts)
     end
   end
 end

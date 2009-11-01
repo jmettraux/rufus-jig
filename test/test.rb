@@ -5,11 +5,17 @@
 # Sat Oct 31 22:44:08 JST 2009
 #
 
-dp = File.dirname(__FILE__)
+def load_tests (prefix)
 
-Dir.new(dp).entries.select { |e|
-  e.match(/^ut\_.*\.rb$/)
-}.sort.each { |e|
-  load("#{dp}/#{e}")
-}
+  dp = File.dirname(__FILE__)
+
+  Dir.new(dp).entries.select { |e|
+    e.match(/^#{prefix}\_.*\.rb$/)
+  }.sort.each { |e|
+    load("#{dp}/#{e}")
+  }
+end
+
+load_tests('ut')
+load_tests('ct') if ARGV.include?('--couch')
 
