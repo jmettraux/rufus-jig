@@ -3,12 +3,11 @@
 [o] DELETE
 [o] POST
 [o] :prefix
+[o] :raw
 
 [ ] get('/x', :cached => true) (with :cache => true ?) ? not really transparent
 
 [ ] POST/PUT cache if etag is given back (couch)
 
 [ ] long polling/continuous change (patron ?)
-
-[ ] :with_reponse option to GET/PUT/... :raw is better
 

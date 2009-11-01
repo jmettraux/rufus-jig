@@ -17,10 +17,13 @@ class UtHttpPostTest < Test::Unit::TestCase
 
   def test_post
 
-    r = @h.post('/documents', '{"msg":"hello"}', :content_type => 'application/json')
+    b = @h.post('/documents', '{"msg":"hello"}', :content_type => 'application/json')
+
+    r = @h.last_response
 
     l = r.headers['Location']
 
+    assert_equal 'created.', b
     assert_equal 201, r.status
     assert_not_nil l
 

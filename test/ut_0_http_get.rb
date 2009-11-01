@@ -13,10 +13,6 @@ class UtHttpGetTest < Test::Unit::TestCase
   def setup
 
     @h = Rufus::Jig::Http.new('127.0.0.1', 4567)
-
-    class << @h
-      attr_reader :cache
-    end
   end
 
   def test_get

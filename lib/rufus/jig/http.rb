@@ -44,6 +44,10 @@ module Rufus::Jig
     #
     attr_reader :last_response
 
+    # the path => [ etag, decoded_body] client cache
+    #
+    attr_reader :cache
+
     def initialize (host, port, opts)
 
       @host = host
@@ -55,33 +59,27 @@ module Rufus::Jig
 
     def get (path, opts={})
 
-      raw = raw_expected?(opts)
-
-      path = add_prefix(path)
-
-      cached = from_cache(path, opts)
-
-      opts = rehash_options(opts)
-
-      r = do_get(path, opts)
-
-      @last_response = r
-
-      unless raw
-
-        return cached.last if r.status == 304
-        return nil if r.status == 404
-
-        raise HttpError.new(r.status, r.body) \
-          if r.status >= 500 && r.status < 600
-      end
-
-      b = decode_body(r, opts)
-
-      cache_if_possible(path, r, b)
-
-      raw ? r : b
+      request(:get, path, nil, opts)
     end
+
+    def post (path, data, opts={})
+
+      request(:post, path, data, opts)
+    end
+
+    def put (path, data, opts={})
+
+      request(:put, path, data, opts)
+    end
+
+    def delete (path, opts={})
+
+      request(:delete, path, nil, opts)
+
+      # TODO : remove from cache if successful
+    end
+
+    protected
 
     def from_cache (path, opts)
 
@@ -105,44 +103,39 @@ module Rufus::Jig
       end
     end
 
-    def post (path, data, opts={})
+    def request (method, path, data, opts={})
 
-      push(:post, path, data, opts)
+      raw = raw_expected?(opts)
+      path = add_prefix(path)
+      cached = from_cache(path, opts)
+      opts = rehash_options(opts)
+      data = repack_data(data, opts)
+
+      r = send("do_#{method}", path, data, opts)
+
+      @last_response = r
+
+      unless raw
+
+        return cached.last if r.status == 304
+        return nil if r.status == 404
+
+        raise HttpError.new(r.status, r.body) \
+          if r.status >= 500 && r.status < 600
+      end
+
+      b = decode_body(r, opts)
+
+      do_cache(method, path, r, b)
+
+      raw ? r : b
     end
-
-    def put (path, data, opts={})
-
-      push(:put, path, data, opts)
-    end
-
-    def delete (path, opts={})
-
-      do_delete(add_prefix(path), opts)
-
-      # TODO : remove from cache if successful
-    end
-
-    protected
 
     def raw_expected? (opts)
 
       raw = opts[:raw]
 
-      return false if raw == false
-
-      raw || @opts[:raw]
-    end
-
-    # POST or PUT
-    #
-    def push (method, path, data, opts)
-
-      opts = rehash_options(opts)
-      data = repack_data(data, opts)
-
-      send("do_#{method}", add_prefix(path), data, opts)
-
-      # TODO : cache if successful and Etag
+      raw == false ? false : raw || @opts[:raw]
     end
 
     # Should work with GET and POST/PUT options
@@ -176,7 +169,7 @@ module Rufus::Jig
 
     def repack_data (data, opts)
 
-      return data if data.is_a?(String)
+      return data if data.nil? || data.is_a?(String)
 
       return Rufus::Jig::Json.encode(data) \
         if (opts['Content-Type'] || '').match(/^application\/json/)
@@ -184,19 +177,23 @@ module Rufus::Jig
       data.to_s
     end
 
-    def cache_if_possible (path, response, body)
+    def do_cache (method, path, response, body)
 
-      if et = response.headers['Etag']
+      if method == :delete
+        @cache.delete(path)
+      elsif et = response.headers['Etag']
         @cache[path] = [ et, body ]
       end
     end
 
-    def decode_body (r, opts)
+    def decode_body (response, opts)
 
-      if r.headers['Content-Type'].match(/^application\/json/)
-        Rufus::Jig::Json.decode(r.body)
+      b = response.body
+
+      if response.headers['Content-Type'].match(/^application\/json/)
+        Rufus::Jig::Json.decode(b) rescue b
       else
-        r.body
+        b
       end
     end
   end
@@ -220,7 +217,7 @@ if defined?(Patron) # gem install patron
 
     protected
 
-    def do_get (path, opts)
+    def do_get (path, data, opts)
 
       @patron.get(path, opts)
     end
@@ -235,7 +232,7 @@ if defined?(Patron) # gem install patron
       @patron.put(path, data, opts)
     end
 
-    def do_delete (path, opts)
+    def do_delete (path, data, opts)
 
       @patron.delete(path, opts)
     end

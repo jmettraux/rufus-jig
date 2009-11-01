@@ -13,40 +13,36 @@ class UtHttpPrefixTest < Test::Unit::TestCase
   def setup
 
     @h = Rufus::Jig::Http.new('127.0.0.1', 4567, :prefix => '/a/b/')
-
-    class << @h
-      attr_reader :cache
-    end
   end
 
   def test_get
 
-    r = @h.get('c')
+    b = @h.get('c')
 
-    assert_equal 'C', r
+    assert_equal 'C', b
 
     assert_equal({"/a/b/c"=>["\"123456123456\"", "C"]}, @h.cache)
   end
 
   def test_put
 
-    r = @h.put('c', 'data')
+    b = @h.put('c', 'data')
 
-    assert_equal 201, r.status
+    assert_equal 201, @h.last_response.status
   end
 
   def test_post
 
-    r = @h.post('c', 'data')
+    b = @h.post('c', 'data')
 
-    assert_equal 201, r.status
+    assert_equal 201, @h.last_response.status
   end
 
   def test_delete
 
-    r = @h.delete('c')
+    b = @h.delete('c')
 
-    assert_equal 200, r.status
+    assert_equal 200, @h.last_response.status
   end
 end
 

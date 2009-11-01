@@ -24,9 +24,9 @@ class UtHttpPutTest < Test::Unit::TestCase
 
   def test_put
 
-    r = @h.put('/documents/1234', '{"msg":"hello"}', :content_type => 'application/json')
+    b = @h.put('/documents/1234', '{"msg":"hello"}', :content_type => 'application/json')
 
-    assert_equal 201, r.status
+    assert_equal 201, @h.last_response.status
 
     assert_equal({ 'msg' => 'hello' }, @h.get('/documents/1234'))
   end
@@ -38,19 +38,19 @@ class UtHttpPutTest < Test::Unit::TestCase
       { 'msg' => 'hello' },
       :content_type => 'application/json')
 
-    assert_equal 201, r.status
+    assert_equal 201, @h.last_response.status
 
     assert_equal({ 'msg' => 'hello' }, @h.get('/documents/5678'))
   end
 
   def test_put_colon_json
 
-    r = @h.put(
+    b = @h.put(
       '/documents/abcd',
       { 'msg' => 'hello' },
       :content_type => :json)
 
-    assert_equal 201, r.status
+    assert_equal 201, @h.last_response.status
 
     assert_equal({ 'msg' => 'hello' }, @h.get('/documents/abcd'))
   end
