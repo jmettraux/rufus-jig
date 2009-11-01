@@ -29,11 +29,26 @@ class UtHttpGetTest < Test::Unit::TestCase
     assert_equal 0, @h.cache.size
   end
 
+  def test_get_raw
+
+    r = @h.get('/document', :raw => true)
+
+    assert_equal 200, r.status
+    assert_equal "{\"car\":\"Mercedes-Benz\"}", r.body
+  end
+
   def test_get_404
 
     r = @h.get('/missing')
 
     assert_nil r
+  end
+
+  def test_get_404_raw
+
+    r = @h.get('/missing', :raw => true)
+
+    assert_equal 404, r.status
   end
 
   def test_get_500
@@ -43,6 +58,13 @@ class UtHttpGetTest < Test::Unit::TestCase
     end
 
     assert 500, @h.last_response.status
+  end
+
+  def test_get_500_raw
+
+    r = @h.get('/server_error', :raw => true)
+
+    assert 500, r.status
   end
 
   def test_get_with_accept

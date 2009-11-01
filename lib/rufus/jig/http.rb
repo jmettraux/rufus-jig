@@ -40,6 +40,8 @@ module Rufus::Jig
 
   class HttpCore
 
+    # mostly for debugging purposes
+    #
     attr_reader :last_response
 
     def initialize (host, port, opts)
@@ -53,6 +55,8 @@ module Rufus::Jig
 
     def get (path, opts={})
 
+      raw = raw_expected?(opts)
+
       path = add_prefix(path)
 
       cached = from_cache(path, opts)
@@ -63,16 +67,20 @@ module Rufus::Jig
 
       @last_response = r
 
-      return cached.last if r.status == 304
-      return nil if r.status == 404
+      unless raw
 
-      raise HttpError.new(r.status, r.body) if r.status >= 500 && r.status < 600
+        return cached.last if r.status == 304
+        return nil if r.status == 404
+
+        raise HttpError.new(r.status, r.body) \
+          if r.status >= 500 && r.status < 600
+      end
 
       b = decode_body(r, opts)
 
       cache_if_possible(path, r, b)
 
-      b
+      raw ? r : b
     end
 
     def from_cache (path, opts)
@@ -115,6 +123,15 @@ module Rufus::Jig
     end
 
     protected
+
+    def raw_expected? (opts)
+
+      raw = opts[:raw]
+
+      return false if raw == false
+
+      raw || @opts[:raw]
+    end
 
     # POST or PUT
     #
@@ -175,8 +192,6 @@ module Rufus::Jig
     end
 
     def decode_body (r, opts)
-
-      # TODO : on :raw, don't touch
 
       if r.headers['Content-Type'].match(/^application\/json/)
         Rufus::Jig::Json.decode(r.body)
