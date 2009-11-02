@@ -107,9 +107,25 @@ class UtHttpGetTest < Test::Unit::TestCase
   def test_cget_dup_body
 
     b = @h.get('/document_with_etag')
+    etag = @h.last_response.headers['Etag']
     b['year'] = 1977
 
     assert_equal({"/document_with_etag"=>["\"123456123456\"", {"car"=>"Peugeot"}]}, @h.cache)
+
+    b = @h.get('/document_with_etag', :etag => etag)
+
+    assert_equal 304, @h.last_response.status
+
+    b['year'] = 1977
+
+    assert_equal({"/document_with_etag"=>["\"123456123456\"", {"car"=>"Peugeot"}]}, @h.cache)
+  end
+
+  def test_cget_dont_cache
+
+    b = @h.get('/document_with_etag', :cache => false)
+
+    assert_equal 0, @h.cache.size
   end
 
   def test_get_params

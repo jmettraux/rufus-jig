@@ -130,7 +130,7 @@ module Rufus::Jig
 
       unless raw
 
-        return cached.last if r.status == 304
+        return marshal_copy(cached.last) if r.status == 304
         return nil if r.status == 404
 
         raise HttpError.new(r.status, r.body) \
@@ -139,7 +139,7 @@ module Rufus::Jig
 
       b = decode_body(r, opts)
 
-      do_cache(method, path, r, b)
+      do_cache(method, path, r, b, opts)
 
       raw ? r : b
     end
@@ -223,9 +223,9 @@ module Rufus::Jig
       data.to_s
     end
 
-    def do_cache (method, path, response, body)
+    def do_cache (method, path, response, body, opts)
 
-      if method == :delete
+      if method == :delete || (opts[:cache] == false)
         @cache.delete(path)
       elsif et = response.headers['Etag']
         @cache[path] = [ et, marshal_copy(body) ]
