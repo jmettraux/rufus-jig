@@ -57,24 +57,26 @@ class CtThingsTest < Test::Unit::TestCase
 
   def test_put_new_document
 
-    doc = @c.put('doc0', { 'a' => true })
+    doc = { 'a' => true }
 
-    assert_equal true, doc['ok']
-    assert_not_nil doc['rev']
+    r = @c.put('doc0', doc)
+
+    assert_equal true, r['ok']
+    assert_not_nil r['rev']
+    assert_equal r['rev'], doc['rev']
 
     assert_equal true, @c.get('doc0')['a']
   end
 
-  def test_conflict
+  def test_put_conflict
 
     doc = @c.put('doc0', { 'a' => true })
 
-    assert_equal 'conflict', @c.delete('doc0')['error']
     assert_equal 'conflict', @c.put('doc0', { 'a' => true })['error']
     assert_equal 'conflict', @c.put('doc0', { 'a' => false })['error']
   end
 
-  def test_no_conflict
+  def test_put
 
     @c.put('doc0', { 'a' => true })
     doc = @c.get('doc0')
@@ -82,6 +84,21 @@ class CtThingsTest < Test::Unit::TestCase
     doc['a'] = false
 
     assert_equal true, @c.put('doc0', doc)['ok']
+  end
+
+  def test_delete_conflict
+
+    @c.put('docX', { 'a' => 'delete_me' })
+
+    assert_equal 'conflict', @c.delete('docX')['error']
+  end
+
+  def test_delete
+
+    doc = { 'a' => 'A' }
+    @c.put('docX', doc)
+
+    assert_equal true, @c.delete('docX', doc)['ok']
   end
 end
 

@@ -79,7 +79,12 @@ module Rufus::Jig
 
       opts[:content_type] ||= :json
 
-      @http.put(path, data, opts)
+      r = @http.put(path, data, opts)
+
+      rev = r['rev'] rescue nil
+      data['rev'] = rev if rev && data.is_a?(Hash)
+
+      r
     end
 
     def post (path='', data={}, opts={})
