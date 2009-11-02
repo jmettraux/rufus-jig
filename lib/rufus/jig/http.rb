@@ -50,7 +50,7 @@ module Rufus::Jig
 
     # the options for the http client
     #
-    attr_reader :opts
+    attr_reader :options
 
     # host and port, vanilla
     #
@@ -60,12 +60,12 @@ module Rufus::Jig
 
       @host = host
       @port = port
-      @opts = opts
+      @options = opts
 
       @cache = LruHash.new((opts[:cache_size] || 77).to_i)
 
-      if pf = @opts[:prefix]
-        @opts[:prefix] = "/#{pf}" if (not pf.match(/^\//))
+      if pf = @options[:prefix]
+        @options[:prefix] = "/#{pf}" if (not pf.match(/^\//))
       end
     end
 
@@ -116,7 +116,7 @@ module Rufus::Jig
     def request (method, path, data, opts={})
 
       raw = raw_expected?(opts)
-      path = add_prefix(path)
+      path = add_prefix(path, opts)
       cached = from_cache(path, opts)
       opts = rehash_options(opts)
       data = repack_data(data, opts)
@@ -145,7 +145,7 @@ module Rufus::Jig
 
       raw = opts[:raw]
 
-      raw == false ? false : raw || @opts[:raw]
+      raw == false ? false : raw || @options[:raw]
     end
 
     # Should work with GET and POST/PUT options
@@ -168,9 +168,11 @@ module Rufus::Jig
       opts
     end
 
-    def add_prefix (path)
+    def add_prefix (path, opts)
 
-      path = if prefix = @opts[:prefix]
+      path = if opts[:no_prefix]
+        path
+      elsif prefix = @options[:prefix]
         "#{chomp_slash(prefix, :tail)}/#{chomp_slash(path, :head)}"
       else
         path

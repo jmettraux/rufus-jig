@@ -32,6 +32,24 @@ class CtCouchTest < Test::Unit::TestCase
     c = Rufus::Jig::CouchThing.new('127.0.0.1', 5984)
 
     assert_equal({ 'ok' => true }, c.put('/rufus_jig_test', ''))
+
+    assert_equal 'rufus_jig_test', c.get('/rufus_jig_test')['db_name']
+    assert_equal 'rufus_jig_test', c.get('rufus_jig_test')['db_name']
+  end
+
+  def test_delete_database
+
+    c = Rufus::Jig::CouchThing.new('127.0.0.1', 5984, 'rufus_jig_test')
+
+    assert_nil c.get
+
+    c.put
+
+    assert_equal 'rufus_jig_test', c.get['db_name']
+
+    c.delete
+
+    assert_nil c.get
   end
 end
 

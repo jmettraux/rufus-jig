@@ -52,14 +52,14 @@ module Rufus::Jig
 
       CouchThing.new(
         @http.host, @http.port,
-        '/' + @http.opts[:prefix].split('/')[1])
+        '/' + @http.options[:prefix].split('/')[1])
     end
 
     def spawn (path)
 
       CouchThing.new(
         @http.host, @http.port,
-        "#{@http.opts[:prefix]}#{path}")
+        "#{@http.options[:prefix]}#{path}")
     end
 
     def get (path='', opts={})

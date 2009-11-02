@@ -37,5 +37,17 @@ class UtHttpMiscTest < Test::Unit::TestCase
     assert_equal 'C', @h.get('/a/b/c')
     assert_equal 'C', @h.get('a/b/c')
   end
+
+  def test_no_prefix
+
+    @h = Rufus::Jig::Http.new('127.0.0.1', 4567, :prefix => '/a/b')
+
+    assert_equal(
+      nil, @h.get('/document'))
+    assert_equal(
+      { 'car' => 'Mercedes-Benz' }, @h.get('/document', :no_prefix => true))
+    assert_equal(
+      { 'car' => 'Mercedes-Benz' }, @h.get('document', :no_prefix => true))
+  end
 end
 

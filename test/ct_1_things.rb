@@ -33,7 +33,7 @@ class CtThingsTest < Test::Unit::TestCase
     assert_equal 'Welcome', @c.couch.get['couchdb']
   end
 
-  def test_get_document
+  def test_put_document
 
     flunk
   end
