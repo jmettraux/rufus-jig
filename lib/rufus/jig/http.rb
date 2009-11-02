@@ -116,7 +116,10 @@ module Rufus::Jig
     def request (method, path, data, opts={})
 
       raw = raw_expected?(opts)
+
       path = add_prefix(path, opts)
+      path = add_params(path, opts)
+
       cached = from_cache(path, opts)
       opts = rehash_options(opts)
       data = repack_data(data, opts)
@@ -191,6 +194,21 @@ module Rufus::Jig
         m[1]
       else
         s
+      end
+    end
+
+    def add_params (path, opts)
+
+      if params = opts[:params]
+
+        params = params.inject([]) { |a, (k, v)|
+          a << "#{k}=#{v}"; a
+        }.join("&")
+
+        path.index('?') ? "#{path}&#{params}" : "#{path}?#{params}"
+      else
+
+        path
       end
     end
 

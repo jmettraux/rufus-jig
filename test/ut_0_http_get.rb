@@ -103,5 +103,21 @@ class UtHttpGetTest < Test::Unit::TestCase
 
     assert_equal 304, r.status
   end
+
+  def test_get_params
+
+    assert_equal(
+      {},
+      @h.get('/params'))
+    assert_equal(
+      { 'a' => 'b' },
+      @h.get('/params?a=b'))
+    assert_equal(
+      { 'a' => 'b', 'c' => 'd' },
+      @h.get('/params?a=b', :params => { :c => 'd' }))
+    assert_equal(
+      { 'a' => 'b', 'c' => 'd' },
+      @h.get('/params', :params => { 'a' => :b, :c => 'd' }))
+  end
 end
 

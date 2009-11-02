@@ -18,6 +18,17 @@ class CtThingsTest < Test::Unit::TestCase
     @c.put rescue nil
   end
 
+  def test_uuids
+
+    uuids = @c.uuids
+
+    assert_equal 1, uuids.length
+
+    uuids = @c.uuids(5)
+
+    assert_equal 5, uuids.length
+  end
+
   def test_get
 
     assert_equal 'rufus_jig_test', @c.get['db_name']
@@ -36,17 +47,6 @@ class CtThingsTest < Test::Unit::TestCase
   def test_put_document
 
     flunk
-  end
-
-  def test_uuids
-
-    uuids = @c.uuids
-
-    assert_equal 1, uuids.length
-
-    uuids = @c.uuids(5)
-
-    assert_equal 5, uuids.length
   end
 end
 

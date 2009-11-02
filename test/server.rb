@@ -58,6 +58,12 @@ get '/server_error' do
   halt 500, 'internal server error'
 end
 
+get '/params' do
+
+  content_type 'application/json'
+  params.to_json
+end
+
 
 #
 # DOCUMENTS
