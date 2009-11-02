@@ -72,16 +72,20 @@ module Rufus::Jig
       @http.delete(path, opts)
     end
 
-    def put (path='', data='', opts={})
+    def put (path='', data={}, opts={})
 
       # TODO : rev thing
+
+      opts[:content_type] ||= :json
 
       @http.put(path, data, opts)
     end
 
-    def post (path='', data='', opts={})
+    def post (path='', data={}, opts={})
 
       # TODO : rev thing
+
+      opts[:content_type] ||= :json
 
       @http.post(path, data, opts)
     end

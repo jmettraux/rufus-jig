@@ -16,6 +16,13 @@ def load_tests (prefix)
   }
 end
 
-load_tests('ut')
-load_tests('ct') if ARGV.include?('--couch')
+set = if ARGV.include?('--all')
+  %w[ ut ct ]
+elsif ARGV.include?('--couch')
+  %w[ ct ]
+else
+  %w[ ut ]
+end
+
+set.each { |prefix| load_tests(prefix) }
 

@@ -62,7 +62,11 @@ module Rufus::Jig
       @port = port
       @opts = opts
 
-      @cache = LruHash.new((opts[:cache_size] || 100).to_i)
+      @cache = LruHash.new((opts[:cache_size] || 77).to_i)
+
+      if pf = @opts[:prefix]
+        @opts[:prefix] = "/#{pf}" if (not pf.match(/^\//))
+      end
     end
 
     def get (path, opts={})
@@ -166,10 +170,25 @@ module Rufus::Jig
 
     def add_prefix (path)
 
-      if prefix = @opts[:prefix]
-        "#{prefix}#{path}"
+      path = if prefix = @opts[:prefix]
+        "#{chomp_slash(prefix, :tail)}/#{chomp_slash(path, :head)}"
       else
         path
+      end
+
+      path = "/#{path}" unless path.match(/^\//)
+
+      path
+    end
+
+    def chomp_slash (s, pos)
+
+      r = (pos == :head) ? /^\/(.*)$/ : /^(.*)\/$/
+
+      if m = r.match(s)
+        m[1]
+      else
+        s
       end
     end
 
