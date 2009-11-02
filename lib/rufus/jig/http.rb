@@ -228,7 +228,7 @@ module Rufus::Jig
       if method == :delete
         @cache.delete(path)
       elsif et = response.headers['Etag']
-        @cache[path] = [ et, body ]
+        @cache[path] = [ et, marshal_copy(body) ]
       end
     end
 
@@ -242,6 +242,11 @@ module Rufus::Jig
       else
         b
       end
+    end
+
+    def marshal_copy (o)
+
+      Marshal.load(Marshal.dump(o))
     end
   end
 end

@@ -79,12 +79,12 @@ class UtHttpGetTest < Test::Unit::TestCase
 
   def test_conditional_get
 
-    r = @h.get('/document_with_etag')
+    b = @h.get('/document_with_etag')
 
     etag = @h.last_response.headers['Etag']
 
-    assert_equal Hash, r.class
-    assert_equal 'Peugeot', r['car']
+    assert_equal Hash, b.class
+    assert_equal 'Peugeot', b['car']
 
     assert_equal 200, @h.last_response.status
 
@@ -102,6 +102,14 @@ class UtHttpGetTest < Test::Unit::TestCase
     r = @h.get('/document_with_etag', :etag => etag, :raw => true)
 
     assert_equal 304, r.status
+  end
+
+  def test_cget_dup_body
+
+    b = @h.get('/document_with_etag')
+    b['year'] = 1977
+
+    assert_equal({"/document_with_etag"=>["\"123456123456\"", {"car"=>"Peugeot"}]}, @h.cache)
   end
 
   def test_get_params
