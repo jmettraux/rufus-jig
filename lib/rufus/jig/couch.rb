@@ -67,14 +67,15 @@ module Rufus::Jig
       @http.get(path, opts)
     end
 
-    def delete (path='', opts={})
+    def delete (path='', data={}, opts={})
+
+      rev = data['rev'] rescue nil
+      (opts[:params] ||= {})['rev'] = rev if rev
 
       @http.delete(path, opts)
     end
 
     def put (path='', data={}, opts={})
-
-      # TODO : rev thing
 
       opts[:content_type] ||= :json
 
@@ -82,8 +83,6 @@ module Rufus::Jig
     end
 
     def post (path='', data={}, opts={})
-
-      # TODO : rev thing
 
       opts[:content_type] ||= :json
 

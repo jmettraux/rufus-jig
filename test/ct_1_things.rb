@@ -15,7 +15,8 @@ class CtThingsTest < Test::Unit::TestCase
 
     @c = Rufus::Jig::CouchThing.new('127.0.0.1', 5984, '/rufus_jig_test')
 
-    @c.put rescue nil
+    @c.delete rescue nil
+    @c.put
   end
 
   def test_uuids
@@ -44,9 +45,43 @@ class CtThingsTest < Test::Unit::TestCase
     assert_equal 'Welcome', @c.couch.get['couchdb']
   end
 
-  def test_put_document
+  def test_put_new_empty_document
 
-    flunk
+    doc = @c.put('doc0')
+
+    assert_equal true, doc['ok']
+    assert_not_nil doc['rev']
+
+    assert_equal 'doc0', @c.get('doc0')['_id']
+  end
+
+  def test_put_new_document
+
+    doc = @c.put('doc0', { 'a' => true })
+
+    assert_equal true, doc['ok']
+    assert_not_nil doc['rev']
+
+    assert_equal true, @c.get('doc0')['a']
+  end
+
+  def test_conflict
+
+    doc = @c.put('doc0', { 'a' => true })
+
+    assert_equal 'conflict', @c.delete('doc0')['error']
+    assert_equal 'conflict', @c.put('doc0', { 'a' => true })['error']
+    assert_equal 'conflict', @c.put('doc0', { 'a' => false })['error']
+  end
+
+  def test_no_conflict
+
+    @c.put('doc0', { 'a' => true })
+    doc = @c.get('doc0')
+
+    doc['a'] = false
+
+    assert_equal true, @c.put('doc0', doc)['ok']
   end
 end
 

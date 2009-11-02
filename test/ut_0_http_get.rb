@@ -118,6 +118,9 @@ class UtHttpGetTest < Test::Unit::TestCase
     assert_equal(
       { 'a' => 'b', 'c' => 'd' },
       @h.get('/params', :params => { 'a' => :b, :c => 'd' }))
+    assert_equal(
+      {},
+      @h.get('/params', :params => {}))
   end
 end
 

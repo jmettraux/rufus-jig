@@ -201,15 +201,16 @@ module Rufus::Jig
 
       if params = opts[:params]
 
+        return path if params.empty?
+
         params = params.inject([]) { |a, (k, v)|
           a << "#{k}=#{v}"; a
         }.join("&")
 
-        path.index('?') ? "#{path}&#{params}" : "#{path}?#{params}"
-      else
-
-        path
+        return path.index('?') ? "#{path}&#{params}" : "#{path}?#{params}"
       end
+
+      path
     end
 
     def repack_data (data, opts)
