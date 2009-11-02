@@ -37,5 +37,16 @@ class CtThingsTest < Test::Unit::TestCase
 
     flunk
   end
+
+  def test_uuids
+
+    uuids = @c.uuids
+
+    assert_equal 1, uuids.length
+
+    uuids = @c.uuids(5)
+
+    assert_equal 5, uuids.length
+  end
 end
 
