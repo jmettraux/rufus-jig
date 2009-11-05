@@ -5,7 +5,6 @@
 # Sun Nov  1 21:42:34 JST 2009
 #
 
-require File.join(File.dirname(__FILE__), 'base')
 require File.join(File.dirname(__FILE__), 'couch_base')
 
 
@@ -18,38 +17,43 @@ class CtCouchTest < Test::Unit::TestCase
     rescue Exception => e
       p e
     end
+
+    @c = Rufus::Jig::Couch.new('127.0.0.1', 5984)
   end
 
   def test_welcome
 
-    c = Rufus::Jig::CouchThing.new('127.0.0.1', 5984)
-
-    assert_equal 'Welcome', c.get['couchdb']
+    assert_equal 'Welcome', @c.get('.')['couchdb']
   end
 
-  def test_create_database
+  def test_put
 
-    c = Rufus::Jig::CouchThing.new('127.0.0.1', 5984)
+    assert_equal({ 'ok' => true }, @c.put('rufus_jig_test', ''))
 
-    assert_equal({ 'ok' => true }, c.put('/rufus_jig_test', ''))
-
-    assert_equal 'rufus_jig_test', c.get('/rufus_jig_test')['db_name']
-    assert_equal 'rufus_jig_test', c.get('rufus_jig_test')['db_name']
+    assert_equal 'rufus_jig_test', @c.get('rufus_jig_test')['db_name']
   end
 
-  def test_delete_database
+  def test_put_db
 
-    c = Rufus::Jig::CouchThing.new('127.0.0.1', 5984, 'rufus_jig_test')
+    assert_nil @c.get_db('rufus_jig_test')
 
-    assert_nil c.get
+    db = @c.put_db('rufus_jig_test')
 
-    c.put
+    assert_equal 'rufus_jig_test', @c.get('rufus_jig_test')['db_name']
+    assert_equal Rufus::Jig::CouchDatabase, @c.get_db('rufus_jig_test').class
+  end
 
-    assert_equal 'rufus_jig_test', c.get['db_name']
+  def test_delete_db
 
-    c.delete
+    assert_raise(ArgumentError) do
+      @c.delete_db('rufus_jig_test')
+    end
 
-    assert_nil c.get
+    @c.put_db('rufus_jig_test')
+
+    @c.delete_db('rufus_jig_test')
+
+    assert_nil @c.get_db('rufus_jig_test')
   end
 end
 

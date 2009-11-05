@@ -25,7 +25,10 @@ require 'test/unit'
 
 begin
   Rufus::Jig::Http.new('127.0.0.1', 4567).get('/document')
-rescue
+rescue Exception => e
+  puts
+  p e
+  #e.backtrace.each { |l| puts l }
   puts
   puts "test server not running, please run :"
   puts

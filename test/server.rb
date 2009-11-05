@@ -159,6 +159,12 @@ get '/a/b/c' do
   'C'
 end
 
+get '/c' do
+
+  content_type 'text/plain'
+  'c'
+end
+
 put '/a/b/c' do
 
   response.status = 201

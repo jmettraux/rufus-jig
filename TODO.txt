@@ -11,3 +11,5 @@
 [ ] long polling/continuous change (patron ?)
 [ ] HEAD
 
+[ ] get('x') vs get('/x') ?
+

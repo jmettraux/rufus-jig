@@ -24,6 +24,8 @@
 
 require 'rufus/lru' # gem install rufus-lru
 
+require 'rufus/jig/path'
+
 
 module Rufus::Jig
 
@@ -62,7 +64,7 @@ module Rufus::Jig
       @port = port
       @options = opts
 
-      @cache = LruHash.new((opts[:cache_size] || 77).to_i)
+      @cache = LruHash.new((opts[:cache_size] || 35).to_i)
 
       if pf = @options[:prefix]
         @options[:prefix] = "/#{pf}" if (not pf.match(/^\//))
@@ -173,28 +175,13 @@ module Rufus::Jig
 
     def add_prefix (path, opts)
 
-      path = if opts[:no_prefix]
-        path
-      elsif prefix = @options[:prefix]
-        "#{chomp_slash(prefix, :tail)}/#{chomp_slash(path, :head)}"
-      else
-        path
+      elts = [ path ]
+
+      if path.match(/^[^\/]/) && prefix = @options[:prefix]
+        elts.unshift(prefix)
       end
 
-      path = "/#{path}" unless path.match(/^\//)
-
-      path
-    end
-
-    def chomp_slash (s, pos)
-
-      r = (pos == :head) ? /^\/(.*)$/ : /^(.*)\/$/
-
-      if m = r.match(s)
-        m[1]
-      else
-        s
-      end
+      Path.join(*elts)
     end
 
     def add_params (path, opts)

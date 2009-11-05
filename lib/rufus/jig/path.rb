@@ -23,15 +23,28 @@
 #++
 
 
-module Rufus
-module Jig
+module Rufus::Jig
 
-  require 'rufus/jig/http'
-  require 'rufus/jig/json'
+  module Path
 
-  VERSION = '0.0.1'
+    def self.join (*elts)
 
-  autoload :Couch, 'rufus/jig/couch'
-end
+      elts.collect { |e|
+
+        e = e.match(/^\//) ? e : "/#{e}"
+
+        if m = e.match(/^(.*)\/$/)
+          m[1]
+        else
+          e
+        end
+      }.join
+    end
+
+    def self.to_path (s)
+
+      s.match(/^\//) ? s : "/#{s}"
+    end
+  end
 end
 

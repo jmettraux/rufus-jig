@@ -14,12 +14,12 @@ class UtHttpMiscTest < Test::Unit::TestCase
 
     @h = Rufus::Jig::Http.new('127.0.0.1', 4567, :prefix => '/a/b')
 
-    assert_equal 'C', @h.get('/c')
+    assert_equal 'c', @h.get('/c')
     assert_equal 'C', @h.get('c')
 
     @h = Rufus::Jig::Http.new('127.0.0.1', 4567, :prefix => 'a/b')
 
-    assert_equal 'C', @h.get('/c')
+    assert_equal 'c', @h.get('/c')
     assert_equal 'C', @h.get('c')
 
     @h = Rufus::Jig::Http.new('127.0.0.1', 4567)
@@ -42,12 +42,8 @@ class UtHttpMiscTest < Test::Unit::TestCase
 
     @h = Rufus::Jig::Http.new('127.0.0.1', 4567, :prefix => '/a/b')
 
-    assert_equal(
-      nil, @h.get('/document'))
-    assert_equal(
-      { 'car' => 'Mercedes-Benz' }, @h.get('/document', :no_prefix => true))
-    assert_equal(
-      { 'car' => 'Mercedes-Benz' }, @h.get('document', :no_prefix => true))
+    assert_equal({ 'car' => 'Mercedes-Benz' }, @h.get('/document'))
+    assert_equal(nil, @h.get('document'))
   end
 end
 
