@@ -146,5 +146,13 @@ class UtHttpGetTest < Test::Unit::TestCase
       {},
       @h.get('/params', :params => {}))
   end
+
+  def test_etag_but_missing
+
+    b = @h.get('/document_with_etag', :etag => '"123456123456"')
+
+    assert_equal 'Peugeot', b['car']
+    assert_equal 200, @h.last_response.status
+  end
 end
 

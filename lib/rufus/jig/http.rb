@@ -131,6 +131,8 @@ module Rufus::Jig
       path = add_params(path, opts)
 
       cached = from_cache(path, opts)
+      opts.delete(:etag) if not cached
+
       opts = rehash_options(opts)
       data = repack_data(data, opts)
 
