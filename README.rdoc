@@ -1,27 +1,45 @@
 
 = rufus-jig
 
-Dancing a jig with JSON and an HTTP client.
+An HTTP client, greedy with JSON content, GETting conditionally.
 
-* conditional GET
-* auto-{en|de}coding of JSON content
+LINK TO COUCHREST !!!
+http://github.com/couchrest/couchrest
 
-* some Couch helpers (the real stuff is at http://github.com/couchrest/couchrest)
 
 
 == examples
 
-blah blah
+=== HTTP client
+
+=== Couch helpers
 
 
-== authors
+== mailing list
 
-* John Mettraux, jmettraux@gmail.com, http://jmettraux.wordpress.com
+On the rufus-ruby list :
+
+http://groups.google.com/group/rufus-ruby
+
+
+== issue tracker
+
+http://github.com/jmettraux/rufus-jig/issues
+
+
+== irc
+
+  irc.freenode.net #ruote
 
 
 == the rest of Rufus
 
 http://rufus.rubyforge.org
+
+
+== authors
+
+* John Mettraux, jmettraux@gmail.com, http://jmettraux.wordpress.com
 
 
 == license
