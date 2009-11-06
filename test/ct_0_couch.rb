@@ -26,6 +26,24 @@ class CtCouchTest < Test::Unit::TestCase
     assert_equal 'Welcome', @c.get('.')['couchdb']
   end
 
+  def test_uuids
+
+    uuids = @c.get_uuids
+
+    assert_equal 1, uuids.size
+
+    uuids = @c.get_uuids(5)
+
+    assert_equal 5, uuids.size
+  end
+
+  def test_get_databases
+
+    dbs = @c.get_databases
+
+    assert_equal Array, dbs.class
+  end
+
   def test_put
 
     assert_equal({ 'ok' => true }, @c.put('rufus_jig_test', ''))

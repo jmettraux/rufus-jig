@@ -6,6 +6,8 @@ Dancing a jig with JSON and an HTTP client.
 * conditional GET
 * auto-{en|de}coding of JSON content
 
+* some Couch helpers (the real stuff is at http://github.com/couchrest/couchrest)
+
 
 == examples
 

@@ -29,6 +29,12 @@ require 'rufus/jig/path'
 
 module Rufus::Jig
 
+
+  def self.marshal_copy (o)
+
+    Marshal.load(Marshal.dump(o))
+  end
+
   class HttpError < RuntimeError
 
     attr_reader :status
@@ -132,7 +138,7 @@ module Rufus::Jig
 
       unless raw
 
-        return marshal_copy(cached.last) if r.status == 304
+        return Rufus::Jig.marshal_copy(cached.last) if r.status == 304
         return nil if r.status == 404
 
         raise HttpError.new(r.status, r.body) \
@@ -215,7 +221,7 @@ module Rufus::Jig
       if method == :delete || (opts[:cache] == false)
         @cache.delete(path)
       elsif et = response.headers['Etag']
-        @cache[path] = [ et, marshal_copy(body) ]
+        @cache[path] = [ et, Rufus::Jig.marshal_copy(body) ]
       end
     end
 
@@ -229,11 +235,6 @@ module Rufus::Jig
       else
         b
       end
-    end
-
-    def marshal_copy (o)
-
-      Marshal.load(Marshal.dump(o))
     end
   end
 end
