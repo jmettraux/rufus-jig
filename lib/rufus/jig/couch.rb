@@ -88,15 +88,11 @@ module Rufus::Jig
 
     def adjust (path)
 
-      r = case path
+      case path
         when '.' then @path
         when /^\// then path
         else Rufus::Jig::Path.join(@path, path)
       end
-
-      #p r
-
-      r
     end
 
     # Fetches etag from http cache
@@ -226,12 +222,15 @@ module Rufus::Jig
 
     def delete
 
-      super(@path, :etag => "\"#{@hash['_rev']}\"")
+      super(Rufus::Jig::Path.add_params(@path, :rev => _rev))
     end
 
     def put
 
-      raise "fail!"
+      h = super(
+        @path, @hash, :content_type => :json, :etag => "\"#{@hash['_rev']}\"")
+
+      @hash['_rev'] = h['rev']
     end
   end
 end
