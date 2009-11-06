@@ -27,9 +27,24 @@ module Rufus::Jig
 
   module Path
 
+    def self.add_params (path, h)
+
+      params = h.collect { |k, v| "#{k}=#{v}" }.join('&')
+
+      sep = path.index('?') ? '&' : '?'
+
+      params.length > 0 ? "#{path}#{sep}#{params}" : path
+    end
+
     def self.join (*elts)
 
-      elts.collect { |e|
+      elts, params = if elts.last.is_a?(Hash)
+        [ elts[0..-2], elts.last ]
+      else
+        [ elts, {} ]
+      end
+
+      r = elts.collect { |e|
 
         e = e.match(/^\//) ? e : "/#{e}"
 
@@ -39,6 +54,8 @@ module Rufus::Jig
           e
         end
       }.join
+
+      add_params(r, params)
     end
 
     def self.to_path (s)

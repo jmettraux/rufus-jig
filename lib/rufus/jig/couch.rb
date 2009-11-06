@@ -26,6 +26,21 @@
 module Rufus::Jig
 
   class CouchError < HttpError
+
+    # the original error hash
+    #
+    attr_reader :original
+
+    def initialize (status, message)
+
+      @original = (Rufus::Jig::Json.decode(message) rescue nil) || message
+
+      if @original.is_a?(String)
+        super(status, @original)
+      else
+        super(status, "#{@original['error']}: #{@original['reason']}")
+      end
+    end
   end
 
   class CouchResource
@@ -73,17 +88,32 @@ module Rufus::Jig
 
     def adjust (path)
 
-      case path
+      r = case path
         when '.' then @path
         when /^\// then path
         else Rufus::Jig::Path.join(@path, path)
       end
+
+      #p r
+
+      r
+    end
+
+    # Fetches etag from http cache
+    #
+    def etag (path)
+
+      r = @http.cache[path]
+
+      r ? r.first : nil
     end
   end
 
   class Couch < CouchResource
 
     def initialize (host, port, options={})
+
+      options.merge!(:error_class => CouchError)
 
       super(Rufus::Jig::Http.new(host, port, options), '/')
     end
@@ -121,41 +151,88 @@ module Rufus::Jig
       @couch = couch
       @name = name
 
-      super(couch.http, Rufus::Jig::Path.to_path(@name))
+      super(couch.http, Rufus::Jig::Path.join(couch.path, @name))
     end
 
     def put_doc (i, doc)
 
-      info = put(i, doc, :content_type => :json)
+      info = put(i, doc, :content_type => :json, :cache => false)
 
-      if info['ok']
+      doc = Rufus::Jig.marshal_copy(doc)
+      doc['_id'] = info['id']
+      doc['_rev'] = info['rev']
 
-        doc = Rufus::Jig.marshal_copy(doc)
-        doc['_id'] = info['id']
-        doc['_rev'] = info['rev']
-
-        doc
-      else
-
-        # TODO : better exception !!!
-        raise "nada"
-      end
+      CouchDocument.new(self, doc)
     end
 
     def get_doc (i)
 
-      get(i)
+      path = Rufus::Jig::Path.join(@path, i)
+      opts = {}
+
+      if et = etag(path)
+        opts[:etag] = et
+      end
+
+      doc = get(path, opts)
+
+      doc ? CouchDocument.new(self, doc) : nil
     end
 
-    def delete_doc (i)
+    def delete_doc (i, rev)
 
-      delete(i)
+      raise(ArgumentError.new("no doc '#{name}'")) if get(i).nil?
+
+      delete(Rufus::Jig::Path.add_params(i, :rev => rev))
     end
   end
 
-  #class CouchDocument < CouchResource
-  #  def initialize (couchdb, id)
-  #  end
-  #end
+  class CouchDocument < CouchResource
+
+    attr_reader :hash
+
+    def initialize (db, h)
+
+      super(db.http, Rufus::Jig::Path.join(db.path, h['_id']))
+      @hash = h
+    end
+
+    def [] (k)
+      @hash[k]
+    end
+
+    def []= (k, v)
+      @hash[k] = v
+    end
+
+    def _id
+      @hash['_id']
+    end
+
+    def _rev
+      @hash['_rev']
+    end
+
+    def get
+
+      h = super(@path, :etag => "\"#{@hash['_rev']}\"")
+
+      raise(CouchError.new(410, 'probably gone')) unless h
+
+      @hash = h
+
+      self
+    end
+
+    def delete
+
+      super(@path, :etag => "\"#{@hash['_rev']}\"")
+    end
+
+    def put
+
+      raise "fail!"
+    end
+  end
 end
 

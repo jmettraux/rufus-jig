@@ -44,23 +44,32 @@ class CtDbsTest < Test::Unit::TestCase
 
   def test_delete_doc
 
-    @db.put_doc('test2', { 'chocolate' => 'Lindt' })
+    doc = @db.put_doc('test2', { 'chocolate' => 'Lindt' })
 
-    @db.delete_doc('test2')
+    @db.delete_doc('test2', doc._rev)
 
-    assert_nil @db.get_doc('test1')
+    assert_nil @db.get_doc('test2')
   end
 
   def test_delete_missing_doc
 
     assert_raise(ArgumentError) {
-      @db.delete_doc('test3')
+      p @db.delete_doc('test3', 'whatever')
     }
   end
 
   def test_conditional_get_doc
 
-    flunk
+    @db.put_doc('test4', { 'chocolate' => 'Sprungli' })
+
+    doc = @db.get_doc('test4')
+
+    assert_equal 200, @db.http.last_response.status
+
+    doc = doc.get
+
+    assert_equal 304, @db.http.last_response.status
+    assert_equal Rufus::Jig::CouchDocument, doc.class
   end
 end
 

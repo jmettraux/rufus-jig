@@ -75,6 +75,8 @@ module Rufus::Jig
       if pf = @options[:prefix]
         @options[:prefix] = "/#{pf}" if (not pf.match(/^\//))
       end
+
+      @error_class = opts[:error_class] || HttpError
     end
 
     def get (path, opts={})
@@ -141,8 +143,9 @@ module Rufus::Jig
         return Rufus::Jig.marshal_copy(cached.last) if r.status == 304
         return nil if r.status == 404
 
-        raise HttpError.new(r.status, r.body) \
-          if r.status >= 500 && r.status < 600
+        #raise HttpError.new(r.status, r.body) \
+        raise @error_class.new(r.status, r.body) \
+          if r.status >= 400 && r.status < 600
       end
 
       b = decode_body(r, opts)
