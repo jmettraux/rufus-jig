@@ -1,10 +1,9 @@
 
 = rufus-jig
 
-An HTTP client, greedy with JSON content, GETting conditionally.
+A HTTP client, greedy with JSON content, GETting conditionally.
 
-LINK TO COUCHREST !!!
-http://github.com/couchrest/couchrest
+This library also contains some CouchDB helpers.
 
 
 
@@ -12,7 +11,29 @@ http://github.com/couchrest/couchrest
 
 === HTTP client
 
+TODO
+
 === Couch helpers
+
+For the real thing : http://github.com/couchrest/couchrest
+
+TODO
+
+
+== testing
+
+At first, make sure to start the tiny sinatra test server :
+
+  ruby test/server.rb
+
+then do
+
+  ruby test/test.rb
+
+
+To test the CouchDB helpers, make you have a running Couch on http:/127.0.0.1:5984 then do
+
+  ruby test/test.rb --couch
 
 
 == mailing list

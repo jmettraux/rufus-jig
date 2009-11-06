@@ -25,8 +25,22 @@
 
 module Rufus::Jig
 
+  #
+  # Some helper methods for URI paths.
+  #
   module Path
 
+    # Given a path and a hash of options, ...
+    #
+    #   p Rufus::Jig::Path.add_params('/toto', :q => 'nada')
+    #     # => "/toto?q=nada"
+    #
+    #   p Rufus::Jig::Path.add_params('/toto?rev=2', :q => 'nada')
+    #     # => "/toto?rev=2&q=nada"
+    #
+    #   p Rufus::Jig::Path.add_params('/toto', :q => 'nada', 'x' => 2)
+    #     # => "/toto?q=nada&x=2"
+    #
     def self.add_params (path, h)
 
       params = h.collect { |k, v| "#{k}=#{v}" }.join('&')
@@ -36,6 +50,11 @@ module Rufus::Jig
       params.length > 0 ? "#{path}#{sep}#{params}" : path
     end
 
+    # Joins paths into a '/' prefixed path.
+    #
+    #   p Rufus::Jig::Path.join('division', 'customer', :restricted => true)
+    #     # => '/division/customer?restricted=true'
+    #
     def self.join (*elts)
 
       elts, params = if elts.last.is_a?(Hash)
@@ -56,11 +75,6 @@ module Rufus::Jig
       }.join
 
       add_params(r, params)
-    end
-
-    def self.to_path (s)
-
-      s.match(/^\//) ? s : "/#{s}"
     end
   end
 end

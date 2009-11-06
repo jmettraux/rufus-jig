@@ -5,11 +5,13 @@
 [o] :prefix
 [o] :raw
 [o] POST/PUT cache if etag is given back (couch)
-
-[ ] get('/x', :cached => true) (with :cache => true ?) ? not really transparent
+[o] get('/x', :cache => false)
+[o] get('x') vs get('/x') ?
 
 [ ] long polling/continuous change (patron ?)
 [ ] HEAD
 
-[ ] get('x') vs get('/x') ?
+[ ] Net::HTTP (when no Patron)
+
+[ ] couch : attachments
 

@@ -29,12 +29,16 @@ require 'rufus/jig/path'
 
 module Rufus::Jig
 
-
+  # The classical helper method, does a full copy of the given object.
+  # Thanks Marshal.
+  #
   def self.marshal_copy (o)
 
     Marshal.load(Marshal.dump(o))
   end
 
+  # Keeping track of the HTTP status code and of the error message.
+  #
   class HttpError < RuntimeError
 
     attr_reader :status
@@ -46,6 +50,8 @@ module Rufus::Jig
     end
   end
 
+  # The base for the Rufus::Jig::Http class.
+  #
   class HttpCore
 
     # mostly for debugging purposes
@@ -286,6 +292,8 @@ if defined?(Patron) # gem install patron
 else
 
   # TODO : use Net:HTTP
+
+  raise "alternative to Patron not yet integrated :(  gem install patron"
 
 end
 

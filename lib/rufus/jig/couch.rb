@@ -43,9 +43,11 @@ module Rufus::Jig
     end
   end
 
+  # The parent class of Rufus::Jig::Couch CouchDatabase and CouchDocument.
+  #
   class CouchResource
 
-    # the jig client, the CouchThing uses
+    # the jig client
     #
     attr_reader :http
 
@@ -59,15 +61,26 @@ module Rufus::Jig
       @path = path
     end
 
+    # GET, relatively to this resource.
+    #
     def get (path, opts={})
       @http.get(adjust(path), opts)
     end
+
+    # POST, relatively to this resource.
+    #
     def post (path, data, opts={})
       @http.post(adjust(path), data, opts)
     end
+
+    # DELETE, relatively to this resource.
+    #
     def delete (path, opts={})
       @http.delete(adjust(path), opts)
     end
+
+    # PUT, relatively to this resource.
+    #
     def put (path, data, opts={})
       @http.put(adjust(path), data, opts)
     end
@@ -79,6 +92,8 @@ module Rufus::Jig
       @http.get("/_uuids?count=#{count}")['uuids']
     end
 
+    # Returns the list of all database [names] in this couch.
+    #
     def get_databases
 
       @http.get('/_all_dbs')
@@ -105,6 +120,9 @@ module Rufus::Jig
     end
   end
 
+  #
+  # Wrapping info about a Couch server.
+  #
   class Couch < CouchResource
 
     def initialize (host, port, options={})
@@ -114,6 +132,9 @@ module Rufus::Jig
       super(Rufus::Jig::Http.new(host, port, options), '/')
     end
 
+    # Returns a CouchDatabase instance or nil if the database doesn't
+    # exist in this couch.
+    #
     def get_db (name)
 
       return nil if get(name).nil?
@@ -121,6 +142,8 @@ module Rufus::Jig
       CouchDatabase.new(self, name)
     end
 
+    # Creates a database and returns the new CouchDatabase instance.
+    #
     def put_db (name)
 
       d = CouchDatabase.new(self, name)
@@ -129,27 +152,35 @@ module Rufus::Jig
       d
     end
 
+    # Deletes a database, given its name.
+    #
     def delete_db (name)
 
-      raise(ArgumentError.new("no db named '#{name}'")) if get(name).nil?
+      raise(CouchError.new(404, "no db named '#{name}'")) if get(name).nil?
 
       delete(name)
     end
   end
 
+  #
+  # Wrapping info about a Couch database.
+  #
   class CouchDatabase < CouchResource
 
-    attr_reader :couch
     attr_reader :name
 
+    # Usually called via Couch#get_database(name)
+    #
     def initialize (couch, name)
 
-      @couch = couch
       @name = name
 
       super(couch.http, Rufus::Jig::Path.join(couch.path, @name))
     end
 
+    # Given an id and an JSONable hash, puts the doc to the database
+    # and returns a CouchDocument instance wrapping it.
+    #
     def put_doc (i, doc)
 
       info = put(i, doc, :content_type => :json, :cache => false)
@@ -161,6 +192,9 @@ module Rufus::Jig
       CouchDocument.new(self, doc)
     end
 
+    # Gets a document, given its id.
+    # (conditional GET).
+    #
     def get_doc (i)
 
       path = Rufus::Jig::Path.join(@path, i)
@@ -175,6 +209,8 @@ module Rufus::Jig
       doc ? CouchDocument.new(self, doc) : nil
     end
 
+    # Deletes a document, you have to provide the current revision.
+    #
     def delete_doc (i, rev)
 
       raise(ArgumentError.new("no doc '#{name}'")) if get(i).nil?
@@ -183,6 +219,11 @@ module Rufus::Jig
     end
   end
 
+  #
+  # Wrapping a couch document.
+  #
+  # Responds to [] and []=
+  #
   class CouchDocument < CouchResource
 
     attr_reader :hash
@@ -201,14 +242,20 @@ module Rufus::Jig
       @hash[k] = v
     end
 
+    # Returns to CouchDB id of the document.
+    #
     def _id
       @hash['_id']
     end
 
+    # Returns the revision string for this copy of the document.
+    #
     def _rev
       @hash['_rev']
     end
 
+    # Re-gets this document (updating its _rev and content if necessary).
+    #
     def get
 
       h = super(@path, :etag => "\"#{@hash['_rev']}\"")
@@ -220,11 +267,15 @@ module Rufus::Jig
       self
     end
 
+    # Deletes this document (from Couch).
+    #
     def delete
 
       super(Rufus::Jig::Path.add_params(@path, :rev => _rev))
     end
 
+    # Puts this document (assumes you have updated it).
+    #
     def put
 
       h = super(

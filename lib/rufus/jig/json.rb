@@ -26,6 +26,8 @@
 module Rufus::Jig
 
   #
+  # Dealing with multiple JSON libs. Favours yajl-ruby.
+  #
   # Lifted from http://github.com/jmettraux/ruote
   #
   module Json
@@ -55,12 +57,12 @@ module Rufus::Jig
     #
     NONE = [ lambda { |s| raise 'no JSON backend found' } ] * 2
 
-    @backend = if defined?(ActiveSupport::JSON)
-      ACTIVE_SUPPORT
+    @backend = if defined?(::Yajl)
+      YAJL
     elsif defined?(::JSON)
       JSON
-    elsif defined?(::Yajl)
-      YAJL
+    elsif defined?(ActiveSupport::JSON)
+      ACTIVE_SUPPORT
     else
       NONE
     end
@@ -73,6 +75,8 @@ module Rufus::Jig
       @backend = b
     end
 
+    # Encodes the given object to JSON.
+    #
     def self.encode (o)
 
       @backend[0].call(o)
