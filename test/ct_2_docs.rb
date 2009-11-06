@@ -43,6 +43,8 @@ class CtDocsTest < Test::Unit::TestCase
 
     @doc.put
 
+    p @doc._rev
+
     assert_not_equal rev, @doc._rev
     assert_equal 'suit', @doc['item']
   end

@@ -15,3 +15,7 @@
 
 [ ] couch : attachments
 
+[ ] redirections ?
+
+[ ] put_doc(h) where _id is set ?
+

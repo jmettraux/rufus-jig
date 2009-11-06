@@ -19,7 +19,8 @@ class UtHttpPostTest < Test::Unit::TestCase
 
   def test_post
 
-    b = @h.post('/documents', '{"msg":"hello"}', :content_type => 'application/json')
+    b = @h.post(
+      '/documents', '{"msg":"hello"}', :content_type => 'application/json')
 
     r = @h.last_response
 

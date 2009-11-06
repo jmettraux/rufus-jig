@@ -3,21 +3,90 @@
 
 A HTTP client, greedy with JSON content, GETting conditionally.
 
-This library also contains some CouchDB helpers.
+Uses Patron (http://github.com/toland/patron) and Yajl-ruby (http://github.com/brianmario/yajl-ruby) whenever possible.
 
+This library also contains some CouchDB helpers.
 
 
 == examples
 
 === HTTP client
 
-TODO
+Let's say we have an hypothetical document server.
+
+getting...
+
+  require 'patron'
+  require 'yajl'
+  require 'rufus/jig'
+
+  h = Rufus::Jig::Http.new('127.0.0.1', 4567)
+
+  p @h.get('/document/xyz.json')
+    #
+    # => { "type" => "letter", "title" => "four birds" }
+    #
+    # if it's JSON, decodes it immediately
+
+  r = @h.get('/document/xyz.txt')
+  p [ r.status, r.body ]
+    #
+    # => [ 200, "letter:\n\nfour birds" ]
+    #
+    # else returns a Response object (currently the one of Patron)
+
+  j = @h.get('/document', :content_type => 'application/json')
+  j = @h.get('/document', :content_type => :json)
+    #
+    # 'Accepts' JSON
+
+posting...
+
+  r = @h.post(
+    '/documents', '<doc>four birds</doc>', :content_type => 'application/xml')
+  p [ r.status, r.body ]
+    #
+    # # => [ 201, "created." ]
+
 
 === Couch helpers
 
 For the real thing : http://github.com/couchrest/couchrest
 
-TODO
+  require 'patron'
+  require 'yajl'
+  require 'rufus/jig'
+
+  c = Rufus::Jig::Couch.new('127.0.0.1', 5984)
+    # connecting to the local couch
+
+  db = @c.put_db('rufus_jig_test')
+    # let's create a database named 'rufus_jig_test'
+
+  d = @db.put_doc('ct2', { 'item' => 'suit', 'brand' => 'suit company' })
+  p [ d._id, d._rev, d['item'] ]
+    #
+    # => [ "ct2", "1-755f205df9f3c3a05849df3554ea24f7", "suit" ]
+
+  # meanwhile, somebody else modifies the doc ...
+
+  d['size'] = 'XL'
+
+  d.put
+    #
+    # ouch, this gives us :
+    # => conflict: Document update conflict. (Rufus::Jig::CouchError)
+
+  d.get
+  p [ d._id, d._rev, d['size'] ]
+    #
+    # re-getting the document
+    #
+    # => [ "ct2", "2-3a09eafe8739b54ab46105b96c1c69a2", "XL" ]
+
+  d.delete
+    # 
+    # getting rid of the document
 
 
 == testing
