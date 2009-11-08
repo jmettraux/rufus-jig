@@ -72,6 +72,10 @@ module Rufus::Jig
     #
     attr_reader :host, :port
 
+    # The class of the error that should be raised when a request is not 2xx.
+    #
+    attr_accessor :error_class
+
     def initialize (host, port, opts)
 
       @host = host

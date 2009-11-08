@@ -15,7 +15,7 @@
 
 [ ] couch : attachments
 
-[ ] redirections ?
+[ ] redirections ? (Patron seem to understand them)
 
 [ ] put_doc(h) where _id is set ?
 

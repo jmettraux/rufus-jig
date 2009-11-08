@@ -170,7 +170,7 @@ module Rufus::Jig
     #
     def self.get_db (*args)
 
-      ht, pt, pl, op = Rufus::Jig::Http.extract_http(false, *args)
+      ht, pt, pl, op = extract_http(false, *args)
 
       return nil unless ht.get(pt)
 
@@ -181,7 +181,7 @@ module Rufus::Jig
     #
     def self.put_db (*args)
 
-      ht, pt, pl, op = Rufus::Jig::Http.extract_http(false, *args)
+      ht, pt, pl, op = extract_http(false, *args)
 
       ht.put(pt, '')
 
@@ -192,7 +192,7 @@ module Rufus::Jig
     #
     def self.delete_db (*args)
 
-      ht, pt, pl, op = Rufus::Jig::Http.extract_http(false, *args)
+      ht, pt, pl, op = extract_http(false, *args)
 
       ht.delete(pt)
     end
@@ -201,7 +201,7 @@ module Rufus::Jig
     #
     def self.get_doc (*args)
 
-      ht, pt, pl, op = Rufus::Jig::Http.extract_http(false, *args)
+      ht, pt, pl, op = extract_http(false, *args)
 
       doc = ht.get(pt)
 
@@ -210,7 +210,7 @@ module Rufus::Jig
 
     def self.put_doc (*args)
 
-      ht, pt, pl, op = Rufus::Jig::Http.extract_http(true, *args)
+      ht, pt, pl, op = extract_http(true, *args)
 
       info = ht.put(pt, pl, :content_type => :json, :cache => false)
 
@@ -226,9 +226,20 @@ module Rufus::Jig
     #
     def self.delete_doc (*args)
 
-      ht, pt, pl, op = Rufus::Jig::Http.extract_http(false, *args)
+      ht, pt, pl, op = extract_http(false, *args)
 
-      raise "nada !"
+      ht.delete(pt)
+    end
+
+    protected # somehow
+
+    def self.extract_http (payload_expected, *args)
+
+      a = Rufus::Jig::Http.extract_http(payload_expected, *args)
+
+      a.first.error_class = Rufus::Jig::CouchError
+
+      a
     end
   end
 

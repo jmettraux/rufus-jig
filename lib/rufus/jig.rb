@@ -32,6 +32,7 @@ module Jig
   VERSION = '0.0.1'
 
   autoload :Couch, 'rufus/jig/couch'
+  autoload :CouchError, 'rufus/jig/couch'
 end
 end
 

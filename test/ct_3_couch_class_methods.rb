@@ -45,7 +45,7 @@ class CtCouchClassMethodsTest < Test::Unit::TestCase
 
     assert_equal 'rufus_jig_test', db.name
 
-    assert_raise(Rufus::Jig::HttpError) {
+    assert_raise(Rufus::Jig::CouchError) {
       Rufus::Jig::Couch.put_db('127.0.0.1', 5984, 'rufus_jig_test')
     }
   end
@@ -56,14 +56,14 @@ class CtCouchClassMethodsTest < Test::Unit::TestCase
 
     assert_equal 'rufus_jig_test', db.name
 
-    assert_raise(Rufus::Jig::HttpError) {
+    assert_raise(Rufus::Jig::CouchError) {
       Rufus::Jig::Couch.put_db('127.0.0.1', 5984, '/rufus_jig_test')
     }
   end
 
   def test_delete_db
 
-    assert_raise(Rufus::Jig::HttpError) {
+    assert_raise(Rufus::Jig::CouchError) {
       Rufus::Jig::Couch.delete_db('127.0.0.1', 5984, 'rufus_jig_test')
     }
 
@@ -102,17 +102,23 @@ class CtCouchClassMethodsTest < Test::Unit::TestCase
 
   def test_delete_doc
 
+    Rufus::Jig::Http.new('127.0.0.1', 5984).put('/rufus_jig_test', '')
+
     assert_nil(
       Rufus::Jig::Couch.get_doc('127.0.0.1', 5984, 'rufus_jig_test/doc0'))
 
-    Rufus::Jig::Couch.delete_doc(
-      'http://127.0.0.1:5984/rufus_jig_test/doc0')
+    assert_raise(Rufus::Jig::CouchError) {
+      Rufus::Jig::Couch.delete_doc(
+        'http://127.0.0.1:5984/rufus_jig_test/doc0')
+    }
 
     Rufus::Jig::Http.new('127.0.0.1', 5984).put(
-      '/rufus_jig_test/doc0', { 'a' => 'b' })
+      '/rufus_jig_test/doc0', { 'a' => 'b' }, :content_type => :json)
 
-    Rufus::Jig::Couch.delete_doc(
-      'http://127.0.0.1:5984/rufus_jig_test/doc0')
+    assert_raise(Rufus::Jig::CouchError) {
+      Rufus::Jig::Couch.delete_doc(
+        'http://127.0.0.1:5984/rufus_jig_test/doc0')
+    }
 
     assert_not_nil(
       Rufus::Jig::Couch.get_doc('127.0.0.1', 5984, 'rufus_jig_test/doc0'))
