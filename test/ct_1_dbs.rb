@@ -15,7 +15,7 @@ class CtDbsTest < Test::Unit::TestCase
     begin
       Rufus::Jig::Http.new('127.0.0.1', 5984).delete('/rufus_jig_test')
     rescue Exception => e
-      p e
+      #p e
     end
 
     @c = Rufus::Jig::Couch.new('127.0.0.1', 5984)

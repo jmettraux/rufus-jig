@@ -316,38 +316,30 @@ class Rufus::Jig::Http
   #
   def self.extract_http (payload_expected, *args)
 
-    # 2  uri, payload
-    # 3  uri, payload, opts
-    # 5  host, port, path, payload, opts
-    #
-    # 2  uri, opts
-    # 4  host, port, path, opts
+    http = case args.first
 
-    args << {} unless args.last.is_a?(Hash)
+      when Rufus::Jig::Http
+        args.shift
 
-    size = payload_expected ? args.size - 1 : args.size
+      when /^http:\/\//
+        u = URI.parse(args.shift)
+        args.unshift(u.path)
+        Rufus::Jig::Http.new(u.host, u.port)
 
-    raise(ArgumentError.new(
-      "expected 1 arg (URI, [opts]) or 3 args (host, port, path, [opts])")
-    ) if size != 1 && size != 2 && size != 4
-
-    uri, payload, opts = if payload_expected
-      args.size == 3 || args.size == 2 ? args : [ args[0, 3], args[3], args[4] ]
-    else
-      args.size == 2 ? [ args[0], nil, args[1] ] : [ args[0, 3], nil, args[3] ]
+      else
+        Rufus::Jig::Http.new(args.shift, args.shift)
     end
 
-    opts ||= {}
-
-    if uri.is_a?(String)
-      u = URI.parse(uri)
-      uri = [ u.host, u.port, u.path ]
-    end
-
-    http = Rufus::Jig::Http.new(uri[0], uri[1])
-
-    path = uri.last
+    path = args.shift
     path = '/' if path == ''
+
+    payload = payload_expected ? args.shift : nil
+
+    opts = args.shift || {}
+
+    raise(
+      ArgumentError.new("option Hash expected, not #{opts.inspect}")
+    ) unless opts.is_a?(Hash)
 
     [ http, path, payload, opts ]
   end

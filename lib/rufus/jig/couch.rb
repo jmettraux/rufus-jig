@@ -212,9 +212,18 @@ module Rufus::Jig
 
       ht, pt, pl, op = Rufus::Jig::Http.extract_http(true, *args)
 
-      raise "nada !"
+      info = ht.put(pt, pl, :content_type => :json, :cache => false)
+
+      pl = Rufus::Jig.marshal_copy(pl)
+
+      pl['_id'] = info['id']
+      pl['_rev'] = info['rev']
+
+      CouchDocument.new(ht, pt, pl)
     end
 
+    # Deletes a document.
+    #
     def self.delete_doc (*args)
 
       ht, pt, pl, op = Rufus::Jig::Http.extract_http(false, *args)
@@ -244,13 +253,13 @@ module Rufus::Jig
     #
     def put_doc (i, doc)
 
-      info = put(i, doc, :content_type => :json, :cache => false)
+      #info = put(i, doc, :content_type => :json, :cache => false)
+      #doc = Rufus::Jig.marshal_copy(doc)
+      #doc['_id'] = info['id']
+      #doc['_rev'] = info['rev']
+      #CouchDocument.new(@http, Rufus::Jig::Path.join(@name, i), doc)
 
-      doc = Rufus::Jig.marshal_copy(doc)
-      doc['_id'] = info['id']
-      doc['_rev'] = info['rev']
-
-      CouchDocument.new(@http, Rufus::Jig::Path.join(@name, i), doc)
+      Rufus::Jig::Couch.put_doc(@http, Rufus::Jig::Path.join(@name, i), doc)
     end
 
     # Gets a document, given its id.

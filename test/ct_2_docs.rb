@@ -15,7 +15,7 @@ class CtDocsTest < Test::Unit::TestCase
     begin
       Rufus::Jig::Http.new('127.0.0.1', 5984).delete('/rufus_jig_test')
     rescue Exception => e
-      p e
+      #p e
     end
 
     @c = Rufus::Jig::Couch.new('127.0.0.1', 5984)
@@ -42,8 +42,6 @@ class CtDocsTest < Test::Unit::TestCase
     @doc['stained'] = true
 
     @doc.put
-
-    p @doc._rev
 
     assert_not_equal rev, @doc._rev
     assert_equal 'suit', @doc['item']

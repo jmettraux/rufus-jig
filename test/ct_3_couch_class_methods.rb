@@ -91,6 +91,8 @@ class CtCouchClassMethodsTest < Test::Unit::TestCase
 
   def test_put_doc
 
+    Rufus::Jig::Http.new('127.0.0.1', 5984).put('/rufus_jig_test', '')
+
     doc = Rufus::Jig::Couch.put_doc(
       'http://127.0.0.1:5984/rufus_jig_test/doc0', { 'x' => 'y' })
 
