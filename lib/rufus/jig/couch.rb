@@ -139,14 +139,14 @@ module Rufus::Jig
 
       return nil if get(name).nil?
 
-      CouchDatabase.new(self, name)
+      CouchDatabase.new(@http, name)
     end
 
     # Creates a database and returns the new CouchDatabase instance.
     #
     def put_db (name)
 
-      d = CouchDatabase.new(self, name)
+      d = CouchDatabase.new(@http, name)
       d.put('.', '')
 
       d
@@ -160,6 +160,50 @@ module Rufus::Jig
 
       delete(name)
     end
+
+    #--
+    # handy class methods
+    #++
+
+    # Returns a CouchDatabase instance or nil if the db doesn't exist.
+    #
+    def self.get_db (*args)
+
+      ht, pt, pl, op = Rufus::Jig::Http.extract_http(false, *args)
+
+      return nil unless ht.get(pt)
+
+      CouchDatabase.new(ht, Rufus::Jig::Path.to_name(pt))
+    end
+
+    # Creates a database and returns a CouchDatabase instance.
+    #
+    def self.put_db (*args)
+
+      ht, pt, pl, op = Rufus::Jig::Http.extract_http(false, *args)
+
+      ht.put(pt, '')
+
+      CouchDatabase.new(ht, Rufus::Jig::Path.to_name(pt))
+    end
+
+    # Deletes a database.
+    #
+    def self.delete_db (*args)
+
+      ht, pt, pl, op = Rufus::Jig::Http.extract_http(false, *args)
+
+      ht.delete(pt)
+    end
+
+    def self.get_doc (*args)
+    end
+
+    def self.put_doc (*args)
+    end
+
+    def self.delete_doc (*args)
+    end
   end
 
   #
@@ -171,11 +215,11 @@ module Rufus::Jig
 
     # Usually called via Couch#get_database(name)
     #
-    def initialize (couch, name)
+    def initialize (http, name)
 
       @name = name
 
-      super(couch.http, Rufus::Jig::Path.join(couch.path, @name))
+      super(http, Rufus::Jig::Path.to_path(@name))
     end
 
     # Given an id and an JSONable hash, puts the doc to the database

@@ -22,6 +22,8 @@
 # Made in Japan.
 #++
 
+require 'uri'
+
 require 'rufus/lru' # gem install rufus-lru
 
 require 'rufus/jig/path'
@@ -295,5 +297,49 @@ else
 
   raise "alternative to Patron not yet integrated :(  gem install patron"
 
+end
+
+#--
+#
+# re-opening the HTTP class to add some class methods
+#
+#++
+class Rufus::Jig::Http
+
+  # Makes sense of arguments and extract an array that goes like
+  # [ http, path, payload, opts ].
+  #
+  # Typical input :
+  #
+  #   a = Rufus::Jig::Http.extract_http(false, 'http://127.0.0.1:5984')
+  #   a = Rufus::Jig::Http.extract_http(false, '127.0.0.1', 5984, '/')
+  #   a = Rufus::Jig::Http.extract_http(true, 'http://127.0.0.1:5984', :payload)
+  #
+  def self.extract_http (payload_expected, *args)
+
+    opts = args.last.is_a?(Hash) ? args.pop : {}
+    payload = payload_expected ? args.pop : nil
+
+    host, port, path = if args.length == 1 # 'http://whatever:1234/nada'
+
+      u = URI.parse(args.first)
+      [ u.host, u.port, u.path ]
+
+    elsif args.length == 3
+
+      args
+
+    else
+
+      raise(ArgumentError.new(
+        "expected 1 arg (URI) or 3 args (host, port, path)"))
+    end
+
+    http = Rufus::Jig::Http.new(host, port)
+
+    path = '/' if path == ''
+
+    [ http, path, payload, opts ]
+  end
 end
 

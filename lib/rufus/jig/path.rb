@@ -65,7 +65,7 @@ module Rufus::Jig
 
       r = elts.collect { |e|
 
-        e = e.match(/^\//) ? e : "/#{e}"
+        e = to_path(e)
 
         if m = e.match(/^(.*)\/$/)
           m[1]
@@ -75,6 +75,24 @@ module Rufus::Jig
       }.join
 
       add_params(r, params)
+    end
+
+    # Makes sure there is a forward slash in the given string.
+    #
+    def self.to_path (s)
+
+      s.match(/^\//) ? s : "/#{s}"
+    end
+
+    # Removes any forward slashes at the beginning of the given string.
+    #
+    def self.to_name (s)
+
+      if m = s.match(/^\/+(.+)$/)
+        m[1]
+      else
+        s
+      end
     end
   end
 end

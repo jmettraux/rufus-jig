@@ -46,7 +46,7 @@ posting...
     '/documents', '<doc>four birds</doc>', :content_type => 'application/xml')
   p [ r.status, r.body ]
     #
-    # # => [ 201, "created." ]
+    # => [ 201, "created." ]
 
 
 === Couch helpers
@@ -87,6 +87,25 @@ For the real thing : http://github.com/couchrest/couchrest
   d.delete
     # 
     # getting rid of the document
+
+Some class methods.
+
+  require 'patron'
+  require 'yajl'
+  require 'rufus/jig'
+
+  db = Rufus::Jig::Couch.get_db('http://127.0.0.1:5984/test_db')
+    # returns a Rufus::Jig::CouchDatabase instance
+    # or nil if the db doesn't exist
+
+  db = Rufus::Jig::Couch.put_db('http://127.0.0.1:5984/test_db')
+    # creates a new database, or raise an exception if the db already exists
+
+  doc = Rufus::Jig::Couch.get_doc('http://127.0.0.1:5984/test_db/doc0')
+    # returns a Rufus::Jig::CouchDocument instance
+    # or nil the document doesn't exist
+
+  # ...
 
 
 == testing
