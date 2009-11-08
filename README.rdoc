@@ -88,7 +88,7 @@ For the real thing : http://github.com/couchrest/couchrest
     # 
     # getting rid of the document
 
-Some class methods.
+Some class methods (getting right to the stuff).
 
   require 'patron'
   require 'yajl'

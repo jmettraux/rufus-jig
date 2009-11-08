@@ -43,6 +43,7 @@ module Rufus::Jig
     end
   end
 
+  #
   # The parent class of Rufus::Jig::Couch CouchDatabase and CouchDocument.
   #
   class CouchResource
@@ -196,13 +197,29 @@ module Rufus::Jig
       ht.delete(pt)
     end
 
+    # Fetches a document. Returns nil if not found or a CouchDocument instance.
+    #
     def self.get_doc (*args)
+
+      ht, pt, pl, op = Rufus::Jig::Http.extract_http(false, *args)
+
+      doc = ht.get(pt)
+
+      doc ? CouchDocument.new(ht, pt, doc) : nil
     end
 
     def self.put_doc (*args)
+
+      ht, pt, pl, op = Rufus::Jig::Http.extract_http(true, *args)
+
+      raise "nada !"
     end
 
     def self.delete_doc (*args)
+
+      ht, pt, pl, op = Rufus::Jig::Http.extract_http(false, *args)
+
+      raise "nada !"
     end
   end
 
@@ -233,7 +250,7 @@ module Rufus::Jig
       doc['_id'] = info['id']
       doc['_rev'] = info['rev']
 
-      CouchDocument.new(self, doc)
+      CouchDocument.new(@http, Rufus::Jig::Path.join(@name, i), doc)
     end
 
     # Gets a document, given its id.
@@ -250,7 +267,7 @@ module Rufus::Jig
 
       doc = get(path, opts)
 
-      doc ? CouchDocument.new(self, doc) : nil
+      doc ? CouchDocument.new(@http, Rufus::Jig::Path.join(@name, i), doc) : nil
     end
 
     # Deletes a document, you have to provide the current revision.
@@ -270,12 +287,12 @@ module Rufus::Jig
   #
   class CouchDocument < CouchResource
 
-    attr_reader :hash
+    #attr_reader :hash
 
-    def initialize (db, h)
+    def initialize (http, path, doc)
 
-      super(db.http, Rufus::Jig::Path.join(db.path, h['_id']))
-      @hash = h
+      super(http, path)
+      @hash = doc
     end
 
     def [] (k)
@@ -302,7 +319,13 @@ module Rufus::Jig
     #
     def get
 
-      h = super(@path, :etag => "\"#{@hash['_rev']}\"")
+      opts = {}
+
+      if @hash && rev = @hash['_rev']
+        opts[:etag] = "\"#{rev}\""
+      end
+
+      h = super(@path, opts)
 
       raise(CouchError.new(410, 'probably gone')) unless h
 

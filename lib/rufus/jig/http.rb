@@ -151,9 +151,8 @@ module Rufus::Jig
       unless raw
 
         return Rufus::Jig.marshal_copy(cached.last) if r.status == 304
-        return nil if r.status == 404
+        return nil if method == :get && r.status == 404
 
-        #raise HttpError.new(r.status, r.body) \
         raise @error_class.new(r.status, r.body) \
           if r.status >= 400 && r.status < 600
       end
@@ -317,26 +316,37 @@ class Rufus::Jig::Http
   #
   def self.extract_http (payload_expected, *args)
 
-    opts = args.last.is_a?(Hash) ? args.pop : {}
-    payload = payload_expected ? args.pop : nil
+    # 2  uri, payload
+    # 3  uri, payload, opts
+    # 5  host, port, path, payload, opts
+    #
+    # 2  uri, opts
+    # 4  host, port, path, opts
 
-    host, port, path = if args.length == 1 # 'http://whatever:1234/nada'
+    args << {} unless args.last.is_a?(Hash)
 
-      u = URI.parse(args.first)
-      [ u.host, u.port, u.path ]
+    size = payload_expected ? args.size - 1 : args.size
 
-    elsif args.length == 3
+    raise(ArgumentError.new(
+      "expected 1 arg (URI, [opts]) or 3 args (host, port, path, [opts])")
+    ) if size != 1 && size != 2 && size != 4
 
-      args
-
+    uri, payload, opts = if payload_expected
+      args.size == 3 || args.size == 2 ? args : [ args[0, 3], args[3], args[4] ]
     else
-
-      raise(ArgumentError.new(
-        "expected 1 arg (URI) or 3 args (host, port, path)"))
+      args.size == 2 ? [ args[0], nil, args[1] ] : [ args[0, 3], nil, args[3] ]
     end
 
-    http = Rufus::Jig::Http.new(host, port)
+    opts ||= {}
 
+    if uri.is_a?(String)
+      u = URI.parse(uri)
+      uri = [ u.host, u.port, u.path ]
+    end
+
+    http = Rufus::Jig::Http.new(uri[0], uri[1])
+
+    path = uri.last
     path = '/' if path == ''
 
     [ http, path, payload, opts ]

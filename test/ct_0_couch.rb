@@ -63,7 +63,7 @@ class CtCouchTest < Test::Unit::TestCase
 
   def test_delete_db
 
-    assert_raise(ArgumentError) do
+    assert_raise(Rufus::Jig::CouchError) do
       @c.delete_db('rufus_jig_test')
     end
 

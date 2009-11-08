@@ -15,7 +15,7 @@ class CtCouchClassMethodsTest < Test::Unit::TestCase
     begin
       Rufus::Jig::Http.new('127.0.0.1', 5984).delete('/rufus_jig_test')
     rescue Exception => e
-      p e
+      #p e
     end
   end
 
@@ -63,8 +63,9 @@ class CtCouchClassMethodsTest < Test::Unit::TestCase
 
   def test_delete_db
 
-    Rufus::Jig::Couch.delete_db('127.0.0.1', 5984, 'rufus_jig_test')
-      # no error
+    assert_raise(Rufus::Jig::HttpError) {
+      Rufus::Jig::Couch.delete_db('127.0.0.1', 5984, 'rufus_jig_test')
+    }
 
     Rufus::Jig::Couch.put_db('127.0.0.1', 5984, 'rufus_jig_test')
 
@@ -73,6 +74,46 @@ class CtCouchClassMethodsTest < Test::Unit::TestCase
     Rufus::Jig::Couch.delete_db('127.0.0.1', 5984, 'rufus_jig_test')
 
     assert_nil Rufus::Jig::Couch.get_db('http://127.0.0.1:5984/rufus_jig_test')
+  end
+
+  def test_get_doc
+
+    Rufus::Jig::Http.new('127.0.0.1', 5984).put(
+      '/rufus_jig_test', '')
+    Rufus::Jig::Http.new('127.0.0.1', 5984).put(
+      '/rufus_jig_test/doc0', { 'a' => 'b' }, :content_type => :json)
+
+    doc = Rufus::Jig::Couch.get_doc('127.0.0.1', 5984, 'rufus_jig_test/doc0')
+
+    assert_equal 'doc0', doc._id
+    assert_not_nil doc._rev
+  end
+
+  def test_put_doc
+
+    doc = Rufus::Jig::Couch.put_doc(
+      'http://127.0.0.1:5984/rufus_jig_test/doc0', { 'x' => 'y' })
+
+    assert_equal 'doc0', doc._id
+    assert_not_nil doc._rev
+  end
+
+  def test_delete_doc
+
+    assert_nil(
+      Rufus::Jig::Couch.get_doc('127.0.0.1', 5984, 'rufus_jig_test/doc0'))
+
+    Rufus::Jig::Couch.delete_doc(
+      'http://127.0.0.1:5984/rufus_jig_test/doc0')
+
+    Rufus::Jig::Http.new('127.0.0.1', 5984).put(
+      '/rufus_jig_test/doc0', { 'a' => 'b' })
+
+    Rufus::Jig::Couch.delete_doc(
+      'http://127.0.0.1:5984/rufus_jig_test/doc0')
+
+    assert_not_nil(
+      Rufus::Jig::Couch.get_doc('127.0.0.1', 5984, 'rufus_jig_test/doc0'))
   end
 end
 
