@@ -25,6 +25,11 @@
 
 module Rufus::Jig
 
+  #
+  # An error class for the couch stuff.
+  #
+  # Has a #status and an #original methods.
+  #
   class CouchError < HttpError
 
     # the original error hash
@@ -197,6 +202,9 @@ module Rufus::Jig
     # Returns a CouchDatabase instance or nil if the database doesn't
     # exist in this couch.
     #
+    #  couch = Rufus::Jig::Couch.get_couch('127.0.0.1', 5984)
+    #  db = couch.get_db('hr_documents')
+    #
     def get_db (name)
 
       return nil if get(name).nil?
@@ -207,6 +215,9 @@ module Rufus::Jig
     # Creates a database and returns the new CouchDatabase instance.
     #
     # Will raise a Rufus::Jig::CouchError if the db already exists.
+    #
+    #  couch = Rufus::Jig::Couch.get_couch('127.0.0.1', 5984)
+    #  db = couch.put_db('financial_results')
     #
     def put_db (name)
 
@@ -219,6 +230,9 @@ module Rufus::Jig
     # Deletes a database, given its name.
     #
     # Will raise a Rufus::Jig::CouchError if the db doesn't exist.
+    #
+    #  couch = Rufus::Jig::Couch.get_couch('127.0.0.1', 5984)
+    #  db = couch.delete_db('financial_results')
     #
     def delete_db (name)
 
@@ -343,7 +357,9 @@ module Rufus::Jig
       ht.delete(pt)
     end
 
-    # (Don't call this method)
+    # This method is used from get_couch, get_db, put_db and co...
+    #
+    # Never used directly.
     #
     def self.extract_http (payload_expected, *args)
 
@@ -357,6 +373,16 @@ module Rufus::Jig
 
   #
   # Wrapping info about a Couch database.
+  #
+  # You usually grab an instance of it like that :
+  #
+  #   db = Rufus::Jig::Couch.get_db('127.0.0.1', 5984, 'my_database')
+  #     # or
+  #   db = Rufus::Jig::Couch.get_db('http://127.0.0.1:5984/my_database')
+  #
+  #     # or
+  #   couch = Rufus::Jig::Couch.get_couch('127.0.0.1', 5984)
+  #   db = Rufus::Jig::Couch.get_db('my_database')
   #
   class CouchDatabase < CouchResource
 
@@ -374,6 +400,8 @@ module Rufus::Jig
     # Given an id and an JSONable hash, puts the doc to the database
     # and returns a CouchDocument instance wrapping it.
     #
+    #   db.put_doc('doc0', { 'item' => 'car', 'brand' => 'bmw' })
+    #
     def put_doc (doc_id, doc)
 
       info = put(doc_id, doc, :content_type => :json, :cache => false)
@@ -386,6 +414,8 @@ module Rufus::Jig
 
     # Gets a document, given its id.
     # (conditional GET).
+    #
+    #   db.get_doc('doc0')
     #
     def get_doc (doc_id)
 
@@ -405,6 +435,8 @@ module Rufus::Jig
 
     # Deletes a document, you have to provide the current revision.
     #
+    #   db.delete_doc('doc0')
+    #
     def delete_doc (doc_id, rev)
 
       raise(ArgumentError.new("no doc '#{name}'")) if get(doc_id).nil?
@@ -422,7 +454,8 @@ module Rufus::Jig
 
     attr_reader :payload
 
-    # Don't call this method directly, use of the get_doc or put_doc methods.
+    # Don't call this method directly, use one of the get_doc or put_doc
+    # methods.
     #
     def initialize (parent_or_http, path, doc, put_result=nil)
 
@@ -435,10 +468,14 @@ module Rufus::Jig
       end
     end
 
+    # Gets a value.
+    #
     def [] (k)
       @payload[k]
     end
 
+    # Sets a value.
+    #
     def []= (k, v)
       @payload[k] = v
     end

@@ -57,7 +57,7 @@ For the real thing : http://github.com/couchrest/couchrest
   require 'yajl'
   require 'rufus/jig'
 
-  c = Rufus::Jig::Couch.new('127.0.0.1', 5984)
+  c = Rufus::Jig::Couch.get_couch('127.0.0.1', 5984)
     # connecting to the local couch
 
   db = @c.put_db('rufus_jig_test')
@@ -106,6 +106,25 @@ Some class methods (getting right to the stuff).
     # or nil the document doesn't exist
 
   # ...
+
+Perhaps the right way to interact from rufus-jig to CouchDB is something like :
+
+  db = Rufus::Jig::Couch.get_db('http://127.0.0.1:5984/test_db')
+
+  doc = db.get_doc('doc0')
+
+  doc['car'] = { 'brand' => 'BMW', 'model' => 'MarkIII' }
+
+  doc.put
+
+  # ...
+
+Get a CouchDatabase instance then play from it.
+
+
+== rdoc
+
+http://rufus.rubyforge.org/rufus-jig/
 
 
 == testing
