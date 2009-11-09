@@ -18,10 +18,25 @@ class CtDocsTest < Test::Unit::TestCase
       #p e
     end
 
-    @c = Rufus::Jig::Couch.new('127.0.0.1', 5984)
+    @c = Rufus::Jig::Couch.get_couch('127.0.0.1', 5984)
     @db = @c.put_db('rufus_jig_test')
 
     @doc = @db.put_doc('ct2', { 'item' => 'suit', 'brand' => 'suit company' })
+  end
+
+  def test_parent
+
+    assert_equal @db, @doc.parent
+  end
+
+  def test_db
+
+    assert_equal @db, @doc.db
+  end
+
+  def test_couch
+
+    assert_equal @c, @doc.couch
   end
 
   def test_doc_get

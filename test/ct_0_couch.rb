@@ -18,7 +18,22 @@ class CtCouchTest < Test::Unit::TestCase
       #p e
     end
 
-    @c = Rufus::Jig::Couch.new('127.0.0.1', 5984)
+    @c = Rufus::Jig::Couch.get_couch('127.0.0.1', 5984)
+  end
+
+  def test_parent
+
+    assert_nil @c.parent
+  end
+
+  def test_db
+
+    assert_nil @c.db
+  end
+
+  def test_couch
+
+    assert_equal @c, @c.couch
   end
 
   def test_welcome
@@ -51,14 +66,25 @@ class CtCouchTest < Test::Unit::TestCase
     assert_equal 'rufus_jig_test', @c.get('rufus_jig_test')['db_name']
   end
 
-  def test_put_db
+  def test_get_db
 
     assert_nil @c.get_db('rufus_jig_test')
+
+    @c.put('rufus_jig_test', '')
+
+    assert_equal 'rufus_jig_test', @c.get_db('rufus_jig_test').name
+  end
+
+  def test_put_db
 
     db = @c.put_db('rufus_jig_test')
 
     assert_equal 'rufus_jig_test', @c.get('rufus_jig_test')['db_name']
     assert_equal Rufus::Jig::CouchDatabase, @c.get_db('rufus_jig_test').class
+
+    assert_raise(Rufus::Jig::CouchError) do
+      db = @c.put_db('rufus_jig_test')
+    end
   end
 
   def test_delete_db

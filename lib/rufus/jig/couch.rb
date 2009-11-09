@@ -56,10 +56,51 @@ module Rufus::Jig
     #
     attr_reader :path
 
-    def initialize (http, path)
+    # nil for a Couch instance, the Couch instance for a CouchDatabase or
+    # the CouchDatabase for a CouchDocument.
+    #
+    attr_reader :parent
 
-      @http = http
+    def initialize (parent_or_http, path)
+
       @path = path
+
+      path = path.split('/').select { |e| e != '' }
+
+      @parent, @http = if parent_or_http.is_a?(Rufus::Jig::Http)
+
+        parent = if path.length == 0
+          nil
+        elsif path.length == 1
+          Couch.new(parent_or_http)
+        else
+          CouchDatabase.new(parent_or_http, path.first)
+        end
+        [ parent, parent_or_http ]
+
+      else
+
+        [ parent_or_http, parent_or_http.http ]
+      end
+
+      @http.options[:error_class] = CouchError
+    end
+
+    # Returns the Rufus::Jig::Couch instance holding this couch resource.
+    #
+    def couch
+
+      @parent == nil ? self : @parent.couch
+    end
+
+    # Returns the Rufus::Jig::CouchDatabase instance holding this couch
+    # resource (or nil if this resource is a Rufus::Jig::Couch instance).
+    #
+    def db
+
+      return nil if @parent.nil?
+      return self if self.is_a?(CouchDatabase)
+      @parent # self is a document
     end
 
     # GET, relatively to this resource.
@@ -124,13 +165,33 @@ module Rufus::Jig
   #
   # Wrapping info about a Couch server.
   #
+  #
+  # Also provides a set of class methods for interacting directly with couch
+  # resources.
+  #
+  # * get_couch
+  # * get_db
+  # * put_db
+  # * delete_db
+  # * get_doc
+  # * put_doc
+  # * delete_doc
+  #
+  # The first one is very important
+  #
   class Couch < CouchResource
 
-    def initialize (host, port, options={})
+    # Never call this method directly.
+    #
+    # Do
+    #
+    #  couch = Rufus::Jig::Couch.get_couch('127.0.0.1', 5984)
+    #
+    # instead.
+    #
+    def initialize (parent_or_http)
 
-      options.merge!(:error_class => CouchError)
-
-      super(Rufus::Jig::Http.new(host, port, options), '/')
+      super(parent_or_http, '/')
     end
 
     # Returns a CouchDatabase instance or nil if the database doesn't
@@ -140,20 +201,24 @@ module Rufus::Jig
 
       return nil if get(name).nil?
 
-      CouchDatabase.new(@http, name)
+      CouchDatabase.new(couch, name)
     end
 
     # Creates a database and returns the new CouchDatabase instance.
     #
+    # Will raise a Rufus::Jig::CouchError if the db already exists.
+    #
     def put_db (name)
 
-      d = CouchDatabase.new(@http, name)
+      d = CouchDatabase.new(couch, name)
       d.put('.', '')
 
       d
     end
 
     # Deletes a database, given its name.
+    #
+    # Will raise a Rufus::Jig::CouchError if the db doesn't exist.
     #
     def delete_db (name)
 
@@ -166,7 +231,26 @@ module Rufus::Jig
     # handy class methods
     #++
 
+    # Returns a Rufus::Jig::Couch instance.
+    #
+    #   couch = Rufus::Jig::Couch.get_couch('http://127.0.0.1:5984')
+    #     # or
+    #   couch = Rufus::Jig::Couch.get_couch('127.0.0.1', 5984)
+    #
+    # Will raise a Rufus::Jig::CouchError in case of trouble.
+    #
+    def self.get_couch (*args)
+
+      ht, pt, pl, op = extract_http(false, *args)
+
+      Couch.new(ht)
+    end
+
     # Returns a CouchDatabase instance or nil if the db doesn't exist.
+    #
+    #   db = Rufus::Jig::Couch.get_db('127.0.0.1', 5984, 'my_database')
+    #     # or
+    #   db = Rufus::Jig::Couch.get_db('http://127.0.0.1:5984/my_database')
     #
     def self.get_db (*args)
 
@@ -179,6 +263,12 @@ module Rufus::Jig
 
     # Creates a database and returns a CouchDatabase instance.
     #
+    #   db = Rufus::Jig::Couch.put_db('127.0.0.1', 5984, 'my_database')
+    #     # or
+    #   db = Rufus::Jig::Couch.put_db('http://127.0.0.1:5984/my_database')
+    #
+    # Will raise a Rufus::Jig::CouchError if the db already exists.
+    #
     def self.put_db (*args)
 
       ht, pt, pl, op = extract_http(false, *args)
@@ -190,6 +280,12 @@ module Rufus::Jig
 
     # Deletes a database.
     #
+    #   Rufus::Jig::Couch.delete_db('127.0.0.1', 5984, 'my_database')
+    #     # or
+    #   Rufus::Jig::Couch.delete_db('http://127.0.0.1:5984/my_database')
+    #
+    # Will raise a Rufus::Jig::CouchError if the db doesn't exist.
+    #
     def self.delete_db (*args)
 
       ht, pt, pl, op = extract_http(false, *args)
@@ -198,6 +294,10 @@ module Rufus::Jig
     end
 
     # Fetches a document. Returns nil if not found or a CouchDocument instance.
+    #
+    #   Rufus::Jig::Couch.get_doc('127.0.0.1', 5984, 'my_database/doc0')
+    #     # or
+    #   Rufus::Jig::Couch.get_doc('http://127.0.0.1:5984/my_database/doc0')
     #
     def self.get_doc (*args)
 
@@ -208,21 +308,33 @@ module Rufus::Jig
       doc ? CouchDocument.new(ht, pt, doc) : nil
     end
 
+    # Puts (creates) a document
+    #
+    #   Rufus::Jig::Couch.put_doc(
+    #     '127.0.0.1', 5984, 'my_database/doc0', { 'a' => 'b' })
+    #       # or
+    #   Rufus::Jig::Couch.put_doc(
+    #     'http://127.0.0.1:5984/my_database/doc0', { 'x' => 'y' })
+    #
+    # To update a doc, get it first, then change its content and put it
+    # via its put method.
+    #
     def self.put_doc (*args)
 
       ht, pt, pl, op = extract_http(true, *args)
 
       info = ht.put(pt, pl, :content_type => :json, :cache => false)
 
-      pl = Rufus::Jig.marshal_copy(pl)
-
-      pl['_id'] = info['id']
-      pl['_rev'] = info['rev']
-
-      CouchDocument.new(ht, pt, pl)
+      CouchDocument.new(ht, pt, Rufus::Jig.marshal_copy(pl), info)
     end
 
     # Deletes a document.
+    #
+    #   Rufus::Jig::Couch.delete_doc('127.0.0.1', 5984, 'my_database/doc0')
+    #     # or
+    #   Rufus::Jig::Couch.delete_doc('http://127.0.0.1:5984/my_database/doc0')
+    #
+    # Will raise a Rufus::Jig::CouchError if the doc doesn't exist.
     #
     def self.delete_doc (*args)
 
@@ -231,8 +343,8 @@ module Rufus::Jig
       ht.delete(pt)
     end
 
-    protected # somehow
-
+    # (Don't call this method)
+    #
     def self.extract_http (payload_expected, *args)
 
       a = Rufus::Jig::Http.extract_http(payload_expected, *args)
@@ -252,33 +364,32 @@ module Rufus::Jig
 
     # Usually called via Couch#get_database(name)
     #
-    def initialize (http, name)
+    def initialize (parent_or_http, name)
 
       @name = name
 
-      super(http, Rufus::Jig::Path.to_path(@name))
+      super(parent_or_http, Rufus::Jig::Path.to_path(@name))
     end
 
     # Given an id and an JSONable hash, puts the doc to the database
     # and returns a CouchDocument instance wrapping it.
     #
-    def put_doc (i, doc)
+    def put_doc (doc_id, doc)
 
-      #info = put(i, doc, :content_type => :json, :cache => false)
-      #doc = Rufus::Jig.marshal_copy(doc)
-      #doc['_id'] = info['id']
-      #doc['_rev'] = info['rev']
-      #CouchDocument.new(@http, Rufus::Jig::Path.join(@name, i), doc)
+      info = put(doc_id, doc, :content_type => :json, :cache => false)
 
-      Rufus::Jig::Couch.put_doc(@http, Rufus::Jig::Path.join(@name, i), doc)
+      CouchDocument.new(
+        self,
+        Rufus::Jig::Path.join(@name, doc_id),
+        Rufus::Jig.marshal_copy(doc), info)
     end
 
     # Gets a document, given its id.
     # (conditional GET).
     #
-    def get_doc (i)
+    def get_doc (doc_id)
 
-      path = Rufus::Jig::Path.join(@path, i)
+      path = Rufus::Jig::Path.join(@path, doc_id)
       opts = {}
 
       if et = etag(path)
@@ -287,16 +398,18 @@ module Rufus::Jig
 
       doc = get(path, opts)
 
-      doc ? CouchDocument.new(@http, Rufus::Jig::Path.join(@name, i), doc) : nil
+      doc ?
+        CouchDocument.new(self, Rufus::Jig::Path.join(@name, doc_id), doc) :
+        nil
     end
 
     # Deletes a document, you have to provide the current revision.
     #
-    def delete_doc (i, rev)
+    def delete_doc (doc_id, rev)
 
-      raise(ArgumentError.new("no doc '#{name}'")) if get(i).nil?
+      raise(ArgumentError.new("no doc '#{name}'")) if get(doc_id).nil?
 
-      delete(Rufus::Jig::Path.add_params(i, :rev => rev))
+      delete(Rufus::Jig::Path.add_params(doc_id, :rev => rev))
     end
   end
 
@@ -307,32 +420,39 @@ module Rufus::Jig
   #
   class CouchDocument < CouchResource
 
-    #attr_reader :hash
+    attr_reader :payload
 
-    def initialize (http, path, doc)
+    # Don't call this method directly, use of the get_doc or put_doc methods.
+    #
+    def initialize (parent_or_http, path, doc, put_result=nil)
 
-      super(http, path)
-      @hash = doc
+      super(parent_or_http, path)
+      @payload = doc
+
+      if put_result
+        @payload['_id'] = put_result['id']
+        @payload['_rev'] = put_result['rev']
+      end
     end
 
     def [] (k)
-      @hash[k]
+      @payload[k]
     end
 
     def []= (k, v)
-      @hash[k] = v
+      @payload[k] = v
     end
 
     # Returns to CouchDB id of the document.
     #
     def _id
-      @hash['_id']
+      @payload['_id']
     end
 
     # Returns the revision string for this copy of the document.
     #
     def _rev
-      @hash['_rev']
+      @payload['_rev']
     end
 
     # Re-gets this document (updating its _rev and content if necessary).
@@ -341,7 +461,7 @@ module Rufus::Jig
 
       opts = {}
 
-      if @hash && rev = @hash['_rev']
+      if @payload && rev = @payload['_rev']
         opts[:etag] = "\"#{rev}\""
       end
 
@@ -349,7 +469,7 @@ module Rufus::Jig
 
       raise(CouchError.new(410, 'probably gone')) unless h
 
-      @hash = h
+      @payload = h
 
       self
     end
@@ -366,9 +486,10 @@ module Rufus::Jig
     def put
 
       h = super(
-        @path, @hash, :content_type => :json, :etag => "\"#{@hash['_rev']}\"")
+        @path, @payload,
+        :content_type => :json, :etag => "\"#{@payload['_rev']}\"")
 
-      @hash['_rev'] = h['rev']
+      @payload['_rev'] = h['rev']
     end
   end
 end

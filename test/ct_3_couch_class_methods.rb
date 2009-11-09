@@ -19,6 +19,14 @@ class CtCouchClassMethodsTest < Test::Unit::TestCase
     end
   end
 
+  def test_get_couch
+
+    c = Rufus::Jig::Couch.get_couch('127.0.0.1', 5984)
+
+    assert_equal Rufus::Jig::Couch, c.class
+    assert_equal '/', c.path
+  end
+
   def test_get_db_missing
 
     assert_nil Rufus::Jig::Couch.get_db('127.0.0.1', 5984, 'rufus_jig_test')
