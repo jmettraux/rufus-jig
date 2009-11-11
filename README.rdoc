@@ -52,6 +52,7 @@ posting...
 === Couch helpers
 
 For the real thing : http://github.com/couchrest/couchrest
+There is also the excellent : http://github.com/langalex/couch_potato
 
   require 'patron'
   require 'yajl'
