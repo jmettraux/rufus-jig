@@ -294,6 +294,65 @@ if defined?(Patron) # gem install patron
     end
   end
 
+elsif defined?( EventMachine::HttpRequest )
+
+  require 'ostruct'
+
+  class Rufus::Jig::Http < Rufus::Jig::HttpCore
+
+    def initialize (host, port, opts={})
+
+      super(host, port, opts)
+
+      @em_base_url = "http://#{host}:#{port}"
+
+      @em_ua = opts[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION}"
+    end
+
+    protected
+
+    def do_get( path, data, opts )
+      http = em_request( path ).get( :head => request_headers(opts) )
+
+      th = Thread.current
+      http.callback {
+        th.wakeup
+      }
+
+      Thread.stop
+
+      em_response( http )
+    end
+
+    def em_request( path = '/' )
+      EventMachine::HttpRequest.new( @em_base_url + path )
+    end
+
+    def em_response( em_client )
+      OpenStruct.new(
+        :status => em_client.response_header.status,
+        :headers => response_headers( em_client.response_header ),
+        :body => em_client.response
+      )
+    end
+
+    def request_headers( options )
+      headers = { 'user-agent' => @em_ua }
+
+      headers['accept'] = options["Accept"] if options.has_key?("Accept")
+      headers['If-None-Match'] = options['If-None-Match'] if options.has_key?('If-None-Match')
+
+      headers
+    end
+
+    def response_headers( hash )
+      hash.inject({}) do |headers, (key, value)|
+        key = key.downcase.split('_').map { |c| c[0].upcase + c[1..c.length] }.join('-')
+        headers[ key ] = value
+        headers
+      end
+    end
+  end
 else
 
   # TODO : use Net:HTTP
