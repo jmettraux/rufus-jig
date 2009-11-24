@@ -304,7 +304,8 @@ elsif defined?( EventMachine::HttpRequest )
 
       super(host, port, opts)
 
-      @em_base_url = "http://#{host}:#{port}"
+      @em_host = host
+      @em_port = port
 
       @em_ua = opts[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION}"
     end
@@ -324,8 +325,58 @@ elsif defined?( EventMachine::HttpRequest )
       em_response( http )
     end
 
-    def em_request( path = '/' )
-      EventMachine::HttpRequest.new( @em_base_url + path )
+    def do_post( path, data, opts )
+      http = em_request( path ).post( :body => data, :head => request_headers(opts) )
+
+      th = Thread.current
+
+      http.callback {
+        th.wakeup
+      }
+
+      Thread.stop
+
+      em_response( http )
+    end
+
+    def do_delete( path, data, opts )
+      http = em_request( path ).delete( :head => request_headers( opts ) )
+
+      th = Thread.current
+
+      http.callback {
+        th.wakeup
+      }
+
+      Thread.stop
+
+      em_response( http )
+    end
+
+    def do_put( path, data, opts )
+      http = em_request( path ).put( :body => data, :head => request_headers( opts ) )
+
+      th = Thread.current
+
+      http.callback {
+        th.wakeup
+      }
+
+      Thread.stop
+
+      em_response( http )
+    end
+
+    def em_request( uri = '/' )
+      uri = URI.parse( uri )
+      uri = URI::HTTP.build(
+        :host => ( uri.host || @em_host ),
+        :port => ( uri.port || @em_port ),
+        :path => uri.path,
+        :query => uri.query
+      )
+
+      EventMachine::HttpRequest.new( uri.to_s )
     end
 
     def em_response( em_client )
@@ -339,8 +390,9 @@ elsif defined?( EventMachine::HttpRequest )
     def request_headers( options )
       headers = { 'user-agent' => @em_ua }
 
-      headers['accept'] = options["Accept"] if options.has_key?("Accept")
+      headers['Accept'] = options["Accept"] if options.has_key?("Accept")
       headers['If-None-Match'] = options['If-None-Match'] if options.has_key?('If-None-Match')
+      headers['Content-Type'] = options['Content-Type'] if options.has_key?('Content-Type')
 
       headers
     end
