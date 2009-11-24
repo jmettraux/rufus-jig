@@ -197,13 +197,22 @@ module Rufus::Jig
 
     def add_prefix (path, opts)
 
-      elts = [ path ]
+      uri = URI.parse( path )
 
-      if path.match(/^[^\/]/) && prefix = @options[:prefix]
-        elts.unshift(prefix)
+      if !uri.host.nil?
+        return uri.to_s
+
+      else
+        uri.host.nil?
+
+        elts = [ path ]
+
+        if path.match(/^[^\/]/) && prefix = @options[:prefix]
+          elts.unshift(prefix)
+        end
+
+        return Path.join(*elts)
       end
-
-      Path.join(*elts)
     end
 
     def add_params (path, opts)
