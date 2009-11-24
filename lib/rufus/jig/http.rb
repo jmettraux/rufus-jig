@@ -324,26 +324,11 @@ elsif defined?( EventMachine::HttpRequest )
     def do_get( path, data, opts )
       http = em_request( path ).get( :head => request_headers(opts) )
 
-      th = Thread.current
-      http.callback {
-        th.wakeup
-      }
-
-      Thread.stop
-
       em_response( http )
     end
 
     def do_post( path, data, opts )
       http = em_request( path ).post( :body => data, :head => request_headers(opts) )
-
-      th = Thread.current
-
-      http.callback {
-        th.wakeup
-      }
-
-      Thread.stop
 
       em_response( http )
     end
@@ -351,27 +336,11 @@ elsif defined?( EventMachine::HttpRequest )
     def do_delete( path, data, opts )
       http = em_request( path ).delete( :head => request_headers( opts ) )
 
-      th = Thread.current
-
-      http.callback {
-        th.wakeup
-      }
-
-      Thread.stop
-
       em_response( http )
     end
 
     def do_put( path, data, opts )
       http = em_request( path ).put( :body => data, :head => request_headers( opts ) )
-
-      th = Thread.current
-
-      http.callback {
-        th.wakeup
-      }
-
-      Thread.stop
 
       em_response( http )
     end
@@ -389,6 +358,14 @@ elsif defined?( EventMachine::HttpRequest )
     end
 
     def em_response( em_client )
+      th = Thread.current
+
+      em_client.callback {
+        th.wakeup
+      }
+
+      Thread.stop
+
       OpenStruct.new(
         :status => em_client.response_header.status,
         :headers => response_headers( em_client.response_header ),
