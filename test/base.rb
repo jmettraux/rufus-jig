@@ -8,18 +8,20 @@ require 'yajl'
 transport_library = 'patron'
 
 if ARGV.include?( '--em' )
+  require 'openssl'
   transport_library = 'em-http'
 end
 
 require transport_library
 
-require 'em-http'
 require 'rufus/jig'
 
 require 'test/unit'
 
-Thread.new { EM.run {} }
-Thread.pass until EM.reactor_running?
+if transport_library == 'em-http'
+  Thread.new { EM.run {} }
+  Thread.pass until EM.reactor_running?
+end
 
 #unless $test_server
 #
