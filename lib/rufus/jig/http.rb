@@ -197,13 +197,22 @@ module Rufus::Jig
 
     def add_prefix (path, opts)
 
-      elts = [ path ]
+      uri = URI.parse( path )
 
-      if path.match(/^[^\/]/) && prefix = @options[:prefix]
-        elts.unshift(prefix)
+      if !uri.host.nil?
+        return uri.to_s
+
+      else
+        uri.host.nil?
+
+        elts = [ path ]
+
+        if path.match(/^[^\/]/) && prefix = @options[:prefix]
+          elts.unshift(prefix)
+        end
+
+        return Path.join(*elts)
       end
-
-      Path.join(*elts)
     end
 
     def add_params (path, opts)
@@ -294,6 +303,94 @@ if defined?(Patron) # gem install patron
     end
   end
 
+elsif defined?( EventMachine::HttpRequest )
+
+  require 'ostruct'
+
+  class Rufus::Jig::Http < Rufus::Jig::HttpCore
+
+    def initialize (host, port, opts={})
+
+      super(host, port, opts)
+
+      @em_host = host
+      @em_port = port
+
+      @em_ua = opts[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION}"
+    end
+
+    protected
+
+    def do_get( path, data, opts )
+      http = em_request( path ).get( :head => request_headers(opts) )
+
+      em_response( http )
+    end
+
+    def do_post( path, data, opts )
+      http = em_request( path ).post( :body => data, :head => request_headers(opts) )
+
+      em_response( http )
+    end
+
+    def do_delete( path, data, opts )
+      http = em_request( path ).delete( :head => request_headers( opts ) )
+
+      em_response( http )
+    end
+
+    def do_put( path, data, opts )
+      http = em_request( path ).put( :body => data, :head => request_headers( opts ) )
+
+      em_response( http )
+    end
+
+    def em_request( uri = '/' )
+      uri = URI.parse( uri )
+      uri = URI::HTTP.build(
+        :host => ( uri.host || @em_host ),
+        :port => ( uri.port || @em_port ),
+        :path => uri.path,
+        :query => uri.query
+      )
+
+      EventMachine::HttpRequest.new( uri.to_s )
+    end
+
+    def em_response( em_client )
+      th = Thread.current
+
+      em_client.callback {
+        th.wakeup
+      }
+
+      Thread.stop
+
+      OpenStruct.new(
+        :status => em_client.response_header.status,
+        :headers => response_headers( em_client.response_header ),
+        :body => em_client.response
+      )
+    end
+
+    def request_headers( options )
+      headers = { 'user-agent' => @em_ua }
+
+      headers['Accept'] = options["Accept"] if options.has_key?("Accept")
+      headers['If-None-Match'] = options['If-None-Match'] if options.has_key?('If-None-Match')
+      headers['Content-Type'] = options['Content-Type'] if options.has_key?('Content-Type')
+
+      headers
+    end
+
+    def response_headers( hash )
+      hash.inject({}) do |headers, (key, value)|
+        key = key.downcase.split('_').map { |c| c[0].upcase + c[1..c.length] }.join('-')
+        headers[ key ] = value
+        headers
+      end
+    end
+  end
 else
 
   # TODO : use Net:HTTP

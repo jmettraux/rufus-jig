@@ -3,10 +3,25 @@ lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 $: << lib unless $:.include?(lib)
 
 require 'yajl'
-require 'patron'
+
+# Our default
+transport_library = 'patron'
+
+if ARGV.include?( '--em' )
+  require 'openssl'
+  transport_library = 'em-http'
+end
+
+require transport_library
+
 require 'rufus/jig'
 
 require 'test/unit'
+
+if transport_library == 'em-http'
+  Thread.new { EM.run {} }
+  Thread.pass until EM.reactor_running?
+end
 
 #unless $test_server
 #
@@ -28,7 +43,7 @@ begin
 rescue Exception => e
   puts
   p e
-  #e.backtrace.each { |l| puts l }
+  e.backtrace.each { |l| puts l }
   puts
   puts "test server not running, please run :"
   puts

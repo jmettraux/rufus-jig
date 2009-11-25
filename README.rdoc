@@ -3,10 +3,27 @@
 
 A HTTP client, greedy with JSON content, GETting conditionally.
 
-Uses Patron (http://github.com/toland/patron) and Yajl-ruby (http://github.com/brianmario/yajl-ruby) whenever possible.
+Uses Patron (http://github.com/toland/patron) or em-http-request (http://github.com/igrigorik/em-http-request)
+and Yajl-ruby (http://github.com/brianmario/yajl-ruby) whenever possible.
 
 This library also contains some CouchDB helpers.
 
+To select a HTTP transport layer for rufus-jig, just make sure you have loaded
+the library before loading rufus-jig.
+
+For Patron:
+
+  require 'patron'
+  require 'rufus/jig'
+
+For em-http-request:
+
+  require 'em-http'
+  require 'rufus/jig'
+
+Please not that em-http-request-0.2.2 and earlier don't support the PUT and DELETE
+verbs. Until a newer gem is released you'll need to build the em-http-request gem
+from source.
 
 == examples
 
@@ -142,6 +159,10 @@ then do
 To test the CouchDB helpers, make you have a running Couch on http:/127.0.0.1:5984 then do
 
   ruby test/test.rb --couch
+
+To test the em-http-request HTTP transport, make sure the sinatra server is running and then do:
+
+  ruby test/test.rb -- --em
 
 
 == mailing list
