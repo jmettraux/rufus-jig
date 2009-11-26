@@ -2,6 +2,7 @@
 lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 $: << lib unless $:.include?(lib)
 
+require 'rubygems'
 require 'yajl'
 
 # Our default
@@ -10,6 +11,8 @@ transport_library = 'patron'
 if ARGV.include?( '--em' )
   require 'openssl'
   transport_library = 'em-http'
+elsif ARGV.include?( '--net' )
+  transport_library = 'net/http'
 end
 
 require transport_library

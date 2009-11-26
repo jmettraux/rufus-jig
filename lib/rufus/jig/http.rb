@@ -52,6 +52,12 @@ module Rufus::Jig
     end
   end
 
+  class HttpResponse
+
+    attr_reader :status, :headers, :body
+    attr_reader :original
+  end
+
   # The base for the Rufus::Jig::Http class.
   #
   class HttpCore
@@ -267,6 +273,17 @@ end
 
 if defined?(Patron) # gem install patron
 
+  class Rufus::Jig::HttpResponse
+
+    def initialize (patron_res)
+
+      @original = patron_res
+      @status = patron_res.status
+      @headers = patron_res.headers
+      @body = patron_res.body
+    end
+  end
+
   class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
     def initialize (host, port, opts={})
@@ -277,7 +294,8 @@ if defined?(Patron) # gem install patron
       @patron.base_url = "#{host}:#{port}"
 
       @patron.headers['User-Agent'] =
-        opts[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION}"
+        opts[:user_agent] ||
+        "#{self.class} #{Rufus::Jig::VERSION} (patron)"
     end
 
     protected
@@ -305,7 +323,27 @@ if defined?(Patron) # gem install patron
 
 elsif defined?( EventMachine::HttpRequest )
 
-  require 'ostruct'
+  class Rufus::Jig::HttpResponse
+
+    def initialize( em_client )
+
+      @original = [ em_client, em_client.response ]
+
+      @status = em_client.response_header.status
+      @headers = response_headers( em_client.response_header )
+      @body = em_client.response
+    end
+
+    protected
+
+    def response_headers( hash )
+      hash.inject({}) do |headers, (key, value)|
+        key = key.downcase.split('_').map { |c| c.capitalize }.join('-')
+        headers[ key ] = value
+        headers
+      end
+    end
+  end
 
   class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
@@ -316,7 +354,7 @@ elsif defined?( EventMachine::HttpRequest )
       @em_host = host
       @em_port = port
 
-      @em_ua = opts[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION}"
+      @em_ua = opts[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION} (em)"
     end
 
     protected
@@ -366,36 +404,92 @@ elsif defined?( EventMachine::HttpRequest )
 
       Thread.stop
 
-      OpenStruct.new(
-        :status => em_client.response_header.status,
-        :headers => response_headers( em_client.response_header ),
-        :body => em_client.response
-      )
+      Rufus::Jig::HttpResponse.new( em_client )
     end
 
     def request_headers( options )
       headers = { 'user-agent' => @em_ua }
 
-      headers['Accept'] = options["Accept"] if options.has_key?("Accept")
-      headers['If-None-Match'] = options['If-None-Match'] if options.has_key?('If-None-Match')
-      headers['Content-Type'] = options['Content-Type'] if options.has_key?('Content-Type')
+      %w[ Accept If-None-Match Content-Type ].each do |k|
+        headers[k] = options[k] if options.has_key?( k )
+      end
 
       headers
     end
-
-    def response_headers( hash )
-      hash.inject({}) do |headers, (key, value)|
-        key = key.downcase.split('_').map { |c| c[0].upcase + c[1..c.length] }.join('-')
-        headers[ key ] = value
-        headers
-      end
-    end
   end
+
 else
 
-  # TODO : use Net:HTTP
+  require 'net/http'
 
-  raise "alternative to Patron not yet integrated :(  gem install patron"
+  class Rufus::Jig::HttpResponse
+
+    def initialize (nh_res)
+
+      @original = nh_res
+      @status = nh_res.code.to_i
+      @body = nh_res.body
+      @headers = {}
+      nh_res.each { |k, v|
+        @headers[k.split('-').collect { |s| s.capitalize }.join('-')] = v
+      }
+    end
+  end
+
+  class Rufus::Jig::Http < Rufus::Jig::HttpCore
+
+    def initialize (host, port, opts={})
+
+      super(host, port, opts)
+
+      @http = Net::HTTP.new(host, port)
+
+      to = opts[:timeout]
+      if to
+        to = to.to_i
+        @http.open_timeout = to
+        @http.read_timeout = to
+      end
+
+      @options[:user_agent] =
+        opts[:user_agent] ||
+        "#{self.class} #{Rufus::Jig::VERSION} (net/http)"
+    end
+
+    protected
+
+    def do_get (path, data, opts)
+
+      do_request(:get, path, data, opts)
+    end
+
+    def do_post (path, data, opts)
+
+      do_request(:post, path, data, opts)
+    end
+
+    def do_put (path, data, opts)
+
+      do_request(:put, path, data, opts)
+    end
+
+    def do_delete (path, data, opts)
+
+      do_request(:delete, path, data, opts)
+    end
+
+    def do_request (method, path, data, opts)
+
+      req = eval("Net::HTTP::#{method.to_s.capitalize}").new(path)
+
+      req['User-Agent'] = options[:user_agent]
+      opts.each { |k, v| req[k] = v if k.is_a?(String) }
+
+      req.body = data ? data : ''
+
+      Rufus::Jig::HttpResponse.new(@http.start { @http.request(req) })
+    end
+  end
 
 end
 
