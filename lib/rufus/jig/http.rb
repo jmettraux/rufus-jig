@@ -312,6 +312,8 @@ if defined?(Patron) # gem install patron
 
     def do_put (path, data, opts)
 
+      opts['Expect'] = '' unless @options[:expect]
+
       @patron.put(path, data, opts)
     end
 
