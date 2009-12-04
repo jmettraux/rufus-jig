@@ -1,3 +1,6 @@
 
-nothing here for now
+== authors
+
+John Mettraux - http://github.com/jmettraux
+Kenneth Kalmer - http://github.com/kennethkalmer
 
