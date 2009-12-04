@@ -189,7 +189,8 @@ http://rufus.rubyforge.org
 
 == authors
 
-* John Mettraux, jmettraux@gmail.com, http://jmettraux.wordpress.com
+* John Mettraux, http://jmettraux.wordpress.com/
+* Kenneth Kalmer, http://www.opensourcery.co.za/
 
 
 == license
