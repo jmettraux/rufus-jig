@@ -4,3 +4,7 @@
 John Mettraux - http://github.com/jmettraux
 Kenneth Kalmer - http://github.com/kennethkalmer
 
+== contributors
+
+Torsten Schoenebaum - http://github.com/tosch
+

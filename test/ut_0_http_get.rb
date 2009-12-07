@@ -15,6 +15,13 @@ class UtHttpGetTest < Test::Unit::TestCase
     @h = Rufus::Jig::Http.new('127.0.0.1', 4567)
   end
 
+  def test_get_root
+
+    r = @h.get('/')
+
+    assert_equal 'hello', r
+  end
+
   def test_get
 
     r = @h.get('/document')

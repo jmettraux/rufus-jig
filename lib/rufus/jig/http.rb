@@ -482,6 +482,8 @@ else
 
     def do_request (method, path, data, opts)
 
+      path = '/' if path == ''
+
       req = eval("Net::HTTP::#{method.to_s.capitalize}").new(path)
 
       req['User-Agent'] = options[:user_agent]

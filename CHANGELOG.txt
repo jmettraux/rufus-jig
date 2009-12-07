@@ -1,7 +1,11 @@
 
 = rufus-jig CHANGELOG.txt
 
-== rufus-jig - 0.1.1    not yet released
+== rufus-jig - 0.1.2    released 2009/12/07
+
+- fixed issue with '/' and net/http. Thanks Torsten.
+
+== rufus-jig - 0.1.1    released
 
 == rufus-jig - 0.1.0    released 2009/11/09
 

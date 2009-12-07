@@ -11,6 +11,13 @@ require 'json'
 # BASIC
 #
 
+get '/' do
+
+  content_type 'text/plain'
+
+  'hello'
+end
+
 get '/document' do
 
   content_type 'application/json'
