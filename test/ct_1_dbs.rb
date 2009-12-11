@@ -55,6 +55,15 @@ class CtDbsTest < Test::Unit::TestCase
     assert_equal 'Camille Bloch', doc['chocolate']
   end
 
+  def test_put_doc_fail
+
+    @db.put_doc('_id' => 'test0c', 'chocolate' => 'Nestle Generics')
+
+    assert_raise(Rufus::Jig::CouchError) {
+      @db.put_doc('_id' => 'test0c', 'chocolate' => 'Nestle Generics')
+    }
+  end
+
   def test_get_doc
 
     @db.put_doc('test1', { 'chocolate' => 'Cailler' })

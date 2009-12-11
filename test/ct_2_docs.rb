@@ -62,6 +62,16 @@ class CtDocsTest < Test::Unit::TestCase
     assert_equal 'suit', @doc['item']
   end
 
+  def test_doc_put_fail
+
+    @db.put_doc(@doc.payload.merge('stripes' => 'none'))
+      # somebody else modifies the document
+
+    assert_raise(Rufus::Jig::CouchError) {
+      @doc.put
+    }
+  end
+
   def test_doc_delete
 
     @doc.delete
