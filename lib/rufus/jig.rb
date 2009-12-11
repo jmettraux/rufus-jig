@@ -29,7 +29,7 @@ module Jig
   require 'rufus/jig/http'
   require 'rufus/jig/json'
 
-  VERSION = '0.1.2'
+  VERSION = '0.1.3'
 
   autoload :Couch, 'rufus/jig/couch'
   autoload :CouchError, 'rufus/jig/couch'
