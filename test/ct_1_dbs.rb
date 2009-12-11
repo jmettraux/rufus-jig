@@ -46,6 +46,15 @@ class CtDbsTest < Test::Unit::TestCase
     assert_equal 'Villars', doc['chocolate']
   end
 
+  def test_put_doc_1_arg
+
+    doc = @db.put_doc('_id' => 'test0b', 'chocolate' => 'Camille Bloch')
+
+    assert_not_nil doc['_rev']
+    assert_equal 'test0b', doc['_id']
+    assert_equal 'Camille Bloch', doc['chocolate']
+  end
+
   def test_get_doc
 
     @db.put_doc('test1', { 'chocolate' => 'Cailler' })

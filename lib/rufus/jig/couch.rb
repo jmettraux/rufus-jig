@@ -402,7 +402,16 @@ module Rufus::Jig
     #
     #   db.put_doc('doc0', { 'item' => 'car', 'brand' => 'bmw' })
     #
-    def put_doc (doc_id, doc)
+    # or
+    #
+    #   db.put_doc('_id' => 'doc0', 'item' => 'car', 'brand' => 'bmw')
+    #
+    def put_doc (doc_id, doc=nil)
+
+      if doc.nil?
+        doc = doc_id
+        doc_id = doc['_id']
+      end
 
       info = put(doc_id, doc, :content_type => :json, :cache => false)
 
