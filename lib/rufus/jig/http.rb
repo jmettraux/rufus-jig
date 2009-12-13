@@ -290,15 +290,28 @@ if defined?(Patron) # gem install patron
 
       super(host, port, opts)
 
+      refresh
+    end
+
+    # Patron sessions tends to wear out. Have to refresh them.
+    #
+    def refresh
+
       @patron = Patron::Session.new
-      @patron.base_url = "#{host}:#{port}"
+      @patron.base_url = "#{@host}:#{@port}"
 
       @patron.headers['User-Agent'] =
-        opts[:user_agent] ||
-        "#{self.class} #{Rufus::Jig::VERSION} (patron)"
+        @options[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION} (patron)"
     end
 
     protected
+
+    def request (method, path, data, opts={})
+
+      refresh
+
+      super(method, path, data, opts)
+    end
 
     def do_get (path, data, opts)
 
@@ -339,6 +352,7 @@ elsif defined?( EventMachine::HttpRequest )
     protected
 
     def response_headers( hash )
+
       hash.inject({}) do |headers, (key, value)|
         key = key.downcase.split('_').map { |c| c.capitalize }.join('-')
         headers[ key ] = value

@@ -2,11 +2,31 @@
 lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 $: << lib unless $:.include?(lib)
 
+require 'rubygems'
 require 'yajl'
-require 'patron'
+
+# Our default
+transport_library = 'patron'
+
+if ARGV.include?( '--em' )
+  require 'openssl'
+  transport_library = 'em-http'
+elsif ARGV.include?( '--net' )
+  transport_library = 'net/http'
+end
+
+p [ :lib, transport_library ]
+
+require transport_library
+
 require 'rufus/jig'
 
 require 'test/unit'
+
+if transport_library == 'em-http'
+  Thread.new { EM.run {} }
+  Thread.pass until EM.reactor_running?
+end
 
 
 begin
