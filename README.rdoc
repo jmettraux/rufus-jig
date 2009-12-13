@@ -71,73 +71,30 @@ posting...
 For the real thing : http://github.com/couchrest/couchrest
 There is also the excellent : http://github.com/langalex/couch_potato
 
-  require 'patron'
-  require 'yajl'
-  require 'rufus/jig'
+The class Rufus::Jig::Couch provides a get/put/delete trio that is couch-oriented. Json encoding/decoding is automatically handled as well as
 
-  c = Rufus::Jig::Couch.get_couch('127.0.0.1', 5984)
-    # connecting to the local couch
-
-  db = @c.put_db('rufus_jig_test')
-    # let's create a database named 'rufus_jig_test'
-
-  d = @db.put_doc('ct2', { 'item' => 'suit', 'brand' => 'suit company' })
-  p [ d._id, d._rev, d['item'] ]
-    #
-    # => [ "ct2", "1-755f205df9f3c3a05849df3554ea24f7", "suit" ]
-
-  # meanwhile, somebody else modifies the doc ...
-
-  d['size'] = 'XL'
-
-  d.put
-    #
-    # ouch, this gives us :
-    # => conflict: Document update conflict. (Rufus::Jig::CouchError)
-
-  d.get
-  p [ d._id, d._rev, d['size'] ]
-    #
-    # re-getting the document
-    #
-    # => [ "ct2", "2-3a09eafe8739b54ab46105b96c1c69a2", "XL" ]
-
-  d.delete
-    # 
-    # getting rid of the document
-
-Some class methods (getting right to the stuff).
+put and delete return nil in case of success and true (conflict) or and exception else.
 
   require 'patron'
   require 'yajl'
   require 'rufus/jig'
 
-  db = Rufus::Jig::Couch.get_db('http://127.0.0.1:5984/test_db')
-    # returns a Rufus::Jig::CouchDatabase instance
-    # or nil if the db doesn't exist
+  c = Rufus::Jig::Couch.new('127.0.0.1', 5984, 'my_couch_db')
 
-  db = Rufus::Jig::Couch.put_db('http://127.0.0.1:5984/test_db')
-    # creates a new database, or raise an exception if the db already exists
+  c.put('_id' => 'coffee0', 'category' => 'espresso')
+  c.put('_id' => 'coffee1', 'category' => 'instantaneous')
 
-  doc = Rufus::Jig::Couch.get_doc('http://127.0.0.1:5984/test_db/doc0')
-    # returns a Rufus::Jig::CouchDocument instance
-    # or nil the document doesn't exist
+  doc0 = c.get('coffee0')
+  doc1 = c.get('coffee1')
 
-  # ...
+  c.delete(doc0)
 
-Perhaps the right way to interact from rufus-jig to CouchDB is something like :
+  doc1['category'] => 'instant'
+  c.put(doc1)
 
-  db = Rufus::Jig::Couch.get_db('http://127.0.0.1:5984/test_db')
+  c.delete(doc1['_id'], doc1['_rev'])
 
-  doc = db.get_doc('doc0')
-
-  doc['car'] = { 'brand' => 'BMW', 'model' => 'MarkIII' }
-
-  doc.put
-
-  # ...
-
-Get a CouchDatabase instance then play from it.
+...
 
 
 == rdoc
