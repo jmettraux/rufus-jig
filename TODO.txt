@@ -19,3 +19,5 @@
 
 [ ] put_doc(h) where _id is set ?
 
+[ ] :update_rev => true...
+
