@@ -289,50 +289,48 @@ if defined?(Patron) # gem install patron
     def initialize (host, port, opts={})
 
       super(host, port, opts)
-
-      refresh
-    end
-
-    # Patron sessions tends to wear out. Have to refresh them.
-    #
-    def refresh
-
-      @patron = Patron::Session.new
-      @patron.base_url = "#{@host}:#{@port}"
-
-      @patron.headers['User-Agent'] =
-        @options[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION} (patron)"
     end
 
     protected
 
-    def request (method, path, data, opts={})
+    # One patron session per thread
+    #
+    def get_patron
 
-      refresh
+      patron = Thread.current["#{self.class}_patron"]
 
-      super(method, path, data, opts)
+      return patron if patron
+
+      patron = Patron::Session.new
+      patron.base_url = "#{@host}:#{@port}"
+
+      patron.headers['User-Agent'] =
+        @options[:user_agent] ||
+        "#{self.class} #{Rufus::Jig::VERSION} #{Thread.current.object_id} (patron)"
+
+      Thread.current["#{self.class}_patron"] = patron
     end
 
     def do_get (path, data, opts)
 
-      @patron.get(path, opts)
+      get_patron.get(path, opts)
     end
 
     def do_post (path, data, opts)
 
-      @patron.post(path, data, opts)
+      get_patron.post(path, data, opts)
     end
 
     def do_put (path, data, opts)
 
       opts['Expect'] = '' unless @options[:expect]
 
-      @patron.put(path, data, opts)
+      get_patron.put(path, data, opts)
     end
 
     def do_delete (path, data, opts)
 
-      @patron.delete(path, opts)
+      get_patron.delete(path, opts)
     end
   end
 

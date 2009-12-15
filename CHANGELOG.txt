@@ -2,6 +2,11 @@
 = rufus-jig CHANGELOG.txt
 
 
+== rufus-jig - 0.1.4    released 2009/12/15
+
+- made jig/patron thread-safe
+
+
 == rufus-jig - 0.1.3    released 2009/12/15
 
 - delete(doc) without _rev now raises ArgumentError
