@@ -54,6 +54,18 @@ class CtCouchDbTest < Test::Unit::TestCase
     assert_not_nil doc['_rev']
   end
 
+  def test_put_update_rev_2nd_time
+
+    @c.put({ '_id' => 'soda0b', 'type' => 'lemon' })
+    doc = @c.get('soda0b')
+    rev = doc['_rev']
+
+    r = @c.put(doc, :update_rev => true)
+
+    assert_nil r
+    assert_not_equal rev, doc['_rev']
+  end
+
   def test_get_doc
 
     doc = @c.get('coffee1')

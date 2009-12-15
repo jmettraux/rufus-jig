@@ -44,14 +44,20 @@ module Rufus::Jig
         [ doc_or_path['_id'], doc_or_path ]
       end
 
+      #if opts[:update_rev] && payload.is_a?(Hash) && payload['_rev']
+      #  pre = get(path)
+      #  payload['_rev'] = prev['_rev']
+      #end
+
       path = adjust(path)
 
       begin
 
         r = @http.put(path, payload, :content_type => :json, :cache => false)
 
-        doc_or_path['_rev'] = r['rev'] \
-          if opts[:update_rev] && doc_or_path.is_a?(Hash)
+        if opts[:update_rev] && doc_or_path.is_a?(Hash)
+          doc_or_path['_rev'] = r['rev']
+        end
 
         nil
 
@@ -83,17 +89,21 @@ module Rufus::Jig
 
       doc_or_path = { '_id' => doc_or_path, '_rev' => rev } if rev
 
-      raise(
-        ArgumentError.new("cannot delete document with _rev")
-      ) unless doc_or_path['_rev']
-
       begin
 
         if doc_or_path.is_a?(String)
+
           @http.delete(adjust(doc_or_path))
+
         else
+
+          raise(
+            ArgumentError.new("cannot delete document without _rev")
+          ) unless doc_or_path['_rev']
+
           path = adjust(doc_or_path['_id'])
           path = Rufus::Jig::Path.add_params(path, :rev => doc_or_path['_rev'])
+
           @http.delete(path)
         end
 

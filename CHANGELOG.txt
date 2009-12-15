@@ -2,7 +2,7 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.3    not yet released
+== rufus-jig - 0.1.3    released 2009/12/15
 
 - delete(doc) without _rev now raises ArgumentError
 - Patron session go stale. Now refreshing them at each request.
