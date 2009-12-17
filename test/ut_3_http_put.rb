@@ -76,5 +76,12 @@ class UtHttpPutTest < Test::Unit::TestCase
     assert_equal({ 'msg' => 'hello world' }, b)
     assert_equal 1, @h.cache.size
   end
+
+  def test_put_conflict
+
+    r = @h.put('/conflict', '')
+
+    assert_equal true, r
+  end
 end
 

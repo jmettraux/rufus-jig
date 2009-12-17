@@ -162,6 +162,7 @@ module Rufus::Jig
 
         return Rufus::Jig.marshal_copy(cached.last) if r.status == 304
         return nil if method == :get && r.status == 404
+        return true if r.status == 409
 
         raise @error_class.new(r.status, r.body) \
           if r.status >= 400 && r.status < 600

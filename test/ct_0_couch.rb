@@ -52,53 +52,5 @@ class CtCouchTest < Test::Unit::TestCase
 #
 #    assert_equal 5, uuids.size
 #  end
-#
-#  def test_get_databases
-#
-#    dbs = @c.get_databases
-#
-#    assert_equal Array, dbs.class
-#  end
-#
-#  def test_put
-#
-#    assert_equal({ 'ok' => true }, @c.put('rufus_jig_test', ''))
-#
-#    assert_equal 'rufus_jig_test', @c.get('rufus_jig_test')['db_name']
-#  end
-#
-#  def test_get_db
-#
-#    assert_nil @c.get_db('rufus_jig_test')
-#
-#    @c.put('rufus_jig_test', '')
-#
-#    assert_equal 'rufus_jig_test', @c.get_db('rufus_jig_test').name
-#  end
-#
-#  def test_put_db
-#
-#    db = @c.put_db('rufus_jig_test')
-#
-#    assert_equal 'rufus_jig_test', @c.get('rufus_jig_test')['db_name']
-#    assert_equal Rufus::Jig::CouchDatabase, @c.get_db('rufus_jig_test').class
-#
-#    assert_raise(Rufus::Jig::CouchError) do
-#      db = @c.put_db('rufus_jig_test')
-#    end
-#  end
-#
-#  def test_delete_db
-#
-#    assert_raise(Rufus::Jig::CouchError) do
-#      @c.delete_db('rufus_jig_test')
-#    end
-#
-#    @c.put_db('rufus_jig_test')
-#
-#    @c.delete_db('rufus_jig_test')
-#
-#    assert_nil @c.get_db('rufus_jig_test')
-#  end
 end
 

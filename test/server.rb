@@ -121,6 +121,13 @@ put '/documents/:id' do
   end
 end
 
+put '/conflict' do
+
+  response.status = 409
+
+  'conflict'
+end
+
 get '/documents/:id' do
 
   if doc = DOCS[params[:id]]
