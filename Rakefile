@@ -34,7 +34,7 @@ Jeweler::Tasks.new do |gem|
     Uses Patron and Yajl-ruby whenever possible.
   }
   gem.email = 'jmettraux@gmail.com'
-  gem.homepage = 'http://github.com/jmettraux/rufus-cloche/'
+  gem.homepage = 'http://github.com/jmettraux/rufus-jig/'
   gem.authors = [ 'John Mettraux', 'Kenneth Kalmer' ]
   gem.rubyforge_project = 'rufus'
 
@@ -42,7 +42,7 @@ Jeweler::Tasks.new do |gem|
 
   #gem.add_dependency 'yajl-ruby'
   #gem.add_dependency 'json'
-  gem.add_development_dependency "yard", ">= 0"
+  gem.add_development_dependency 'yard', '>= 0'
 
   # gemspec spec : http://www.rubygems.org/read/chapter/20
 end
