@@ -4,6 +4,7 @@
 
 == rufus-jig - 0.1.5    not yet released
 
+- using jeweler (thanks Kenneth)
 - made jig/patron really thread-safe
 
 

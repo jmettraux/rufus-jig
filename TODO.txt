@@ -7,17 +7,17 @@
 [o] POST/PUT cache if etag is given back (couch)
 [o] get('/x', :cache => false)
 [o] get('x') vs get('/x') ?
+[o] Net::HTTP (when no Patron)
+[x] couch : attachments
+[o] put_doc(h) where _id is set ?
+[o] :update_rev => true...
 
 [ ] long polling/continuous change (patron ?)
 [ ] HEAD
 
-[ ] Net::HTTP (when no Patron)
-
-[ ] couch : attachments
-
 [ ] redirections ? (Patron seem to understand them)
 
-[ ] put_doc(h) where _id is set ?
+[ ] don't abuse exceptions ! (especially with couch)
 
-[ ] :update_rev => true...
+[ ] patron : http can steal each other's patron session (inside the same thread)
 
