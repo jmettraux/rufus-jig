@@ -51,7 +51,7 @@ Gem::Specification.new do |s|
      "test/ut_5_http_misc.rb",
      "test/ut_6_args.rb"
   ]
-  s.homepage = %q{http://github.com/jmettraux/rufus-cloche/}
+  s.homepage = %q{http://github.com/jmettraux/rufus-jig/}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{rufus}
