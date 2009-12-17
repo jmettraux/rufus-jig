@@ -2,6 +2,11 @@
 = rufus-jig CHANGELOG.txt
 
 
+== rufus-jig - 0.1.5    not yet released
+
+- made jig/patron really thread-safe
+
+
 == rufus-jig - 0.1.4    released 2009/12/15
 
 - made jig/patron thread-safe

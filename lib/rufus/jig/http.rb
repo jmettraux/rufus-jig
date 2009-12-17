@@ -297,7 +297,9 @@ if defined?(Patron) # gem install patron
     #
     def get_patron
 
-      patron = Thread.current["#{self.class}_patron"]
+      k = "#{self.class} #{self.object_id}"
+
+      patron = Thread.current[k]
 
       return patron if patron
 
@@ -306,9 +308,11 @@ if defined?(Patron) # gem install patron
 
       patron.headers['User-Agent'] =
         @options[:user_agent] ||
-        "#{self.class} #{Rufus::Jig::VERSION} #{Thread.current.object_id} (patron)"
+        [
+          self.class, Rufus::Jig::VERSION, Thread.current.object_id, '(patron)'
+        ].join(' ')
 
-      Thread.current["#{self.class}_patron"] = patron
+      Thread.current[k] = patron
     end
 
     def do_get (path, data, opts)
