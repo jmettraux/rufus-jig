@@ -12,18 +12,25 @@ class CtCouchDbTest < Test::Unit::TestCase
 
   def setup
 
+    h = Rufus::Jig::Http.new('127.0.0.1', 5984)
+
     begin
-      Rufus::Jig::Http.new('127.0.0.1', 5984).delete('/rufus_jig_test')
+      h.delete('/rufus_jig_test')
     rescue Exception => e
       #p e
     end
-    Rufus::Jig::Http.new('127.0.0.1', 5984).put('/rufus_jig_test', '')
 
-    Rufus::Jig::Http.new('127.0.0.1', 5984).put(
-      '/rufus_jig_test/coffee1',
-      '{"_id":"coffee1","type":"ristretto"}')
+    h.put('/rufus_jig_test', '')
+    h.put('/rufus_jig_test/coffee1', '{"_id":"coffee1","type":"ristretto"}')
+
+    h.close
 
     @c = Rufus::Jig::Couch.new('127.0.0.1', 5984, 'rufus_jig_test')
+  end
+
+  def teardown
+
+    @c.close
   end
 
   def test_put_doc

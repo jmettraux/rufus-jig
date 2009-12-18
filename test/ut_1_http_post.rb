@@ -11,10 +11,11 @@ require File.join(File.dirname(__FILE__), 'base')
 class UtHttpPostTest < Test::Unit::TestCase
 
   def setup
-
     @h = Rufus::Jig::Http.new('127.0.0.1', 4567)
-
     @h.delete('/documents')
+  end
+  def teardown
+    @h.close
   end
 
   def test_post

@@ -11,8 +11,10 @@ require File.join(File.dirname(__FILE__), 'base')
 class UtHttpPrefixTest < Test::Unit::TestCase
 
   def setup
-
     @h = Rufus::Jig::Http.new('127.0.0.1', 4567, :prefix => '/a/b/')
+  end
+  def teardown
+    @h.close
   end
 
   def test_get

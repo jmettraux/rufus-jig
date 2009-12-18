@@ -36,6 +36,11 @@ module Rufus::Jig
       @path ||= '/'
     end
 
+    def close
+
+      @http.close
+    end
+
     def put (doc_or_path, opts={})
 
       path, payload = if doc_or_path.is_a?(String)

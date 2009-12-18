@@ -1,7 +1,6 @@
 
 
-$:.unshift(File.join(File.dirname(__FILE__), 'lib'))
-require 'lib/rufus/jig.rb'
+require 'lib/rufus/jig/version.rb'
 
 require 'rubygems'
 require 'rake'

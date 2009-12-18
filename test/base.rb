@@ -1,6 +1,6 @@
 
 lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-$: << lib unless $:.include?(lib)
+$:.unshift(lib) unless $:.include?(lib)
 
 require 'rubygems'
 require 'yajl'

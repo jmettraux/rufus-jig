@@ -2,7 +2,12 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.5    not yet released
+== rufus-jig - 0.1.6    not yet released
+
+- implemented close for Http and Couch classes
+
+
+== rufus-jig - 0.1.5    released 2009/12/17
 
 - returning true (not raising) in case of 409 conflict
 - using jeweler (thanks Kenneth)

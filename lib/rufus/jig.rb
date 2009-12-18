@@ -26,10 +26,10 @@
 module Rufus
 module Jig
 
+  require 'rufus/jig/version'
+
   require 'rufus/jig/http'
   require 'rufus/jig/json'
-
-  VERSION = '0.1.5'
 
   autoload :Couch, 'rufus/jig/couch'
   autoload :CouchError, 'rufus/jig/couch'

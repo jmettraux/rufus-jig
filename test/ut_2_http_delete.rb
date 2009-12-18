@@ -18,6 +18,11 @@ class UtHttpDeleteTest < Test::Unit::TestCase
       '/documents/xyz', 'data', :content_type => 'text/plain', :raw => true)
   end
 
+  def teardown
+
+    @h.close
+  end
+
   def test_delete
 
     b = @h.delete('/documents/xyz')

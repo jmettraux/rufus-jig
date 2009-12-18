@@ -12,13 +12,21 @@ class CtCouchTest < Test::Unit::TestCase
 
   def setup
 
+    h = Rufus::Jig::Http.new('127.0.0.1', 5984)
     begin
-      Rufus::Jig::Http.new('127.0.0.1', 5984).delete('/rufus_jig_test')
+      h.delete('/rufus_jig_test')
     rescue Exception => e
       #p e
+    ensure
+      h.close rescue nil
     end
 
     @c = Rufus::Jig::Couch.new('127.0.0.1', 5984)
+  end
+
+  def teardown
+
+    @c.close
   end
 
   def test_welcome

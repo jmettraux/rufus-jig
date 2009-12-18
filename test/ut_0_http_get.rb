@@ -11,8 +11,10 @@ require File.join(File.dirname(__FILE__), 'base')
 class UtHttpGetTest < Test::Unit::TestCase
 
   def setup
-
     @h = Rufus::Jig::Http.new('127.0.0.1', 4567)
+  end
+  def teardown
+    @h.close
   end
 
   def test_get_root

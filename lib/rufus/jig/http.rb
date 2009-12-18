@@ -97,6 +97,11 @@ module Rufus::Jig
       @error_class = opts[:error_class] || HttpError
     end
 
+    def close
+
+      # default implementation does nothing
+    end
+
     def get (path, opts={})
 
       request(:get, path, nil, opts)
@@ -292,13 +297,25 @@ if defined?(Patron) # gem install patron
       super(host, port, opts)
     end
 
+    def close
+
+      # it's not really closing, it's rather making sure the patron
+      # session can get collected as garbage
+
+      Thread.current[key] = nil
+    end
+
     protected
+
+    def key
+      "#{self.class} #{self.object_id}"
+    end
 
     # One patron session per thread
     #
     def get_patron
 
-      k = "#{self.class} #{self.object_id}"
+      k = key
 
       patron = Thread.current[k]
 
