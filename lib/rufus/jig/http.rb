@@ -308,7 +308,7 @@ if defined?(Patron) # gem install patron
     protected
 
     def key
-      "#{self.class} #{self.object_id}"
+      self.object_id.to_s
     end
 
     # One patron session per thread
