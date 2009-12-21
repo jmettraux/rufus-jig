@@ -2,7 +2,7 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.6    not yet released
+== rufus-jig - 0.1.6    released 2009/12/21
 
 - implemented close for Http and Couch classes
 
