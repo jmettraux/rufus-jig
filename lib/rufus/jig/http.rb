@@ -268,7 +268,7 @@ module Rufus::Jig
       b = response.body
       ct = response.headers['Content-Type']
 
-      if ct && ct.match(/^application\/json/)
+      if opts[:force_json] || (ct && ct.match(/^application\/json/))
         Rufus::Jig::Json.decode(b)
       else
         b

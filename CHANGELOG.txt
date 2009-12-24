@@ -4,6 +4,7 @@
 
 == rufus-jig - 0.1.7    not yet released
 
+- implemented :force_json => true for services returning JSON in plain/text
 - :accept => :json as a shorcut for :accept -> 'application/json'
 
 

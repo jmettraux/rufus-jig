@@ -90,6 +90,17 @@ class UtHttpGetTest < Test::Unit::TestCase
     assert_equal Hash, r.class
   end
 
+  def test_get_force_json
+
+    r = @h.get('/document_json_plain', :accept => :json)
+
+    assert_equal('{"car":"Peugeot"}', r)
+
+    r = @h.get('/document_json_plain', :force_json => true)
+
+    assert_equal({ 'car' => 'Peugeot' }, r)
+  end
+
   def test_conditional_get
 
     b = @h.get('/document_with_etag')

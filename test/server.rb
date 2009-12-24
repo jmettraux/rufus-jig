@@ -36,6 +36,13 @@ get '/document_accept' do
   '{"car":"Saab"}'
 end
 
+get '/document_json_plain' do
+
+  content_type 'text/plain'
+
+  '{"car":"Peugeot"}'
+end
+
 get '/document_utf8' do
 
   content_type 'application/json', :charset => 'utf-8'
