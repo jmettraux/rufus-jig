@@ -21,3 +21,5 @@
 
 [ ] patron : http can steal each other's patron session (inside the same thread)
 
+[ ] why not a :force_json ?
+

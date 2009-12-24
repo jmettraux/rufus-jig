@@ -192,6 +192,7 @@ module Rufus::Jig
     def rehash_options (opts)
 
       opts['Accept'] ||= (opts.delete(:accept) || 'application/json')
+      opts['Accept'] = 'application/json' if opts['Accept'] == :json
 
       if ct = opts.delete(:content_type)
         opts['Content-Type'] = ct

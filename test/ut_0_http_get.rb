@@ -84,6 +84,10 @@ class UtHttpGetTest < Test::Unit::TestCase
     assert_equal 'Saab', r['car']
 
     assert_equal 0, @h.cache.size
+
+    r = @h.get('/document_accept', :accept => :json)
+
+    assert_equal Hash, r.class
   end
 
   def test_conditional_get
