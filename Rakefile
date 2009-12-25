@@ -41,6 +41,8 @@ Jeweler::Tasks.new do |gem|
 
   #gem.add_dependency 'yajl-ruby'
   #gem.add_dependency 'json'
+  gem.add_dependency 'rufus-lru'
+  gem.add_dependency 'rufus-json'
   gem.add_development_dependency 'yard', '>= 0'
 
   # gemspec spec : http://www.rubygems.org/read/chapter/20

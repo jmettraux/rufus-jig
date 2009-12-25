@@ -248,7 +248,7 @@ module Rufus::Jig
 
       return data if data.nil? || data.is_a?(String)
 
-      return Rufus::Jig::Json.encode(data) \
+      return Rufus::Json.encode(data) \
         if (opts['Content-Type'] || '').match(/^application\/json/)
 
       data.to_s
@@ -269,7 +269,7 @@ module Rufus::Jig
       ct = response.headers['Content-Type']
 
       if opts[:force_json] || (ct && ct.match(/^application\/json/))
-        Rufus::Jig::Json.decode(b)
+        Rufus::Json.decode(b)
       else
         b
       end
