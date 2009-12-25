@@ -2,9 +2,13 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.7    released 2009/12/25
+== rufus-jig - 0.1.8    released 2009/12/25
 
 - using rufus-json
+
+
+== rufus-jig - 0.1.7    released 2009/12/23
+
 - implemented :force_json => true for services returning JSON in plain/text
 - :accept => :json as a shorcut for :accept -> 'application/json'
 
