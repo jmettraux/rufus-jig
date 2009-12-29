@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rufus-jig}
-  s.version = "0.1.8"
+  s.version = "0.1.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Mettraux", "Kenneth Kalmer"]
-  s.date = %q{2009-12-25}
+  s.date = %q{2009-12-29}
   s.description = %q{
     Json Internet Get.
 
@@ -41,6 +41,7 @@ Gem::Specification.new do |s|
      "test/couch_base.rb",
      "test/ct_0_couch.rb",
      "test/ct_1_couchdb.rb",
+     "test/ct_2_couchdb_options.rb",
      "test/server.rb",
      "test/test.rb",
      "test/ut_0_http_get.rb",

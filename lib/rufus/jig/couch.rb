@@ -59,7 +59,7 @@ module Rufus::Jig
 
       r = @http.put(path, payload, :content_type => :json, :cache => false)
 
-      return true if r == true
+      return @http.get(path) if r == true
         # conflict
 
       if opts[:update_rev] && doc_or_path.is_a?(Hash)

@@ -48,7 +48,7 @@ class CtCouchDbTest < Test::Unit::TestCase
 
     r = @c.put('_id' => 'coffee1', 'type' => 'espresso')
 
-    assert_equal true, r
+    assert_match /^1-.+$/, r['_rev']
   end
 
   def test_put_conflict
@@ -58,7 +58,7 @@ class CtCouchDbTest < Test::Unit::TestCase
       'type' => 'espresso',
       '_rev' => '2-47844552aae09c41a0ffffffffffffff')
 
-    assert_equal true, r
+    assert_match /^1-.+$/, r['_rev']
   end
 
   def test_put_update_rev

@@ -3,6 +3,7 @@
 
 == rufus-jig - 0.1.9    released 2009/12/29
 
+- Couch now handling conflict re-get by itself
 - :re_put_ok => false option for Rufus::Jig::Couch
   (refusing puts on deleted documents)
 
