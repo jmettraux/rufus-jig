@@ -1,6 +1,11 @@
 
 = rufus-jig CHANGELOG.txt
 
+== rufus-jig - 0.1.9    released 2009/12/29
+
+- :re_put_ok => false option for Rufus::Jig::Couch
+  (refusing puts on deleted documents)
+
 
 == rufus-jig - 0.1.8    released 2009/12/25
 

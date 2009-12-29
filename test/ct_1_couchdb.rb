@@ -33,7 +33,7 @@ class CtCouchDbTest < Test::Unit::TestCase
     @c.close
   end
 
-  def test_put_doc
+  def test_put
 
     r = @c.put('_id' => 'coffee0', 'type' => 'espresso')
 
@@ -44,9 +44,19 @@ class CtCouchDbTest < Test::Unit::TestCase
     assert_not_nil doc['_rev']
   end
 
-  def test_put_doc_fail
+  def test_put_fail
 
     r = @c.put('_id' => 'coffee1', 'type' => 'espresso')
+
+    assert_equal true, r
+  end
+
+  def test_put_conflict
+
+    r = @c.put(
+      '_id' => 'coffee1',
+      'type' => 'espresso',
+      '_rev' => '2-47844552aae09c41a0ffffffffffffff')
 
     assert_equal true, r
   end
@@ -73,21 +83,35 @@ class CtCouchDbTest < Test::Unit::TestCase
     assert_not_equal rev, doc['_rev']
   end
 
-  def test_get_doc
+  def test_re_put
+
+    doc = @c.get('coffee1')
+    @c.delete(doc)
+
+    assert_nil @c.get('coffee1')
+
+    doc['whatever'] = 'else'
+
+    r = @c.put(doc)
+
+    assert_not_nil @c.get('coffee1')['_rev']
+  end
+
+  def test_get
 
     doc = @c.get('coffee1')
 
     assert_not_nil doc['_rev']
   end
 
-  def test_get_missing_doc
+  def test_get_404
 
     doc = @c.get('tea0')
 
     assert_nil doc
   end
 
-  def test_delete_doc
+  def test_delete
 
     doc = @c.get('coffee1')
 
@@ -99,7 +123,7 @@ class CtCouchDbTest < Test::Unit::TestCase
       Rufus::Jig::Http.new('127.0.0.1', 5984).get('/rufus_jig_test/coffee1'))
   end
 
-  def test_delete_doc_2_args
+  def test_delete_2_args
 
     doc = @c.get('coffee1')
 
@@ -109,7 +133,7 @@ class CtCouchDbTest < Test::Unit::TestCase
       Rufus::Jig::Http.new('127.0.0.1', 5984).get('/rufus_jig_test/coffee1'))
   end
 
-  def test_delete_doc_fail
+  def test_delete_conflict
 
     doc = @c.get('coffee1')
 

@@ -49,10 +49,11 @@ module Rufus::Jig
         [ doc_or_path['_id'], doc_or_path ]
       end
 
-      #if opts[:update_rev] && payload.is_a?(Hash) && payload['_rev']
-      #  pre = get(path)
-      #  payload['_rev'] = prev['_rev']
-      #end
+      if @opts[:re_put_ok] == false && payload['_rev']
+        cur = get(path)
+        return true if cur.nil?
+        return cur if cur['_rev'] != payload['_rev']
+      end
 
       path = adjust(path)
 
