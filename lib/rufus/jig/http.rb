@@ -457,6 +457,7 @@ elsif defined?( EventMachine::HttpRequest )
 
 else
 
+  require 'thread'
   require 'net/http'
 
   class Rufus::Jig::HttpResponse
@@ -519,16 +520,19 @@ else
 
     def do_request (method, path, data, opts)
 
-      path = '/' if path == ''
+      @mutex.synchronize do
 
-      req = eval("Net::HTTP::#{method.to_s.capitalize}").new(path)
+        path = '/' if path == ''
 
-      req['User-Agent'] = options[:user_agent]
-      opts.each { |k, v| req[k] = v if k.is_a?(String) }
+        req = eval("Net::HTTP::#{method.to_s.capitalize}").new(path)
 
-      req.body = data ? data : ''
+        req['User-Agent'] = options[:user_agent]
+        opts.each { |k, v| req[k] = v if k.is_a?(String) }
 
-      Rufus::Jig::HttpResponse.new(@http.start { |h| h.request(req) })
+        req.body = data ? data : ''
+
+        Rufus::Jig::HttpResponse.new(@http.start { |h| h.request(req) })
+      end
     end
   end
 

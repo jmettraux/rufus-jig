@@ -4,6 +4,7 @@
 
 == rufus-jig - 0.1.10    released 2010/01/02
 
+- made net/http Http thread-safe (serialization through synchronization)
 - :re_put_ok => false rework (deleting at first)
 
 
