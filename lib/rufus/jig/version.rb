@@ -1,7 +1,7 @@
 
 module Rufus
 module Jig
-  VERSION = '0.1.9'
+  VERSION = '0.1.10'
 end
 end
 

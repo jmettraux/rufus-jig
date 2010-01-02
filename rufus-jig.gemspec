@@ -5,13 +5,13 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rufus-jig}
-  s.version = "0.1.9"
+  s.version = "0.1.10"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Mettraux", "Kenneth Kalmer"]
-  s.date = %q{2009-12-29}
+  s.date = %q{2010-01-02}
   s.description = %q{
-    Json Internet Get.
+    Json Interwebs Get.
 
     An HTTP client, greedy with JSON content, GETting conditionally.
 
@@ -38,6 +38,7 @@ Gem::Specification.new do |s|
      "lib/rufus/jig/version.rb",
      "rufus-jig.gemspec",
      "test/base.rb",
+     "test/con/put_vs_delete.rb",
      "test/couch_base.rb",
      "test/ct_0_couch.rb",
      "test/ct_1_couchdb.rb",

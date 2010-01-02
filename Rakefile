@@ -26,7 +26,7 @@ Jeweler::Tasks.new do |gem|
   gem.summary = 'An HTTP client, greedy with JSON content, GETting conditionally.'
 
   gem.description = %{
-    Json Internet Get.
+    Json Interwebs Get.
 
     An HTTP client, greedy with JSON content, GETting conditionally.
 
