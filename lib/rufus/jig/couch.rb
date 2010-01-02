@@ -1,5 +1,5 @@
 #--
-# Copyright (c) 2009-2009, John Mettraux, jmettraux@gmail.com
+# Copyright (c) 2009-2010, John Mettraux, jmettraux@gmail.com
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -50,9 +50,8 @@ module Rufus::Jig
       end
 
       if @opts[:re_put_ok] == false && payload['_rev']
-        cur = get(path)
-        return true if cur.nil?
-        return cur if cur['_rev'] != payload['_rev']
+        rr = delete(path, payload['_rev'])
+        return rr unless rr.nil?
       end
 
       path = adjust(path)
@@ -103,7 +102,16 @@ module Rufus::Jig
         @http.delete(path)
       end
 
-      r == true ? true : nil
+      if r == true # conflict
+
+        doc = @http.get(adjust(doc_or_path['_id']))
+        doc ? doc : true
+          # returns the doc if present or true if the doc is gone
+
+      else # delete is successful
+
+        nil
+      end
     end
 
     protected

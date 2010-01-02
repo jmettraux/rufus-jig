@@ -143,7 +143,7 @@ class CtCouchDbTest < Test::Unit::TestCase
 
     r = @c.delete(doc)
 
-    assert_equal true, r
+    assert_equal rev, r['_rev']
   end
 
   def test_get_doc_304

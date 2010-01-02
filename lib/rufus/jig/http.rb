@@ -1,5 +1,5 @@
 #--
-# Copyright (c) 2009-2009, John Mettraux, jmettraux@gmail.com
+# Copyright (c) 2009-2010, John Mettraux, jmettraux@gmail.com
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -167,7 +167,7 @@ module Rufus::Jig
 
         return Rufus::Jig.marshal_copy(cached.last) if r.status == 304
         return nil if method == :get && r.status == 404
-        return true if r.status == 409
+        return true if [ 404, 409 ].include?(r.status)
 
         raise @error_class.new(r.status, r.body) \
           if r.status >= 400 && r.status < 600
@@ -491,6 +491,8 @@ else
       @options[:user_agent] =
         opts[:user_agent] ||
         "#{self.class} #{Rufus::Jig::VERSION} (net/http)"
+
+      @mutex = Mutex.new
     end
 
     protected
@@ -526,7 +528,7 @@ else
 
       req.body = data ? data : ''
 
-      Rufus::Jig::HttpResponse.new(@http.start { @http.request(req) })
+      Rufus::Jig::HttpResponse.new(@http.start { |h| h.request(req) })
     end
   end
 
