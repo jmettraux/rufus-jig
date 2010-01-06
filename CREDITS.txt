@@ -8,3 +8,7 @@ Kenneth Kalmer - http://github.com/kennethkalmer
 
 Torsten Schoenebaum - http://github.com/tosch
 
+== feedback
+
+gauched - http://github.com/gauched
+

@@ -2,8 +2,9 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.10    released 2010/01/02
+== rufus-jig - 0.1.10    released 2010/01/06
 
+- test/con to test/conc (win issue), thanks gauched
 - made net/http Http thread-safe (serialization through synchronization)
 - :re_put_ok => false rework (deleting at first)
 

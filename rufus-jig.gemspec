@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Mettraux", "Kenneth Kalmer"]
-  s.date = %q{2010-01-02}
+  s.date = %q{2010-01-06}
   s.description = %q{
     Json Interwebs Get.
 
@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
      "lib/rufus/jig/version.rb",
      "rufus-jig.gemspec",
      "test/base.rb",
-     "test/con/put_vs_delete.rb",
+     "test/conc/put_vs_delete.rb",
      "test/couch_base.rb",
      "test/ct_0_couch.rb",
      "test/ct_1_couchdb.rb",
