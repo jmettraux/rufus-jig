@@ -49,16 +49,16 @@ module Rufus::Jig
         [ doc_or_path['_id'], doc_or_path ]
       end
 
+      pa = adjust(path)
+
       if @opts[:re_put_ok] == false && payload['_rev']
         rr = delete(path, payload['_rev'])
         return rr unless rr.nil?
       end
 
-      path = adjust(path)
+      r = @http.put(pa, payload, :content_type => :json, :cache => false)
 
-      r = @http.put(path, payload, :content_type => :json, :cache => false)
-
-      return @http.get(path) if r == true
+      return @http.get(pa) if r == true
         # conflict
 
       if opts[:update_rev] && doc_or_path.is_a?(Hash)

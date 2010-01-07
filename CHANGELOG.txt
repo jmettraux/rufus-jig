@@ -2,6 +2,11 @@
 = rufus-jig CHANGELOG.txt
 
 
+== rufus-jig - 0.1.11    not yet released
+
+- couch : shortened time between put { delete if re_put_ok == false; put }
+
+
 == rufus-jig - 0.1.10    released 2010/01/06
 
 - test/con to test/conc (win issue), thanks gauched
