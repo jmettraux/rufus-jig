@@ -2,7 +2,7 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.11    not yet released
+== rufus-jig - 0.1.11    released 2010/01/11
 
 - couch : shortened time between put { delete if re_put_ok == false; put }
 
