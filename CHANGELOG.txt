@@ -1,6 +1,10 @@
 
 = rufus-jig CHANGELOG.txt
 
+== rufus-jig - 0.1.12    released 2010/01/13
+
+- fixed bug with Couch and delete('missing')
+
 
 == rufus-jig - 0.1.11    released 2010/01/11
 

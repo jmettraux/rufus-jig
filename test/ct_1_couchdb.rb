@@ -154,5 +154,19 @@ class CtCouchDbTest < Test::Unit::TestCase
     doc = @c.get('coffee1')
     assert_equal 304, @c.http.last_response.status
   end
+
+  def test_delete_path
+
+    r = @c.delete('coffee1')
+
+    assert_equal(@c.get('coffee1'), r)
+  end
+
+  def test_delete_path_missing
+
+    r = @c.delete('missing')
+
+    assert_equal(true, r)
+  end
 end
 

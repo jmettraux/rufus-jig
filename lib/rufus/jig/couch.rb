@@ -84,27 +84,34 @@ module Rufus::Jig
 
     def delete (doc_or_path, rev=nil)
 
-      doc_or_path = { '_id' => doc_or_path, '_rev' => rev } if rev
-
-      r = if doc_or_path.is_a?(String)
-
-        @http.delete(adjust(doc_or_path))
-
+      doc, path, rev = if rev
+        [ { '_id' => doc_or_path, '_rev' => rev }, doc_or_path ]
+      elsif doc_or_path.is_a?(String)
+        [ nil, doc_or_path ]
       else
+        [ doc_or_path, doc_or_path['_id'] ]
+      end
+
+      path = adjust(path)
+
+      r = if doc
 
         raise(
           ArgumentError.new("cannot delete document without _rev")
-        ) unless doc_or_path['_rev']
+        ) unless doc['_rev']
 
-        path = adjust(doc_or_path['_id'])
-        path = Rufus::Jig::Path.add_params(path, :rev => doc_or_path['_rev'])
+        rpath = Rufus::Jig::Path.add_params(path, :rev => doc['_rev'])
+
+        @http.delete(rpath)
+
+      else
 
         @http.delete(path)
       end
 
       if r == true # conflict
 
-        doc = @http.get(adjust(doc_or_path['_id']))
+        doc = @http.get(path)
         doc ? doc : true
           # returns the doc if present or true if the doc is gone
 
