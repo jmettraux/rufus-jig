@@ -39,11 +39,10 @@ Jeweler::Tasks.new do |gem|
 
   gem.test_file = 'test/test.rb'
 
-  #gem.add_dependency 'yajl-ruby'
-  #gem.add_dependency 'json'
   gem.add_dependency 'rufus-lru'
   gem.add_dependency 'rufus-json'
-  gem.add_development_dependency 'yard', '>= 0'
+  gem.add_development_dependency 'yard'
+  gem.add_development_dependency 'jeweler'
 
   # gemspec spec : http://www.rubygems.org/read/chapter/20
 end
