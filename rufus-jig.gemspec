@@ -43,6 +43,7 @@ Gem::Specification.new do |s|
      "test/ct_0_couch.rb",
      "test/ct_1_couchdb.rb",
      "test/ct_2_couchdb_options.rb",
+     "test/ct_3_couchdb_views.rb",
      "test/server.rb",
      "test/test.rb",
      "test/ut_0_http_get.rb",

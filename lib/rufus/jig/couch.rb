@@ -121,6 +121,19 @@ module Rufus::Jig
       end
     end
 
+    def post (path, doc)
+
+      path = adjust(path)
+
+      opts = { :content_type => :json }
+
+      if et = etag(path)
+        opts[:etag] = et
+      end
+
+      @http.post(path, doc, opts)
+    end
+
     protected
 
     def adjust (path)
