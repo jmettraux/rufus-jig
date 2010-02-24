@@ -41,6 +41,7 @@ Jeweler::Tasks.new do |gem|
 
   gem.add_dependency 'rufus-lru'
   gem.add_dependency 'rufus-json'
+  gem.add_development_dependency 'rake'
   gem.add_development_dependency 'yard'
   gem.add_development_dependency 'jeweler'
 
