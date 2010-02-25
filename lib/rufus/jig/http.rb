@@ -317,6 +317,10 @@ if defined?(Patron) # gem install patron
       Thread.current[key] = nil
     end
 
+    def variant
+      :patron
+    end
+
     protected
 
     def key
@@ -403,6 +407,10 @@ elsif defined?( EventMachine::HttpRequest )
       @em_port = port
 
       @em_ua = opts[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION} (em)"
+    end
+
+    def variant
+      :em
     end
 
     protected
@@ -505,6 +513,10 @@ else
         "#{self.class} #{Rufus::Jig::VERSION} (net/http)"
 
       @mutex = Mutex.new
+    end
+
+    def variant
+      :net
     end
 
     protected

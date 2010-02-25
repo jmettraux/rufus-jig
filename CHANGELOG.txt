@@ -4,6 +4,7 @@
 
 == rufus-jig - 0.1.14    not yet released
 
+- temporary fallback to net/http for Couch#attach and patron
 - implemented Rufus::Jig::Couch#attach and #detach
   warning : Patron as of 0.4.5 is not OK with PUTting attachments
 

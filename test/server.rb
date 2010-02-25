@@ -115,7 +115,7 @@ end
 
 put '/documents/:id' do
 
-  p env
+  #p env
 
   doc = env['rack.input'].read
 

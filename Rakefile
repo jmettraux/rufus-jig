@@ -44,6 +44,7 @@ Jeweler::Tasks.new do |gem|
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'yard'
   gem.add_development_dependency 'jeweler'
+  gem.add_development_dependency 'patron'
 
   # gemspec spec : http://www.rubygems.org/read/chapter/20
 end
