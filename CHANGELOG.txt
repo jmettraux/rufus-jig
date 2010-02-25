@@ -2,7 +2,7 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.14    not yet released
+== rufus-jig - 0.1.14    released 2010/02/25
 
 - temporary fallback to net/http for Couch#attach and patron
 - implemented Rufus::Jig::Couch#attach and #detach
