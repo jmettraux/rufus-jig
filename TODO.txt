@@ -23,3 +23,6 @@
 
 [ ] why not a :force_json ?
 
+[ ] couch.attach
+[ ] couch.detach ?
+

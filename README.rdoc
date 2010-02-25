@@ -94,7 +94,21 @@ put and delete return nil in case of success and true (conflict) or and exceptio
 
   c.delete(doc1['_id'], doc1['_rev'])
 
+  # ...
+
+  c.attach(
+    doc0, 'picture', File.read('espresso.jpg'), :content_type => 'image/jpeg')
+      # or
+  c.attach(
+    doc0['_id'], doc0['_rev'], 'picture', File.read('espresso.jpg'), :content_type => 'image/jpeg')
+
+  picture = c.get('coffe0/picture')
+
+  c.detach('coffee0', '1-x-newrevision-whatever', 'picture')
+
 ...
+
+Warning : Patron, as of 0.4.5 is timing out when PUTting images.
 
 
 == rdoc

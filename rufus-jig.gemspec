@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Mettraux", "Kenneth Kalmer"]
-  s.date = %q{2010-02-24}
+  s.date = %q{2010-02-25}
   s.description = %q{
     Json Interwebs Get.
 
@@ -44,8 +44,10 @@ Gem::Specification.new do |s|
      "test/ct_1_couchdb.rb",
      "test/ct_2_couchdb_options.rb",
      "test/ct_3_couchdb_views.rb",
+     "test/ct_4_attachments.rb",
      "test/server.rb",
      "test/test.rb",
+     "test/tweet.png",
      "test/ut_0_http_get.rb",
      "test/ut_1_http_post.rb",
      "test/ut_2_http_delete.rb",

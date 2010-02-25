@@ -53,5 +53,25 @@ class UtHttpPostTest < Test::Unit::TestCase
 
     assert_equal 1, @h.cache.size
   end
+
+  def test_post_long_stuff
+
+    data = 'x' * 1000
+
+    b = @h.post('/documents', data, :content_type => 'text/plain')
+
+    r = @h.last_response
+
+    assert_equal 201, r.status
+  end
+
+  def test_post_image
+
+    data = File.read(File.join(File.dirname(__FILE__), 'tweet.png'))
+
+    b = @h.post('/documents', data, :content_type => 'image/png')
+
+    assert_equal 201, @h.last_response.status
+  end
 end
 

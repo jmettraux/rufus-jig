@@ -25,6 +25,10 @@
 
 module Rufus::Jig
 
+  #
+  # A class wrapping an instance of Rufus::Jig::Http and providing
+  # CouchDB-oriented http verbs.
+  #
   class Couch
 
     attr_reader :http
@@ -132,6 +136,66 @@ module Rufus::Jig
       end
 
       @http.post(path, doc, opts)
+    end
+
+    # Attaches a file to a couch document.
+    #
+    #   couch.attach(
+    #     doc['_id'], doc['_rev'], 'my_picture', data,
+    #     :content_type => 'image/jpeg')
+    #
+    # or
+    #
+    #   couch.attach(
+    #     doc, 'my_picture', data,
+    #     :content_type => 'image/jpeg')
+    #
+    def attach (doc_id, doc_rev, attachment_name, data, opts=nil)
+
+      if opts.nil?
+        opts = data
+        data = attachment_name
+        attachment_name = doc_rev
+        doc_rev = doc_id['_rev']
+        doc_id = doc_id['_id']
+      end
+
+      attachment_name = attachment_name.gsub(/\//, '%2F')
+
+      ct = opts[:content_type]
+
+      raise(ArgumentError.new(
+        ":content_type option must be specified"
+      )) unless ct
+
+      opts[:cache] = false
+
+      path = adjust("#{doc_id}/#{attachment_name}?rev=#{doc_rev}")
+
+      @http.put(path, data, opts)
+    end
+
+    # Detaches a file from a couch document.
+    #
+    #   couch.detach(doc['_id'], doc['_rev'], 'my_picture')
+    #
+    # or
+    #
+    #   couch.detach(doc, 'my_picture')
+    #
+    def detach (doc_id, doc_rev, attachment_name=nil)
+
+      if attachment_name.nil?
+        attachment_name = doc_rev
+        doc_rev = doc_id['_rev']
+        doc_id = doc_id['_id']
+      end
+
+      attachment_name = attachment_name.gsub(/\//, '%2F')
+
+      path = adjust("#{doc_id}/#{attachment_name}?rev=#{doc_rev}")
+
+      @http.delete(path)
     end
 
     protected

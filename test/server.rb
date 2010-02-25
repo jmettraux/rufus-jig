@@ -94,6 +94,8 @@ end
 
 post '/documents' do
 
+  #p env
+
   did = (Time.now.to_f * 1000).to_i.to_s
   doc = env['rack.input'].read
 
@@ -112,6 +114,8 @@ post '/documents' do
 end
 
 put '/documents/:id' do
+
+  p env
 
   doc = env['rack.input'].read
 

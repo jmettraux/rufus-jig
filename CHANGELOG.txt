@@ -2,6 +2,12 @@
 = rufus-jig CHANGELOG.txt
 
 
+== rufus-jig - 0.1.14    not yet released
+
+- implemented Rufus::Jig::Couch#attach and #detach
+  warning : Patron as of 0.4.5 is not OK with PUTting attachments
+
+
 == rufus-jig - 0.1.13    released 2010/02/12
 
 - implemented Rufus::Jig::Couch#post

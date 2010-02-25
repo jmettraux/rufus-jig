@@ -84,5 +84,23 @@ class UtHttpPutTest < Test::Unit::TestCase
 
     assert_equal true, r
   end
+
+  def test_put_long_stuff
+
+    data = 'x' * 5000
+
+    b = @h.put('/documents/abcd', data, :content_type => 'image/png')
+
+    assert_equal 201, @h.last_response.status
+  end
+
+  def test_put_image
+
+    data = File.read(File.join(File.dirname(__FILE__), 'tweet.png'))
+
+    b = @h.put('/documents/img0', data, :content_type => 'image/png')
+
+    assert_equal 201, @h.last_response.status
+  end
 end
 
