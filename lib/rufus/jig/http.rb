@@ -52,6 +52,16 @@ module Rufus::Jig
     end
   end
 
+  # A common error for all adapters in case of timeout.
+  #
+  class TimeoutError < RuntimeError
+
+    def initialize (message=nil)
+
+      super(message || 'timed out')
+    end
+  end
+
   class HttpResponse
 
     attr_reader :status, :headers, :body
@@ -162,7 +172,8 @@ module Rufus::Jig
       opts = rehash_options(opts)
       data = repack_data(data, opts)
 
-      r = send("do_#{method}", path, data, opts)
+      #r = send("do_#{method}", path, data, opts)
+      r = do_request(method, path, data, opts)
 
       @last_response = r
 

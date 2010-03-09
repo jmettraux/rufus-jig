@@ -56,6 +56,13 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     @em_port = port
 
     @em_ua = opts[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION} (em)"
+
+    if to = opts[:timeout]
+      to = to.to_f
+      @options[:timeout] = (to < 1.0) ? (3 * 24 * 3600).to_f : to
+    else
+      @options[:timeout] = 5.0 # like Patron
+    end
   end
 
   def variant
@@ -64,28 +71,15 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   protected
 
-  def do_get( path, data, opts )
-    http = em_request( path ).get( :head => request_headers( opts ) )
+  def do_request ( method, path, data, opts )
 
-    em_response( http )
-  end
+    args = {}
 
-  def do_post( path, data, opts )
-    http = em_request( path ).post( :body => data, :head => request_headers( opts ) )
+    args[:head] = request_headers( opts )
+    args[:body] = data if data
+    args[:timeout] = @options[:timeout]
 
-    em_response( http )
-  end
-
-  def do_delete( path, data, opts )
-    http = em_request( path ).delete( :head => request_headers( opts ) )
-
-    em_response( http )
-  end
-
-  def do_put( path, data, opts )
-    http = em_request( path ).put( :body => data, :head => request_headers( opts ) )
-
-    em_response( http )
+    em_response( em_request( path ).send( method, args ) )
   end
 
   def em_request( uri = '/' )
@@ -103,11 +97,24 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
   def em_response( em_client )
     th = Thread.current
 
+    timedout = false
+
+    em_client.errback {
+
+      #th.raise( Rufus::Jig::TimeoutError.new )
+        # works with ruby < 1.9.x
+
+      timedout = true
+      th.wakeup
+    }
+
     em_client.callback {
       th.wakeup
     }
 
     Thread.stop
+
+    raise Rufus::Jig::TimeoutError if timedout
 
     Rufus::Jig::HttpResponse.new( em_client )
   end

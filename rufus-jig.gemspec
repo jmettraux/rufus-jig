@@ -57,7 +57,8 @@ Gem::Specification.new do |s|
      "test/ut_3_http_put.rb",
      "test/ut_4_http_prefix.rb",
      "test/ut_5_http_misc.rb",
-     "test/ut_6_args.rb"
+     "test/ut_6_args.rb",
+     "test/ut_7_http_get_timeout.rb"
   ]
   s.homepage = %q{http://github.com/jmettraux/rufus-jig/}
   s.rdoc_options = ["--charset=UTF-8"]

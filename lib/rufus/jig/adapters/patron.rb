@@ -91,26 +91,20 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     Thread.current[k] = patron
   end
 
-  def do_get (path, data, opts)
+  def do_request (method, path, data, opts)
 
-    get_patron.get(path, opts)
-  end
+    opts['Expect'] = '' if (method == :put) && ( ! @options[:expect])
 
-  def do_post (path, data, opts)
+    args = case method
+      when :post, :put then [ path, data, opts ]
+      else [ path, opts ]
+    end
 
-    get_patron.post(path, data, opts)
-  end
-
-  def do_put (path, data, opts)
-
-    opts['Expect'] = '' unless @options[:expect]
-
-    get_patron.put(path, data, opts)
-  end
-
-  def do_delete (path, data, opts)
-
-    get_patron.delete(path, opts)
+    begin
+      get_patron.send(method, *args)
+    rescue Patron::TimeoutError => te
+      raise Rufus::Jig::TimeoutError
+    end
   end
 end
 

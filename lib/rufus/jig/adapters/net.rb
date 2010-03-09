@@ -71,26 +71,6 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   protected
 
-  def do_get (path, data, opts)
-
-    do_request(:get, path, data, opts)
-  end
-
-  def do_post (path, data, opts)
-
-    do_request(:post, path, data, opts)
-  end
-
-  def do_put (path, data, opts)
-
-    do_request(:put, path, data, opts)
-  end
-
-  def do_delete (path, data, opts)
-
-    do_request(:delete, path, data, opts)
-  end
-
   def do_request (method, path, data, opts)
 
     @mutex.synchronize do
@@ -104,7 +84,11 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
       req.body = data ? data : ''
 
-      Rufus::Jig::HttpResponse.new(@http.start { |h| h.request(req) })
+      begin
+        Rufus::Jig::HttpResponse.new(@http.start { |h| h.request(req) })
+      rescue Timeout::Error => te
+        raise Rufus::Jig::TimeoutError
+      end
     end
   end
 end

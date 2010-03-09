@@ -212,7 +212,7 @@ end
 
 get '/later' do
 
-  sleep 10
+  sleep 7
   'later'
 end
 
