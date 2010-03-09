@@ -2,6 +2,11 @@
 = rufus-jig CHANGELOG.txt
 
 
+== rufus-jig - 0.1.15    not yet released
+
+- Ruote::Couch.new now passes options when doing Rufus::Jig::Http
+
+
 == rufus-jig - 0.1.14    released 2010/02/25
 
 - temporary fallback to net/http for Couch#attach and patron

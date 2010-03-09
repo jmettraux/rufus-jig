@@ -503,7 +503,7 @@ else
 
       to = opts[:timeout]
       if to
-        to = to.to_i
+        to = to.to_i / 1000
         @http.open_timeout = to
         @http.read_timeout = to
       end
@@ -579,7 +579,7 @@ class Rufus::Jig::Http
   #
   def self.extract_http (payload_expected, *args)
 
-    http = case args.first
+    host, port = case args.first
 
       when Rufus::Jig::Http
         args.shift
@@ -587,10 +587,10 @@ class Rufus::Jig::Http
       when /^http:\/\//
         u = URI.parse(args.shift)
         args.unshift(u.path)
-        Rufus::Jig::Http.new(u.host, u.port)
+        [ u.host, u.port ]
 
       else
-        Rufus::Jig::Http.new(args.shift, args.shift)
+        [ args.shift, args.shift ]
     end
 
     path = args.shift
@@ -603,6 +603,10 @@ class Rufus::Jig::Http
     raise(
       ArgumentError.new("option Hash expected, not #{opts.inspect}")
     ) unless opts.is_a?(Hash)
+
+    http = host.is_a?(Rufus::Jig::Http) ?
+      host :
+      Rufus::Jig::Http.new(host, port, opts)
 
     [ http, path, payload, opts ]
   end
