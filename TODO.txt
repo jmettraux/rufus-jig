@@ -11,18 +11,13 @@
 [x] couch : attachments
 [o] put_doc(h) where _id is set ?
 [o] :update_rev => true...
+[o] long polling/continuous change (patron ?)
+[x] don't abuse exceptions ! (especially with couch)
+[o] couch.attach
+[o] couch.detach ?
 
-[ ] long polling/continuous change (patron ?)
 [ ] HEAD
-
 [ ] redirections ? (Patron seem to understand them)
-
-[ ] don't abuse exceptions ! (especially with couch)
-
 [ ] patron : http can steal each other's patron session (inside the same thread)
-
 [ ] why not a :force_json ?
-
-[ ] couch.attach
-[ ] couch.detach ?
 
