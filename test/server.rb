@@ -207,3 +207,12 @@ delete '/a/b/c' do
   'delete'
 end
 
+#
+# TIMEOUT testing
+
+get '/later' do
+
+  sleep 10
+  'later'
+end
+
