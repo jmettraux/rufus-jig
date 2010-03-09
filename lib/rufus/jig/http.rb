@@ -340,6 +340,16 @@ if defined?(Patron) # gem install patron
       patron = Patron::Session.new
       patron.base_url = "#{@host}:#{@port}"
 
+      #patron.connect_timeout = 1
+        # connection timeout defaults to 1 second
+
+      if to = @options[:timeout]
+        to = to.to_i
+        patron.timeout = to < 1 ? nil : to
+      #else
+      #  patron.timeout = 5 # Patron's default
+      end
+
       patron.headers['User-Agent'] =
         @options[:user_agent] ||
         [
@@ -501,11 +511,14 @@ else
 
       @http = Net::HTTP.new(host, port)
 
-      to = opts[:timeout]
-      if to
-        to = to.to_i / 1000
-        @http.open_timeout = to
-        @http.read_timeout = to
+      @http.open_timeout = 1
+        # connection timeout
+
+      if to = opts[:timeout]
+        to = to.to_i
+        @http.read_timeout = (to < 1) ? nil : to
+      else
+        @http.read_timeout = 5 # like Patron
       end
 
       @options[:user_agent] =
