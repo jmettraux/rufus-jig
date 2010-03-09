@@ -153,6 +153,8 @@ module Rufus::Jig
       path = add_prefix(path, opts)
       path = add_params(path, opts)
 
+      path = '/' if path == ''
+
       cached = from_cache(path, opts)
       opts.delete(:etag) if not cached
 

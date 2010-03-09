@@ -4,6 +4,7 @@
 
 == rufus-jig - 0.1.15    not yet released
 
+- fixed small issue with em-http-request and '/' path
 - Ruote::Couch.new now passes options when doing Rufus::Jig::Http
 
 
