@@ -86,7 +86,8 @@ module Rufus::Jig
 
       @host = host
       @port = port
-      @options = opts
+
+      @options = opts.dup
 
       @cache = LruHash.new((opts[:cache_size] || 35).to_i)
 
