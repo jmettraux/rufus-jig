@@ -45,6 +45,7 @@ Jeweler::Tasks.new do |gem|
   gem.add_development_dependency 'yard'
   gem.add_development_dependency 'jeweler'
   gem.add_development_dependency 'patron'
+  gem.add_development_dependency 'em-http-request'
 
   # gemspec spec : http://www.rubygems.org/read/chapter/20
 end

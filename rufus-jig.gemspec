@@ -32,6 +32,9 @@ Gem::Specification.new do |s|
      "TODO.txt",
      "lib/rufus-jig.rb",
      "lib/rufus/jig.rb",
+     "lib/rufus/jig/adapters/em.rb",
+     "lib/rufus/jig/adapters/net.rb",
+     "lib/rufus/jig/adapters/patron.rb",
      "lib/rufus/jig/couch.rb",
      "lib/rufus/jig/http.rb",
      "lib/rufus/jig/path.rb",
@@ -77,6 +80,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<yard>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<patron>, [">= 0"])
+      s.add_development_dependency(%q<em-http-request>, [">= 0"])
     else
       s.add_dependency(%q<rufus-lru>, [">= 0"])
       s.add_dependency(%q<rufus-json>, [">= 0"])
@@ -84,6 +88,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<yard>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<patron>, [">= 0"])
+      s.add_dependency(%q<em-http-request>, [">= 0"])
     end
   else
     s.add_dependency(%q<rufus-lru>, [">= 0"])
@@ -92,6 +97,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<yard>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<patron>, [">= 0"])
+    s.add_dependency(%q<em-http-request>, [">= 0"])
   end
 end
 
