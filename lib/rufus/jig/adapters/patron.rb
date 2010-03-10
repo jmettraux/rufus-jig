@@ -61,7 +61,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   # One patron session per thread
   #
-  def get_patron
+  def get_patron (opts)
 
     k = key
 
@@ -75,7 +75,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     #patron.connect_timeout = 1
       # connection timeout defaults to 1 second
 
-    if to = @options[:timeout]
+    if to = (opts[:timeout] || @options[:timeout])
       to = to.to_i
       patron.timeout = to < 1 ? nil : to
     #else
@@ -101,7 +101,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     end
 
     begin
-      get_patron.send(method, *args)
+      get_patron(opts).send(method, *args)
     rescue Patron::TimeoutError => te
       raise Rufus::Jig::TimeoutError
     end

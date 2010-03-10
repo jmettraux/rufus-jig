@@ -172,7 +172,6 @@ module Rufus::Jig
       opts = rehash_options(opts)
       data = repack_data(data, opts)
 
-      #r = send("do_#{method}", path, data, opts)
       r = do_request(method, path, data, opts)
 
       @last_response = r

@@ -46,23 +46,9 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
     super(host, port, opts)
 
-    @http = Net::HTTP.new(host, port)
+    @options[:user_agent] ||= "#{self.class} #{Rufus::Jig::VERSION} (net/http)"
 
-    @http.open_timeout = 1
-      # connection timeout
-
-    if to = opts[:timeout]
-      to = to.to_i
-      @http.read_timeout = (to < 1) ? nil : to
-    else
-      @http.read_timeout = 5 # like Patron
-    end
-
-    @options[:user_agent] =
-      opts[:user_agent] ||
-      "#{self.class} #{Rufus::Jig::VERSION} (net/http)"
-
-    @mutex = Mutex.new
+    #@mutex = Mutex.new
   end
 
   def variant
@@ -71,25 +57,42 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   protected
 
+  def get_http (opts)
+
+    http = Net::HTTP.new(@host, @port)
+
+    http.open_timeout = 5
+      # connection timeout
+
+    if to = (opts[:timeout] || @options[:timeout])
+      to = to.to_i
+      http.read_timeout = (to < 1) ? nil : to
+    else
+      http.read_timeout = 5 # like Patron
+    end
+
+    http
+  end
+
   def do_request (method, path, data, opts)
 
-    @mutex.synchronize do
+    #@mutex.synchronize do
 
-      path = '/' if path == ''
+    path = '/' if path == ''
 
-      req = eval("Net::HTTP::#{method.to_s.capitalize}").new(path)
+    req = eval("Net::HTTP::#{method.to_s.capitalize}").new(path)
 
-      req['User-Agent'] = options[:user_agent]
-      opts.each { |k, v| req[k] = v if k.is_a?(String) }
+    req['User-Agent'] = @options[:user_agent]
+    opts.each { |k, v| req[k] = v if k.is_a?(String) }
 
-      req.body = data ? data : ''
+    req.body = data ? data : ''
 
-      begin
-        Rufus::Jig::HttpResponse.new(@http.start { |h| h.request(req) })
-      rescue Timeout::Error => te
-        raise Rufus::Jig::TimeoutError
-      end
+    begin
+      Rufus::Jig::HttpResponse.new(get_http(opts).start { |h| h.request(req) })
+    rescue Timeout::Error => te
+      raise Rufus::Jig::TimeoutError
     end
+    #end
   end
 end
 

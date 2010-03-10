@@ -52,17 +52,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
     super( host, port, opts )
 
-    @em_host = host
-    @em_port = port
-
-    @em_ua = opts[:user_agent] || "#{self.class} #{Rufus::Jig::VERSION} (em)"
-
-    if to = opts[:timeout]
-      to = to.to_f
-      @options[:timeout] = (to < 1.0) ? (3 * 24 * 3600).to_f : to
-    else
-      @options[:timeout] = 5.0 # like Patron
-    end
+    @options[:user_agent] ||= "#{self.class} #{Rufus::Jig::VERSION} (em)"
   end
 
   def variant
@@ -77,7 +67,13 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
     args[:head] = request_headers( opts )
     args[:body] = data if data
-    args[:timeout] = @options[:timeout]
+
+    if to = (opts[:timeout] || @options[:timeout])
+      to = to.to_f
+      args[:timeout] = (to < 1.0) ? (3 * 24 * 3600).to_f : to
+    else
+      args[:timeout] = 5.0 # like Patron
+    end
 
     em_response( em_request( path ).send( method, args ) )
   end
@@ -85,8 +81,8 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
   def em_request( uri = '/' )
     uri = URI.parse( uri )
     uri = URI::HTTP.build(
-      :host => ( uri.host || @em_host ),
-      :port => ( uri.port || @em_port ),
+      :host => ( uri.host || @host ),
+      :port => ( uri.port || @port ),
       :path => uri.path,
       :query => uri.query
     )
@@ -114,13 +110,15 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
     Thread.stop
 
+    # after the wake up...
+
     raise Rufus::Jig::TimeoutError if timedout
 
     Rufus::Jig::HttpResponse.new( em_client )
   end
 
   def request_headers( options )
-    headers = { 'user-agent' => @em_ua }
+    headers = { 'user-agent' => @options[:user_agent] }
 
     %w[ Accept If-None-Match Content-Type ].each do |k|
       headers[k] = options[k] if options.has_key?( k )
