@@ -63,24 +63,24 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
   #
   def get_patron (opts)
 
+    to = (opts[:timeout] || @options[:timeout])
+    to = to.to_i if to
+    to = nil if to && to < 1
+
     k = key
 
     patron = Thread.current[k]
 
-    return patron if patron
+    return patron if patron && patron.timeout == to
 
-    patron = Patron::Session.new
-    patron.base_url = "#{@host}:#{@port}"
+    if patron.nil?
+      patron = Patron::Session.new
+      patron.base_url = "#{@host}:#{@port}"
+    end
 
     #patron.connect_timeout = 1
       # connection timeout defaults to 1 second
-
-    if to = (opts[:timeout] || @options[:timeout])
-      to = to.to_i
-      patron.timeout = to < 1 ? nil : to
-    #else
-    #  patron.timeout = 5 # Patron's default
-    end
+    patron.timeout = to
 
     patron.headers['User-Agent'] =
       @options[:user_agent] ||

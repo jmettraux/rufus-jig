@@ -72,12 +72,10 @@ module Rufus::Jig
       nil
     end
 
-    def get (doc_or_path)
+    def get (doc_or_path, opts={})
 
       path = doc_or_path.is_a?(Hash) ? doc_or_path['_id'] : doc_or_path
       path = adjust(path)
-
-      opts = {}
 
       if et = etag(path)
         opts[:etag] = et
