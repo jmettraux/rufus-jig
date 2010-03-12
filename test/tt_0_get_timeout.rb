@@ -42,7 +42,7 @@ class UtHttpGetTimeoutTest < Test::Unit::TestCase
       @h.get('/later')
     end
 
-    d = Time.now - t; dd = 7.0; assert d < dd, "after #{d} seconds (#{dd})"
+    d = Time.now - t; dd = 6.0; assert d < dd, "after #{d} seconds (#{dd})"
   end
 
   def test_timeout_after_15
