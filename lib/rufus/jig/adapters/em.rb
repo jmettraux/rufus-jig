@@ -99,8 +99,6 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
       #th.raise( Rufus::Jig::TimeoutError.new )
         # works with ruby < 1.9.x
-
-      timedout = true
       th.wakeup
     }
 
@@ -112,7 +110,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
     # after the wake up...
 
-    raise Rufus::Jig::TimeoutError if timedout
+    raise Rufus::Jig::TimeoutError if em_client.response_header.status == 0
 
     Rufus::Jig::HttpResponse.new( em_client )
   end
