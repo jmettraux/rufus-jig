@@ -62,8 +62,10 @@ module Rufus::Jig
 
       r = @http.put(pa, payload, :content_type => :json, :cache => false)
 
-      return @http.get(pa) if r == true
-        # conflict
+      return @http.get(pa) || true if r == true
+        #
+        # conflict : returns the current version of the doc
+        # (or true if there is no document (probably 404 for the database))
 
       if opts[:update_rev] && doc_or_path.is_a?(Hash)
         doc_or_path['_rev'] = r['rev']

@@ -168,5 +168,14 @@ class CtCouchDbTest < Test::Unit::TestCase
 
     assert_equal(true, r)
   end
+
+  def test_put_in_missing_db
+
+    @c.delete('.')
+
+    r = @c.put('_id' => 'coffee2', 'type' => 'chevere')
+
+    assert_equal true, r
+  end
 end
 

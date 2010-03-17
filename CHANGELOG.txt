@@ -2,7 +2,12 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.15    not yet released
+== rufus-jig - 0.1.16    released 2010/03/17
+
+- Rufus::Jig::Couch returns true (was nil) when trying to put into a missing db
+
+
+== rufus-jig - 0.1.15    released 2010/03/11
 
 - unified :timeout => sec option and Rufus::Jig::TimeoutError
 - fixed small issue with em-http-request and '/' path
