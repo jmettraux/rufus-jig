@@ -4,6 +4,8 @@
 
 == rufus-jig - 0.1.17    not yet released
 
+- Rufus::Jig::Couch #path and #name methods
+
 
 == rufus-jig - 0.1.16    released 2010/03/17
 

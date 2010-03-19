@@ -33,6 +33,12 @@ class CtCouchDbTest < Test::Unit::TestCase
     @c.close
   end
 
+  def test_path
+
+    assert_equal 'rufus_jig_test', @c.path
+    assert_equal 'rufus_jig_test', @c.name
+  end
+
   def test_put
 
     r = @c.put('_id' => 'coffee0', 'type' => 'espresso')

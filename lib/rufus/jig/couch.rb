@@ -31,6 +31,7 @@ module Rufus::Jig
   #
   class Couch
 
+    attr_reader :path
     attr_reader :http
 
     def initialize (*args)
@@ -38,6 +39,11 @@ module Rufus::Jig
       @http, @path, payload, @opts = Rufus::Jig::Http.extract_http(false, *args)
 
       @path ||= '/'
+    end
+
+    def name
+
+      path
     end
 
     def close
