@@ -75,5 +75,23 @@ class CtCouchDbViewsTest < Test::Unit::TestCase
       {"total_rows"=>5, "rows"=>[{"id"=>"c0", "value"=>nil, "key"=>"espresso"}, {"id"=>"c2", "value"=>nil, "key"=>"macchiato"}, {"id"=>"c4", "value"=>nil, "key"=>"macchiato"}], "offset"=>1},
       @c.post('_design/my_test/_view/my_view', { 'keys' => [ 'espresso', 'macchiato' ] }))
   end
+
+  #def test_put_views
+  #  p @c.get('_design/my_test_2')
+  #  @c.put(
+  #    {
+  #      '_id' => '_design/my_test_2',
+  #      'views' => {
+  #        'my_view' => {
+  #          'map' => "function (doc) { emit(doc['type'], null); }"
+  #        }
+  #      }
+  #    })
+  #  p @c.http.cache.keys
+  #  p @c.get('_design/my_test_2/_view/my_view?key=%22macchiato%22')
+  #  p @c.http.cache.keys
+  #  p @c.get('_design/my_test_2/_view/my_view?key=%22macchiato%22')
+  #  p @c.http.cache.keys
+  #end
 end
 

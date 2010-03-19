@@ -280,9 +280,9 @@ module Rufus::Jig
 
     def do_cache (method, path, response, body, opts)
 
-      if method == :delete || (opts[:cache] == false)
+      if (method == :delete) || (opts[:cache] == false)
         @cache.delete(path)
-      elsif et = response.headers['Etag']
+      elsif (method == :get) && (et = response.headers['Etag'])
         @cache[path] = [ et, Rufus::Jig.marshal_copy(body) ]
       end
     end

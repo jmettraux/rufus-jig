@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Mettraux", "Kenneth Kalmer"]
-  s.date = %q{2010-03-17}
+  s.date = %q{2010-03-19}
   s.description = %q{
     Json Interwebs Get.
 
@@ -65,7 +65,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{rufus}
-  s.rubygems_version = %q{1.3.6}
+  s.rubygems_version = %q{1.3.5}
   s.summary = %q{An HTTP client, greedy with JSON content, GETting conditionally.}
   s.test_files = [
     "test/test.rb"
