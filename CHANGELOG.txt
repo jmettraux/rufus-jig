@@ -2,6 +2,9 @@
 = rufus-jig CHANGELOG.txt
 
 
+== rufus-jig - 0.1.17    not yet released
+
+
 == rufus-jig - 0.1.16    released 2010/03/17
 
 - Rufus::Jig::Couch returns true (was nil) when trying to put into a missing db
