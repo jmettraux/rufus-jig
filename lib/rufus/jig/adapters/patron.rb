@@ -46,7 +46,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     # it's not really closing, it's rather making sure the patron
     # session can get collected as garbage
 
-    Thread.current[key] = nil
+    #Thread.current[key] = nil
   end
 
   def variant
@@ -55,28 +55,14 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   protected
 
-  def key
-    self.object_id.to_s
-  end
-
-  # One patron session per thread
-  #
   def get_patron (opts)
 
     to = (opts[:timeout] || @options[:timeout])
     to = to.to_i if to
     to = nil if to && to < 1
 
-    k = key
-
-    patron = Thread.current[k]
-
-    return patron if patron && patron.timeout == to
-
-    if patron.nil?
-      patron = Patron::Session.new
-      patron.base_url = "#{@host}:#{@port}"
-    end
+    patron = Patron::Session.new
+    patron.base_url = "#{@host}:#{@port}"
 
     #patron.connect_timeout = 1
       # connection timeout defaults to 1 second
@@ -84,11 +70,9 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
     patron.headers['User-Agent'] =
       @options[:user_agent] ||
-      [
-        self.class, Rufus::Jig::VERSION, Thread.current.object_id, '(patron)'
-      ].join(' ')
+      [ self.class, Rufus::Jig::VERSION, '(patron)' ].join(' ')
 
-    Thread.current[k] = patron
+    patron
   end
 
   def do_request (method, path, data, opts)

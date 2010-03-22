@@ -4,6 +4,7 @@
 
 == rufus-jig - 0.1.17    not yet released
 
+- using a new Patron::Session for each request (yes, they seem GC friendly)
 - Rufus::Jig::Couch #path and #name methods
 
 
