@@ -75,7 +75,7 @@ class UtHttpPutTest < Test::Unit::TestCase
       :content_type => :json)
 
     assert_equal({ 'msg' => 'hello world' }, b)
-    assert_equal 1, @h.cache.size
+    assert_equal 0, @h.cache.size
   end
 
   def test_put_conflict

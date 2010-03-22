@@ -31,6 +31,10 @@ class UtHttpPostTest < Test::Unit::TestCase
     assert_equal 201, r.status
     assert_not_nil l
 
+    if l.match(/^http:\/\//)
+      l = '/' + l.split('/')[3..-1].join('/')
+    end
+
     assert_equal({ 'msg' => 'hello' }, @h.get(l))
   end
 
@@ -51,7 +55,7 @@ class UtHttpPostTest < Test::Unit::TestCase
 
     assert_equal({ 'msg' => 'hello world' }, b)
 
-    assert_equal 1, @h.cache.size
+    assert_equal 0, @h.cache.size
   end
 
   def test_post_long_stuff
