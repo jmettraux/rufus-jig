@@ -40,7 +40,7 @@ Jeweler::Tasks.new do |gem|
   gem.test_file = 'test/test.rb'
 
   gem.add_dependency 'rufus-lru'
-  gem.add_dependency 'rufus-json'
+  gem.add_dependency 'rufus-json', '>= 0.2.1'
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'yard'
   gem.add_development_dependency 'jeweler'
