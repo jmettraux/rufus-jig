@@ -110,6 +110,23 @@ put and delete return nil in case of success and true (conflict) or and exceptio
 
 Warning : Patron, as of 0.4.5 is timing out when PUTting images.
 
+=== on_change
+
+Continuous feed with a 20s heartbeat :
+
+  db.on_change do |doc_id, deleted|
+    puts "doc #{doc_id} has been #{deleted ? 'deleted' : 'changed'}"
+  end
+  
+  db.on_change do |doc_id, deleted, doc|
+    puts "doc #{doc_id} has been #{deleted ? 'deleted' : 'changed'}"
+    p doc
+  end
+
+Please note the 3 param block, it includes the changed document (Note : this only work with CouchDB >= 0.11).
+
+This is a blocking method (one may want to wrap it in a thread).
+
 
 == rdoc
 

@@ -22,6 +22,9 @@
 # Made in Japan.
 #++
 
+require 'socket'
+  # for #on_change
+
 
 module Rufus::Jig
 
@@ -222,6 +225,49 @@ module Rufus::Jig
       path = adjust("#{doc_id}/#{attachment_name}?rev=#{doc_rev}")
 
       @http.delete(path)
+    end
+
+    # Watches the database for changes.
+    #
+    #   db.on_change do |doc_id, deleted|
+    #     puts "doc #{doc_id} has been #{deleted ? 'deleted' : 'changed'}"
+    #   end
+    #
+    #   db.on_change do |doc_id, deleted, doc|
+    #     puts "doc #{doc_id} has been #{deleted ? 'deleted' : 'changed'}"
+    #     p doc
+    #   end
+    #
+    # This is a blocking method. One might want to wrap it inside of a Thread.
+    #
+    # Note : doc inclusion (third parameter to the block) only works with
+    # CouchDB >= 0.11.
+    #
+    def on_change (opts={}, &block)
+
+      query = {
+        'feed' => 'continuous',
+        'heartbeat' => opts[:heartbeat] || 20_000 }
+      query['include_docs'] = true if block.arity > 2
+      query = query.map { |k, v| "#{k}=#{v}" }.join('&')
+
+      socket = TCPSocket.open(@http.host, @http.port)
+
+      socket.print("GET /#{path}/_changes?#{query} HTTP/1.1\r\n")
+      socket.print("User-Agent: rufus-jig #{Rufus::Jig::VERSION}\r\n")
+      socket.print("\r\n")
+
+      loop do
+        data = socket.gets
+        break if data.nil?
+        data = (Rufus::Json.decode(data) rescue nil)
+        next unless data.is_a?(Hash)
+        args = [ data['id'], (data['deleted'] == true) ]
+        args << data['doc'] if block.arity > 2
+        block.call(*args)
+      end
+
+      on_change(opts, &block) if opts[:reconnect]
     end
 
     protected
