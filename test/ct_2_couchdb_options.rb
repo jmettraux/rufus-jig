@@ -21,12 +21,15 @@ class CtCouchDbOptionsTest < Test::Unit::TestCase
     end
 
     h.put('/rufus_jig_test', '')
-    h.put('/rufus_jig_test/coffee1', '{"_id":"coffee1","type":"ristretto"}')
+    h.put('/rufus_jig_test/coffee2_0', '{"_id":"coffee2_0","type":"ristretto"}')
 
     h.close
 
     @c = Rufus::Jig::Couch.new(
-      '127.0.0.1', 5984, 'rufus_jig_test', :re_put_ok => false)
+      #'127.0.0.1', 5984, 'rufus_jig_test', :re_put_ok => false)
+      '127.0.0.1', 5984, 'rufus_jig_test')
+
+    # CouchDB >= 0.11 rendered re_put_ok useless
   end
 
   def teardown
@@ -36,10 +39,10 @@ class CtCouchDbOptionsTest < Test::Unit::TestCase
 
   def test_put_gone
 
-    doc = @c.get('coffee1')
+    doc = @c.get('coffee2_0')
     @c.delete(doc)
 
-    assert_nil @c.get('coffee1')
+    assert_nil @c.get('coffee2_0')
 
     doc['whatever'] = 'else'
 

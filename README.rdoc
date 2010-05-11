@@ -71,6 +71,8 @@ posting...
 For the real thing : http://github.com/couchrest/couchrest
 There is also the excellent : http://github.com/langalex/couch_potato
 
+Warning : rufus-jig >= 0.1.18 is meant for CouchDB >= 0.11.
+
 The class Rufus::Jig::Couch provides a get/put/delete trio that is couch-oriented. Json encoding/decoding is automatically handled as well as
 
 put and delete return nil in case of success and true (conflict) or and exception else.

@@ -48,6 +48,7 @@ Gem::Specification.new do |s|
      "test/ct_2_couchdb_options.rb",
      "test/ct_3_couchdb_views.rb",
      "test/ct_4_attachments.rb",
+     "test/ct_5_couchdb_continuous.rb",
      "test/server.rb",
      "test/test.rb",
      "test/to.sh",

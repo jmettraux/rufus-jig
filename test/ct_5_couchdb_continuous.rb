@@ -9,7 +9,7 @@
 require File.join(File.dirname(__FILE__), 'couch_base')
 
 
-class CtCouchDbOptionsTest < Test::Unit::TestCase
+class CtCouchDbContinuousTest < Test::Unit::TestCase
 
   def setup
 

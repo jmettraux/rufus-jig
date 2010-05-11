@@ -100,7 +100,11 @@ class CtCouchDbTest < Test::Unit::TestCase
 
     r = @c.put(doc)
 
-    assert_not_nil @c.get('coffee1')['_rev']
+    assert_equal true, r
+    assert_nil @c.get('coffee1')
+
+    #assert_not_nil @c.get('coffee1')['_rev']
+      # CouchDB < 0.11
   end
 
   def test_get

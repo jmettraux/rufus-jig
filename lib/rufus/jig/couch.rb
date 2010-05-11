@@ -64,10 +64,10 @@ module Rufus::Jig
 
       pa = adjust(path)
 
-      if @opts[:re_put_ok] == false && payload['_rev']
-        rr = delete(path, payload['_rev'])
-        return rr unless rr.nil?
-      end
+      #if @opts[:re_put_ok] == false && payload['_rev']
+      #  rr = delete(path, payload['_rev'])
+      #  return rr unless rr.nil?
+      #end
 
       r = @http.put(pa, payload, :content_type => :json, :cache => false)
 
