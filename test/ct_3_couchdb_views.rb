@@ -93,5 +93,14 @@ class CtCouchDbViewsTest < Test::Unit::TestCase
   #  p @c.get('_design/my_test_2/_view/my_view?key=%22macchiato%22')
   #  p @c.http.cache.keys
   #end
+
+  def test_nuke_design_documents
+
+    assert_not_nil @c.get('_design/my_test')
+
+    @c.nuke_design_documents
+
+    assert_nil @c.get('_design/my_test')
+  end
 end
 

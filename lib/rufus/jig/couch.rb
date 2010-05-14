@@ -270,6 +270,21 @@ module Rufus::Jig
       on_change(opts, &block) if opts[:reconnect]
     end
 
+    # A development method. Removes all the design documents in this couch
+    # database.
+    #
+    # Used in tests setup or teardown, when views are subject to frequent
+    # changes (rufus-doric and co).
+    #
+    def nuke_design_documents
+
+      docs = get('_all_docs')['rows']
+
+      views = docs.select { |d| d['id'] && d['id'].match(/^\_design\//) }
+
+      views.each { |v| delete(v['id'], v['value']['rev']) }
+    end
+
     protected
 
     def adjust (path)

@@ -2,7 +2,17 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.17    not yet released
+== rufus-jig - 0.1.19    not yet released
+
+- couch #nuke_design_documents to clean out [old/all] views
+
+
+== rufus-jig - 0.1.18    released 2010/05/10
+
+bugfix release
+
+
+== rufus-jig - 0.1.17    released 2010/03/21
 
 - using a new Patron::Session for each request (yes, they seem GC friendly)
 - Rufus::Jig::Couch #path and #name methods
