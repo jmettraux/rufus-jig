@@ -97,7 +97,7 @@ module Rufus::Jig
 
     def delete (doc_or_path, rev=nil)
 
-      doc, path, rev = if rev
+      doc, path = if rev
         [ { '_id' => doc_or_path, '_rev' => rev }, doc_or_path ]
       elsif doc_or_path.is_a?(String)
         [ nil, doc_or_path ]
