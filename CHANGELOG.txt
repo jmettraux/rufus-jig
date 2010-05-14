@@ -2,14 +2,14 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.19    not yet released
+== rufus-jig - 0.1.19    released 2010/05/14
 
 - couch #nuke_design_documents to clean out [old/all] views
 
 
 == rufus-jig - 0.1.18    released 2010/05/10
 
-bugfix release
+- couch #on_change to track continuous changes in a CouchDB databases
 
 
 == rufus-jig - 0.1.17    released 2010/03/21
