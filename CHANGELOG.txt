@@ -2,7 +2,7 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.20    not yet released
+== rufus-jig - 0.1.20    released 2010/06/22
 
 - URI.parse(x) can't do UTF-8, so working around...
 
