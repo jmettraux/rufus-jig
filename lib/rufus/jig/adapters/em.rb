@@ -79,7 +79,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
   end
 
   def em_request( uri = '/' )
-    uri = URI.parse( uri )
+    uri = Rufus::Jig.parse_uri( uri )
     uri = URI::HTTP.build(
       :host => ( uri.host || @host ),
       :port => ( uri.port || @port ),

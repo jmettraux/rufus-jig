@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rufus-jig}
-  s.version = "0.1.19"
+  s.version = "0.1.20"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Mettraux", "Kenneth Kalmer"]
-  s.date = %q{2010-05-14}
+  s.date = %q{2010-06-22}
   s.description = %q{
     Json Interwebs Get.
 
@@ -60,7 +60,8 @@ Gem::Specification.new do |s|
      "test/ut_3_http_put.rb",
      "test/ut_4_http_prefix.rb",
      "test/ut_5_http_misc.rb",
-     "test/ut_6_args.rb"
+     "test/ut_6_args.rb",
+     "test/ut_7_parse_uri.rb"
   ]
   s.homepage = %q{http://github.com/jmettraux/rufus-jig/}
   s.rdoc_options = ["--charset=UTF-8"]

@@ -23,6 +23,7 @@
 #++
 
 require 'uri'
+require 'ostruct'
 
 require 'rufus/lru' # gem install rufus-lru
 
@@ -66,6 +67,44 @@ module Rufus::Jig
 
     attr_reader :status, :headers, :body
     attr_reader :original
+  end
+
+  URI_REGEX = /https?:\/\/([^\/]+)([^\?]*)(\?.+)?$/
+
+  # The current URI lib is not UTF-8 friendly, so this is a workaround.
+  # Temporary hopefully.
+  #
+  def self.parse_uri (s)
+
+    m = URI_REGEX.match(s)
+
+    host, port, path, query = if m
+
+      h, p = m[1].split(':')
+      p ||= 80
+
+      query = m[3] ? m[3][1..-1] : nil
+
+      [ h, p, m[2], query ]
+
+    else
+
+      p, q = s.split('?')
+
+      [ nil, nil, p, q ]
+    end
+
+    OpenStruct.new(:host => host, :port => port, :path => path, :query => query)
+  end
+
+  # The current URI lib is not UTF-8 friendly, so this is a workaround.
+  # Temporary hopefully.
+  #
+  def self.parse_host (s)
+
+    u = parse_uri(s)
+
+    u ? u.host : nil
   end
 
   # The base for the Rufus::Jig::Http class.
@@ -223,22 +262,17 @@ module Rufus::Jig
 
     def add_prefix (path, opts)
 
-      uri = URI.parse( path )
+      host = Rufus::Jig.parse_host(path)
 
-      if !uri.host.nil?
-        return uri.to_s
+      return path if host
 
-      else
-        uri.host.nil?
+      elts = [ path ]
 
-        elts = [ path ]
-
-        if path.match(/^[^\/]/) && prefix = @options[:prefix]
-          elts.unshift(prefix)
-        end
-
-        return Path.join(*elts)
+      if path.match(/^[^\/]/) && prefix = @options[:prefix]
+        elts.unshift(prefix)
       end
+
+      Path.join(*elts)
     end
 
     def add_params (path, opts)
@@ -340,7 +374,7 @@ class Rufus::Jig::Http
         args.shift
 
       when /^http:\/\//
-        u = URI.parse(args.shift)
+        u = Rufus::Jig.parse_uri(args.shift)
         args.unshift(u.path)
         [ u.host, u.port ]
 

@@ -1,3 +1,4 @@
+# encoding: utf-8
 
 #
 # testing rufus-jig
@@ -177,6 +178,14 @@ class UtHttpGetTest < Test::Unit::TestCase
 
     assert_equal 'Peugeot', b['car']
     assert_equal 200, @h.last_response.status
+  end
+
+  def test_get_utf8_uri
+
+    b = @h.get('/川崎')
+
+    assert_nil b
+    assert_equal 404, @h.last_response.status
   end
 end
 

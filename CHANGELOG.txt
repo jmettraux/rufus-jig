@@ -2,6 +2,11 @@
 = rufus-jig CHANGELOG.txt
 
 
+== rufus-jig - 0.1.20    not yet released
+
+- URI.parse(x) can't do UTF-8, so working around...
+
+
 == rufus-jig - 0.1.19    released 2010/05/14
 
 - couch #nuke_design_documents to clean out [old/all] views

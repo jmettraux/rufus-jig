@@ -1,3 +1,4 @@
+# encoding: utf-8
 
 #
 # testing rufus-jig
@@ -186,6 +187,18 @@ class CtCouchDbTest < Test::Unit::TestCase
     r = @c.put('_id' => 'coffee2', 'type' => 'chevere')
 
     assert_equal true, r
+  end
+
+  def test_put_utf8_id
+
+    r = @c.put('_id' => 'コーヒー', 'type' => 'espresso')
+
+    assert_nil r
+
+    doc =
+      Rufus::Jig::Http.new('127.0.0.1', 5984).get('/rufus_jig_test/コーヒー')
+
+    assert_not_nil doc['_rev']
   end
 end
 
