@@ -2,7 +2,7 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.21    not yet released
+== rufus-jig - 0.1.21    release 2010/09/21
 
 - fixed port.to_i minor issue
 - caching is only for GET !
