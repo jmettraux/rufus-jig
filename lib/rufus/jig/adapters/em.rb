@@ -48,6 +48,8 @@ end
 
 class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
+  require 'uri'
+
   def initialize ( host, port, opts={} )
 
     super( host, port, opts )

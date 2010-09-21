@@ -22,7 +22,6 @@
 # Made in Japan.
 #++
 
-require 'uri'
 require 'ostruct'
 
 require 'rufus/lru' # gem install rufus-lru
