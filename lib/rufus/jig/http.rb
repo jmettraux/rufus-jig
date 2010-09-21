@@ -206,7 +206,7 @@ module Rufus::Jig
       path = '/' if path == ''
 
       cached = from_cache(path, opts)
-      opts.delete(:etag) if not cached
+      opts.delete(:etag) if (not cached) || method != :get
 
       opts = rehash_options(opts)
       data = repack_data(data, opts)
@@ -314,9 +314,9 @@ module Rufus::Jig
 
     def do_cache (method, path, response, body, opts)
 
-      if (method == :delete) || (opts[:cache] == false)
+      if (method != :get) || (opts[:cache] == false)
         @cache.delete(path)
-      elsif (method == :get) && (et = response.headers['Etag'])
+      elsif et = response.headers['Etag']
         @cache[path] = [ et, Rufus::Jig.marshal_copy(body) ]
       end
     end
