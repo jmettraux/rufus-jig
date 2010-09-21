@@ -25,3 +25,6 @@
 
 [ ] timeout per request ?
 
+[ ] net http persistent
+    http://seattlerb.rubyforge.org/net-http-persistent/Net/HTTP/Persistent.html
+
