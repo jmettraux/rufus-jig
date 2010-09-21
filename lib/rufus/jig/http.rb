@@ -382,6 +382,8 @@ class Rufus::Jig::Http
         [ args.shift, args.shift ]
     end
 
+    port = port.to_i
+
     path = args.shift
     path = '/' if path == ''
 

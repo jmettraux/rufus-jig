@@ -4,6 +4,7 @@
 
 == rufus-jig - 0.1.21    not yet released
 
+- fixed port.to_i minor issue
 - caching is only for GET !
 
 
