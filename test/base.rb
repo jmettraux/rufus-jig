@@ -11,8 +11,8 @@ transport_library = 'net/http'
 if ARGV.include?( '--em' )
   require 'openssl'
   transport_library = 'em-http'
-#elsif ARGV.include?( '--net' )
-#  transport_library = 'net/http'
+elsif ARGV.include?( '--netp' )
+  transport_library = 'net/http/persistent'
 elsif ARGV.include?( '--patron' )
   transport_library = 'patron'
 end

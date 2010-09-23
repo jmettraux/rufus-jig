@@ -125,9 +125,9 @@ module Rufus::Jig
     #
     attr_reader :options
 
-    # host and port, vanilla
+    # scheme, host and port, vanilla
     #
-    attr_reader :host, :port
+    attr_reader :scheme, :host, :port
 
     # The class of the error that should be raised when a request is not 2xx.
     #
@@ -135,6 +135,7 @@ module Rufus::Jig
 
     def initialize (host, port, opts)
 
+      @scheme = opts[:scheme] || 'http'
       @host = host
       @port = port
 
@@ -147,6 +148,11 @@ module Rufus::Jig
       end
 
       @error_class = opts[:error_class] || HttpError
+    end
+
+    def uri
+
+      OpenStruct.new(:scheme => @scheme, :host => @host, :port => @port)
     end
 
     def close
@@ -338,7 +344,11 @@ module Rufus::Jig
 end
 
 
-if defined?(Patron) # gem install patron
+if defined?(Net::HTTP::Persistent) # gem install net-http-persistent
+
+  require 'rufus/jig/adapters/net_persistent'
+
+elsif defined?(Patron) # gem install patron
 
   require 'rufus/jig/adapters/patron'
 
