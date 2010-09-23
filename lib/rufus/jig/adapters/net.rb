@@ -22,7 +22,7 @@
 # Made in Japan.
 #++
 
-require 'thread'
+#require 'thread'
 require 'net/http'
 
 
@@ -47,8 +47,6 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     super(host, port, opts)
 
     @options[:user_agent] ||= "#{self.class} #{Rufus::Jig::VERSION} (net/http)"
-
-    #@mutex = Mutex.new
   end
 
   def variant
@@ -76,8 +74,6 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   def do_request (method, path, data, opts)
 
-    #@mutex.synchronize do
-
     path = '/' if path == ''
 
     req = eval("Net::HTTP::#{method.to_s.capitalize}").new(path)
@@ -92,7 +88,6 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     rescue Timeout::Error => te
       raise Rufus::Jig::TimeoutError
     end
-    #end
   end
 end
 
