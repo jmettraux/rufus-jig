@@ -11,6 +11,11 @@ This library also contains some CouchDB helpers.
 To select a HTTP transport layer for rufus-jig, just make sure you have loaded
 the library before loading rufus-jig.
 
+For net-http-persistent:
+
+  require 'net/http/persistent'
+  require 'rufus/jig'
+
 For Patron:
 
   require 'patron'
@@ -33,7 +38,7 @@ Let's say we have an hypothetical document server.
 
 getting...
 
-  require 'patron'
+  require 'net/http/persistent'
   require 'yajl'
   require 'rufus/jig'
 
@@ -49,8 +54,6 @@ getting...
   p [ r.status, r.body ]
     #
     # => [ 200, "letter:\n\nfour birds" ]
-    #
-    # else returns a Response object (currently the one of Patron)
 
   j = @h.get('/document', :content_type => 'application/json')
   j = @h.get('/document', :content_type => :json)
@@ -77,7 +80,7 @@ The class Rufus::Jig::Couch provides a get/put/delete trio that is couch-oriente
 
 put and delete return nil in case of success and true (conflict) or and exception else.
 
-  require 'patron'
+  require 'net/http/persistent'
   require 'yajl'
   require 'rufus/jig'
 
@@ -108,9 +111,6 @@ put and delete return nil in case of success and true (conflict) or and exceptio
 
   c.detach('coffee0', '1-x-newrevision-whatever', 'picture')
 
-...
-
-Warning : Patron, as of 0.4.5 is timing out when PUTting images.
 
 === on_change
 

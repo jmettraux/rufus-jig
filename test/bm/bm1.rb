@@ -25,7 +25,7 @@ require 'rufus/jig'
 
 require 'benchmark'
 
-N = 1000
+N = 10_000
 
 c = Rufus::Jig::Couch.new('127.0.0.1', 5984, 'artsr_development_ruote_msgs')
 
