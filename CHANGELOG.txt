@@ -2,7 +2,12 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.21    release 2010/09/21
+== rufus-jig - 0.1.22    not yet released
+
+- Rufus::Jig.parse_uri(s), uri now has scheme
+
+
+== rufus-jig - 0.1.21    released 2010/09/21
 
 - fixed port.to_i minor issue
 - caching is only for GET !

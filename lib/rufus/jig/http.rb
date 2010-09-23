@@ -68,7 +68,7 @@ module Rufus::Jig
     attr_reader :original
   end
 
-  URI_REGEX = /https?:\/\/([^\/]+)([^\?]*)(\?.+)?$/
+  URI_REGEX = /(https?):\/\/([^\/]+)([^\?]*)(\?.+)?$/
 
   # The current URI lib is not UTF-8 friendly, so this is a workaround.
   # Temporary hopefully.
@@ -77,23 +77,26 @@ module Rufus::Jig
 
     m = URI_REGEX.match(s)
 
-    host, port, path, query = if m
+    scheme, host, port, path, query = if m
 
-      h, p = m[1].split(':')
+      h, p = m[2].split(':')
       p ||= 80
 
-      query = m[3] ? m[3][1..-1] : nil
+      query = m[4] ? m[4][1..-1] : nil
 
-      [ h, p, m[2], query ]
+      [ m[1], h, p, m[3], query ]
 
     else
 
       p, q = s.split('?')
 
-      [ nil, nil, p, q ]
+      [ nil, nil, nil, p, q ]
     end
 
-    OpenStruct.new(:host => host, :port => port, :path => path, :query => query)
+    OpenStruct.new(
+      :scheme => scheme,
+      :host => host, :port => port,
+      :path => path, :query => query)
   end
 
   # The current URI lib is not UTF-8 friendly, so this is a workaround.

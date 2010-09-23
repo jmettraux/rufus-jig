@@ -6,7 +6,12 @@
 # Tue Jun 22 12:31:35 JST 2010
 #
 
-require File.join(File.dirname(__FILE__), 'base')
+#require File.join(File.dirname(__FILE__), 'base')
+lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
+$:.unshift(lib) unless $:.include?(lib)
+
+require 'test/unit'
+require 'rufus/jig'
 
 
 class UtParseUriTest < Test::Unit::TestCase
@@ -19,6 +24,12 @@ class UtParseUriTest < Test::Unit::TestCase
 
   def test_parse_uri
 
+    assert_equal(
+      'http',
+      Rufus::Jig.parse_uri('http://www.unifr.ch').scheme)
+    assert_equal(
+      'https',
+      Rufus::Jig.parse_uri('https://www.unifr.ch').scheme)
     assert_equal(
       'www.unifr.ch',
       Rufus::Jig.parse_uri('http://www.unifr.ch').host)
