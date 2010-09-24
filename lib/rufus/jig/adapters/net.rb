@@ -22,23 +22,9 @@
 # Made in Japan.
 #++
 
-#require 'thread'
 require 'net/http'
+require 'rufus/jig/adapters/net_response'
 
-
-class Rufus::Jig::HttpResponse
-
-  def initialize (nh_res)
-
-    @original = nh_res
-    @status = nh_res.code.to_i
-    @body = nh_res.body
-    @headers = {}
-    nh_res.each { |k, v|
-      @headers[k.split('-').collect { |s| s.capitalize }.join('-')] = v
-    }
-  end
-end
 
 class Rufus::Jig::Http < Rufus::Jig::HttpCore
 

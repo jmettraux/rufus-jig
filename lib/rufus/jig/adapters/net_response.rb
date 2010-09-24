@@ -23,47 +23,20 @@
 #++
 
 
-require 'rufus/jig/adapters/net_response'
+#
+# a Rufus::Jig wrapper for the server response.
+#
+class Rufus::Jig::HttpResponse
 
+  def initialize (nh_res)
 
-class Rufus::Jig::Http < Rufus::Jig::HttpCore
-
-  def initialize (host, port, opts={})
-
-    super(host, port, opts)
-
-    @options[:user_agent] ||=
-      "#{self.class} #{Rufus::Jig::VERSION} (net/http/persistent)"
-
-    @http = Net::HTTP::Persistent.new
-  end
-
-  def variant
-    :net_persistent
-  end
-
-  protected
-
-  def do_request (method, path, data, opts)
-
-    path = '/' if path == ''
-
-    req = eval("Net::HTTP::#{method.to_s.capitalize}").new(path)
-
-    req['User-Agent'] = @options[:user_agent]
-    opts.each { |k, v| req[k] = v if k.is_a?(String) }
-
-    if auth = @options[:basic_auth]
-      req.basic_auth(*auth)
-    end
-
-    req.body = data ? data : ''
-
-    begin
-      Rufus::Jig::HttpResponse.new(@http.request(uri, req))
-    rescue Timeout::Error => te
-      raise Rufus::Jig::TimeoutError
-    end
+    @original = nh_res
+    @status = nh_res.code.to_i
+    @body = nh_res.body
+    @headers = {}
+    nh_res.each { |k, v|
+      @headers[k.split('-').collect { |s| s.capitalize }.join('-')] = v
+    }
   end
 end
 
