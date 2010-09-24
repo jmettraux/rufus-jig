@@ -58,23 +58,6 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   protected
 
-#  def get_http (opts)
-#
-#    http = Net::HTTP.new(@host, @port)
-#
-#    http.open_timeout = 5
-#      # connection timeout
-#
-#    if to = (opts[:timeout] || @options[:timeout])
-#      to = to.to_i
-#      http.read_timeout = (to < 1) ? nil : to
-#    else
-#      http.read_timeout = 5 # like Patron
-#    end
-#
-#    http
-#  end
-
   def do_request (method, path, data, opts)
 
     path = '/' if path == ''
@@ -83,6 +66,10 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
     req['User-Agent'] = @options[:user_agent]
     opts.each { |k, v| req[k] = v if k.is_a?(String) }
+
+    if auth = @options[:basic_auth]
+      req.basic_auth(*auth)
+    end
 
     req.body = data ? data : ''
 

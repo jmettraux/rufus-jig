@@ -19,6 +19,11 @@ end
 
 require transport_library
 
+unless $advertised
+  p transport_library
+  $advertised = true
+end
+
 require 'rufus/jig'
 
 require 'test/unit'

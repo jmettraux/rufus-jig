@@ -17,9 +17,12 @@ elsif ARGV.include?( '--patron' )
   transport_library = 'patron'
 end
 
-p [ :lib, transport_library ]
-
 require transport_library
+
+unless $advertised
+  p transport_library
+  $advertised = true
+end
 
 require 'rufus/jig'
 

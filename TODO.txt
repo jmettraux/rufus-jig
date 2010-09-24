@@ -27,3 +27,7 @@
 
 [ ] timeout per request ?
 
+[ ] netp : close() impl
+
+[ ] HttpResponse : DRY net and netp
+

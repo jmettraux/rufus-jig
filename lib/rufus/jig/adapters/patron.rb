@@ -41,14 +41,6 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     super(host, port, opts)
   end
 
-  def close
-
-    # it's not really closing, it's rather making sure the patron
-    # session can get collected as garbage
-
-    #Thread.current[key] = nil
-  end
-
   def variant
     :patron
   end

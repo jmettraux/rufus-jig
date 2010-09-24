@@ -81,6 +81,10 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     req['User-Agent'] = @options[:user_agent]
     opts.each { |k, v| req[k] = v if k.is_a?(String) }
 
+    if auth = @options[:basic_auth]
+      req.basic_auth(*auth)
+    end
+
     req.body = data ? data : ''
 
     begin
