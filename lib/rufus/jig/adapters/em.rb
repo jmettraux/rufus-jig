@@ -77,6 +77,10 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
       args[:timeout] = 5.0 # like Patron
     end
 
+    if auth = @options[:basic_auth]
+      args[:head] = { 'authorization' => auth }
+    end
+
     em_response( em_request( path ).send( method, args ) )
   end
 
