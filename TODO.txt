@@ -17,10 +17,11 @@
 [o] couch.detach ?
 [o] net http persistent
     http://seattlerb.rubyforge.org/net-http-persistent/Net/HTTP/Persistent.html
+[o] HttpResponse : DRY net and netp
+[x] patron : http can steal each other's patron session (inside the same thread)
 
 [ ] HEAD
 [ ] redirections ? (Patron seem to understand them)
-[ ] patron : http can steal each other's patron session (inside the same thread)
 [ ] why not a :force_json ?
 
 [ ] make HttpCore detect do_request
@@ -28,6 +29,4 @@
 [ ] timeout per request ?
 
 [ ] netp : close() impl
-
-[ ] HttpResponse : DRY net and netp
 

@@ -64,6 +64,12 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
       @options[:user_agent] ||
       [ self.class, Rufus::Jig::VERSION, '(patron)' ].join(' ')
 
+    if auth = @options[:basic_auth]
+      patron.auth_type = :basic
+      patron.username = auth[0]
+      patron.password = auth[1]
+    end
+
     patron
   end
 
