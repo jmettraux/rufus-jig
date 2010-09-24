@@ -15,6 +15,8 @@
 [x] don't abuse exceptions ! (especially with couch)
 [o] couch.attach
 [o] couch.detach ?
+[o] net http persistent
+    http://seattlerb.rubyforge.org/net-http-persistent/Net/HTTP/Persistent.html
 
 [ ] HEAD
 [ ] redirections ? (Patron seem to understand them)
@@ -24,7 +26,4 @@
 [ ] make HttpCore detect do_request
 
 [ ] timeout per request ?
-
-[ ] net http persistent
-    http://seattlerb.rubyforge.org/net-http-persistent/Net/HTTP/Persistent.html
 

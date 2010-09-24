@@ -216,3 +216,33 @@ get '/later' do
   'later'
 end
 
+
+#
+# BASIC AUTH
+
+helpers do
+
+  def basic_auth_required
+
+    return if authorized?
+
+    response['WWW-Authenticate'] = 'Basic realm="rufus-jig test"'
+    throw :halt, [ 401, "Not authorized\n" ]
+  end
+
+  def authorized?
+
+    @auth ||= Rack::Auth::Basic::Request.new(request.env)
+    @auth.provided? && @auth.basic? && @auth.credentials == [ 'admin', 'nimda' ]
+  end
+end
+
+get '/protected' do
+
+  basic_auth_required
+
+  content_type 'application/json'
+
+  '{ "info": "secretive" }'
+end
+
