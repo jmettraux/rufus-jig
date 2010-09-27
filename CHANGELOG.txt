@@ -4,6 +4,7 @@
 
 == rufus-jig - 0.1.22    not yet released
 
+- basic authentication added
 - net-http-persistent integration
 - Rufus::Jig.parse_uri(s), uri now has scheme
 

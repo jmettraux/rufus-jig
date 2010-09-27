@@ -22,6 +22,7 @@
 # Made in Japan.
 #++
 
+require 'base64'
 require 'socket'
   # for #on_change
 
@@ -253,9 +254,35 @@ module Rufus::Jig
 
       socket = TCPSocket.open(@http.host, @http.port)
 
+      auth = @http.options[:basic_auth]
+
+      if auth
+        auth = Base64.encode64(auth.join(':')).strip
+        auth = "Authorization: Basic #{auth}\r\n"
+      else
+        auth = ''
+      end
+
       socket.print("GET /#{path}/_changes?#{query} HTTP/1.1\r\n")
       socket.print("User-Agent: rufus-jig #{Rufus::Jig::VERSION}\r\n")
+      socket.print(auth)
       socket.print("\r\n")
+
+      # consider reply
+
+      answer = socket.gets.strip
+      status = answer.match(/^HTTP\/.+ (\d{3}) /)[1].to_i
+
+      raise Rufus::Jig::HttpError.new(status, answer) if status != 200
+
+      # discard headers
+
+      loop do
+        data = socket.gets
+        break if data.nil? || data == "\r\n"
+      end
+
+      # the on_change loop
 
       loop do
         data = socket.gets

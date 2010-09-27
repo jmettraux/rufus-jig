@@ -21,7 +21,7 @@ set = if ARGV.include?('--all')
 elsif ARGV.include?('--couch')
   %w[ ct ]
 else
-  %w[ ut ]
+  %w[ ut cut ]
 end
 
 set.each { |prefix| load_tests(prefix) }

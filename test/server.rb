@@ -242,7 +242,28 @@ get '/protected' do
   basic_auth_required
 
   content_type 'application/json'
-
   '{ "info": "secretive" }'
+end
+
+
+#
+# AUTH COUCH
+#
+# simulating a basic authentified couchdb instance
+
+get '/tcouch' do
+
+  basic_auth_required
+
+  content_type 'application/json'
+  '{ "id": "nada" }'
+end
+
+get '/tcouch/_changes' do
+
+  basic_auth_required
+
+  content_type 'application/json'
+  '{ "id": "x", "deleted": false, "doc": { "hello": "world" }' + "\r\n"
 end
 
