@@ -183,11 +183,6 @@ module Rufus::Jig
       OpenStruct.new(:scheme => @scheme, :host => @host, :port => @port)
     end
 
-    def close
-
-      # default implementation does nothing
-    end
-
     def get (path, opts={})
 
       request(:get, path, nil, opts)

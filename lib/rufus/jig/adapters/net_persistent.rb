@@ -42,6 +42,13 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     :net_persistent
   end
 
+  # Closes the connection
+  #
+  def close
+
+    @http.shutdown
+  end
+
   protected
 
   def do_request (method, path, data, opts)

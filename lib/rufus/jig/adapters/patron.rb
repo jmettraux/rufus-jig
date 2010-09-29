@@ -47,6 +47,11 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     :patron
   end
 
+  def close
+
+    # nothing to do
+  end
+
   protected
 
   def get_patron (opts)

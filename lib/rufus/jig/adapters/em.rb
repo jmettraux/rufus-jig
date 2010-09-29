@@ -61,6 +61,11 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     :em
   end
 
+  def close
+
+    # nothing to do
+  end
+
   protected
 
   def do_request( method, path, data, opts )

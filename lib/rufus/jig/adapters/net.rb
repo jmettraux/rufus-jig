@@ -39,6 +39,10 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     :net
   end
 
+  def close
+    # nothing to do
+  end
+
   protected
 
   def get_http (opts)
@@ -74,9 +78,12 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     req.body = data ? data : ''
 
     begin
-      Rufus::Jig::HttpResponse.new(get_http(opts).start { |h| h.request(req) })
+      http = get_http(opts)
+      Rufus::Jig::HttpResponse.new(http.start { |h| h.request(req) })
     rescue Timeout::Error => te
       raise Rufus::Jig::TimeoutError
+    ensure
+      http.finish rescue nil
     end
   end
 end
