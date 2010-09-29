@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Mettraux", "Kenneth Kalmer"]
-  s.date = %q{2010-09-21}
+  s.date = %q{2010-09-29}
   s.description = %q{
     Json Interwebs Get.
 
@@ -34,6 +34,8 @@ Gem::Specification.new do |s|
      "lib/rufus/jig.rb",
      "lib/rufus/jig/adapters/em.rb",
      "lib/rufus/jig/adapters/net.rb",
+     "lib/rufus/jig/adapters/net_persistent.rb",
+     "lib/rufus/jig/adapters/net_response.rb",
      "lib/rufus/jig/adapters/patron.rb",
      "lib/rufus/jig/couch.rb",
      "lib/rufus/jig/http.rb",
@@ -41,14 +43,18 @@ Gem::Specification.new do |s|
      "lib/rufus/jig/version.rb",
      "rufus-jig.gemspec",
      "test/base.rb",
+     "test/bm/bm0.rb",
+     "test/bm/bm1.rb",
      "test/conc/put_vs_delete.rb",
      "test/couch_base.rb",
+     "test/couch_url.txt",
      "test/ct_0_couch.rb",
      "test/ct_1_couchdb.rb",
      "test/ct_2_couchdb_options.rb",
      "test/ct_3_couchdb_views.rb",
      "test/ct_4_attachments.rb",
      "test/ct_5_couchdb_continuous.rb",
+     "test/cut_0_auth_couch.rb",
      "test/server.rb",
      "test/test.rb",
      "test/to.sh",
@@ -61,7 +67,8 @@ Gem::Specification.new do |s|
      "test/ut_4_http_prefix.rb",
      "test/ut_5_http_misc.rb",
      "test/ut_6_args.rb",
-     "test/ut_7_parse_uri.rb"
+     "test/ut_7_parse_uri.rb",
+     "test/ut_8_auth.rb"
   ]
   s.homepage = %q{http://github.com/jmettraux/rufus-jig/}
   s.rdoc_options = ["--charset=UTF-8"]

@@ -44,3 +44,9 @@ rescue Exception => e
   exit(1)
 end
 
+class Test::Unit::TestCase
+  def couch_url
+    File.read('test/couch_url.txt').strip
+  end
+end
+

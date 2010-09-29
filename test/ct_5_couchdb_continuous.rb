@@ -13,7 +13,7 @@ class CtCouchDbContinuousTest < Test::Unit::TestCase
 
   def setup
 
-    h = Rufus::Jig::Http.new('127.0.0.1', 5984)
+    h = Rufus::Jig::Http.new(couch_url)
 
     begin
       h.delete('/rufus_jig_test')
@@ -23,7 +23,7 @@ class CtCouchDbContinuousTest < Test::Unit::TestCase
     h.put('/rufus_jig_test', '')
     h.close
 
-    @c = Rufus::Jig::Couch.new('127.0.0.1', 5984, 'rufus_jig_test')
+    @c = Rufus::Jig::Couch.new(couch_url, 'rufus_jig_test')
   end
 
   def teardown

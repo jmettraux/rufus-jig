@@ -12,7 +12,7 @@ class CtAttachmentsTest < Test::Unit::TestCase
 
   def setup
 
-    h = Rufus::Jig::Http.new('127.0.0.1', 5984)
+    h = Rufus::Jig::Http.new(couch_url)
     begin
       h.delete('/rufus_jig_test')
     rescue Exception => e
@@ -22,7 +22,7 @@ class CtAttachmentsTest < Test::Unit::TestCase
     h.put('/rufus_jig_test', '')
     h.close
 
-    @c = Rufus::Jig::Couch.new('127.0.0.1', 5984, 'rufus_jig_test')
+    @c = Rufus::Jig::Couch.new(couch_url, 'rufus_jig_test')
 
     @c.put('_id' => 'thedoc', 'function' => 'recipient for attachements')
     @d = @c.get('thedoc')

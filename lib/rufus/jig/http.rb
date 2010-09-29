@@ -68,7 +68,7 @@ module Rufus::Jig
     attr_reader :original
   end
 
-  URI_REGEX = /(https?):\/\/([^\/]+)([^\?]*)(\?.+)?$/
+  URI_REGEX = /(https?):\/\/([^@]+:[^@]+@)?([^\/]+)([^\?]*)(\?.+)?$/
 
   # The current URI lib is not UTF-8 friendly, so this is a workaround.
   # Temporary hopefully.
@@ -77,26 +77,29 @@ module Rufus::Jig
 
     m = URI_REGEX.match(s)
 
-    scheme, host, port, path, query = if m
+    scheme, uname, pass, host, port, path, query = if m
 
-      h, p = m[2].split(':')
-      p ||= 80
+      ho, po = m[3].split(':')
+      po = (po || 80).to_i
 
-      query = m[4] ? m[4][1..-1] : nil
+      query = m[5] ? m[5][1..-1] : nil
 
-      [ m[1], h, p, m[3], query ]
+      un, pa = m[2] ? m[2][0..-2].split(':') : [ nil, nil ]
+
+      [ m[1], un, pa, ho, po, m[4], query ]
 
     else
 
-      p, q = s.split('?')
+      pa, qu = s.split('?')
 
-      [ nil, nil, nil, p, q ]
+      [ nil, nil, nil, nil, nil, pa, qu ]
     end
 
     OpenStruct.new(
       :scheme => scheme,
       :host => host, :port => port,
-      :path => path, :query => query)
+      :path => path, :query => query,
+      :username => uname, :password => pass)
   end
 
   # The current URI lib is not UTF-8 friendly, so this is a workaround.
@@ -133,21 +136,46 @@ module Rufus::Jig
     #
     attr_accessor :error_class
 
-    def initialize (host, port, opts)
+    # Sometimes a URI is passed for initialization, if the URI contained a
+    # path, it is stored in @_path (and not used).
+    # Rufus::Jig::Couch uses it though.
+    #
+    attr_accessor :_path, :_query
 
-      @scheme = opts[:scheme] || 'http'
-      @host = host
-      @port = port
+    def initialize (*args)
 
-      @options = opts.dup
+      @options = args.last.is_a?(Hash) ? args.pop.dup : {}
 
-      @cache = LruHash.new((opts[:cache_size] || 35).to_i)
+      if args[1].is_a?(Fixnum) # host, port[, path]
+
+        @scheme = 'http'
+        @host, @port, @_path = args
+
+      else # uri
+
+        u = Rufus::Jig.parse_uri(args.first)
+
+        @scheme = u.scheme
+        @host = u.host
+        @port = u.port
+
+        @options[:basic_auth] ||= [ u.username, u.password ] if u.username
+
+        if args[1]
+          @_path, @_query = args[1].split('?')
+        else
+          @_path = u.path
+          @_query = u.query
+        end
+      end
+
+      @cache = LruHash.new((@options[:cache_size] || 35).to_i)
 
       if pf = @options[:prefix]
         @options[:prefix] = "/#{pf}" if (not pf.match(/^\//))
       end
 
-      @error_class = opts[:error_class] || HttpError
+      @error_class = @options[:error_class] || HttpError
     end
 
     def uri
@@ -343,6 +371,9 @@ module Rufus::Jig
   end
 end
 
+#--
+# now load an adapter
+#++
 
 if defined?(Net::HTTP::Persistent) # gem install net-http-persistent
 
@@ -360,58 +391,5 @@ else
 
   require 'rufus/jig/adapters/net'
 
-end
-
-#--
-#
-# re-opening the HTTP class to add some class methods
-#
-#++
-class Rufus::Jig::Http
-
-  # Makes sense of arguments and extract an array that goes like
-  # [ http, path, payload, opts ].
-  #
-  # Typical input :
-  #
-  #   a = Rufus::Jig::Http.extract_http(false, 'http://127.0.0.1:5984')
-  #   a = Rufus::Jig::Http.extract_http(false, '127.0.0.1', 5984, '/')
-  #   a = Rufus::Jig::Http.extract_http(true, 'http://127.0.0.1:5984', :payload)
-  #
-  def self.extract_http (payload_expected, *args)
-
-    host, port = case args.first
-
-      when Rufus::Jig::Http
-        args.shift
-
-      when /^http:\/\//
-        u = Rufus::Jig.parse_uri(args.shift)
-        args.unshift(u.path)
-        [ u.host, u.port ]
-
-      else
-        [ args.shift, args.shift ]
-    end
-
-    port = port.to_i
-
-    path = args.shift
-    path = '/' if path == ''
-
-    payload = payload_expected ? args.shift : nil
-
-    opts = args.shift || {}
-
-    raise(
-      ArgumentError.new("option Hash expected, not #{opts.inspect}")
-    ) unless opts.is_a?(Hash)
-
-    http = host.is_a?(Rufus::Jig::Http) ?
-      host :
-      Rufus::Jig::Http.new(host, port, opts)
-
-    [ http, path, payload, opts ]
-  end
 end
 

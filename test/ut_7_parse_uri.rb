@@ -40,7 +40,7 @@ class UtParseUriTest < Test::Unit::TestCase
       'mufg.jp',
        Rufus::Jig.parse_uri('http://mufg.jp/大和').host)
     assert_equal(
-      '8080',
+      8080,
        Rufus::Jig.parse_uri('http://mufg.jp:8080/大和').port)
     assert_equal(
       '/大和',
@@ -58,6 +58,22 @@ class UtParseUriTest < Test::Unit::TestCase
     assert_equal(
       nil,
       Rufus::Jig.parse_uri('/').host)
+  end
+
+  def test_parse_uri_with_auth
+
+    assert_equal(
+      'admin',
+      Rufus::Jig.parse_uri('http://admin:nimda@example.com').username)
+    assert_equal(
+      'nimda',
+      Rufus::Jig.parse_uri('http://admin:nimda@example.com').password)
+    assert_equal(
+      'http',
+      Rufus::Jig.parse_uri('http://admin:nimda@example.com').scheme)
+    assert_equal(
+      'example.com',
+      Rufus::Jig.parse_uri('http://admin:nimda@example.com').host)
   end
 end
 

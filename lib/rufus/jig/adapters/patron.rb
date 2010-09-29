@@ -36,9 +36,11 @@ end
 
 class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
-  def initialize (host, port, opts={})
+  def initialize (*args)
 
-    super(host, port, opts)
+    super(*args)
+
+    @options[:user_agent] ||= "#{self.class} #{Rufus::Jig::VERSION} (patron)"
   end
 
   def variant

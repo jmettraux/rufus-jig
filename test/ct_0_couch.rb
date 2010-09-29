@@ -12,7 +12,7 @@ class CtCouchTest < Test::Unit::TestCase
 
   def setup
 
-    h = Rufus::Jig::Http.new('127.0.0.1', 5984)
+    h = Rufus::Jig::Http.new(couch_url)
     begin
       h.delete('/rufus_jig_test')
     rescue Exception => e
@@ -21,7 +21,7 @@ class CtCouchTest < Test::Unit::TestCase
       h.close rescue nil
     end
 
-    @c = Rufus::Jig::Couch.new('127.0.0.1', 5984)
+    @c = Rufus::Jig::Couch.new(couch_url)
   end
 
   def teardown
@@ -38,16 +38,16 @@ class CtCouchTest < Test::Unit::TestCase
 
     @c.put('rufus_jig_test')
 
-    assert_not_nil Rufus::Jig::Http.new('127.0.0.1', 5984).get('/rufus_jig_test')
+    assert_not_nil Rufus::Jig::Http.new(couch_url).get('/rufus_jig_test')
   end
 
   def test_delete_db
 
-    Rufus::Jig::Http.new('127.0.0.1', 5984).put('/rufus_jig_test', '')
+    Rufus::Jig::Http.new(couch_url).put('/rufus_jig_test', '')
 
     @c.delete('rufus_jig_test')
 
-    assert_nil Rufus::Jig::Http.new('127.0.0.1', 5984).get('/rufus_jig_test')
+    assert_nil Rufus::Jig::Http.new(couch_url).get('/rufus_jig_test')
   end
 
 #  def test_uuids

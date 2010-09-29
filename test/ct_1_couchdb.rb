@@ -13,7 +13,7 @@ class CtCouchDbTest < Test::Unit::TestCase
 
   def setup
 
-    h = Rufus::Jig::Http.new('127.0.0.1', 5984)
+    h = Rufus::Jig::Http.new(couch_url)
 
     begin
       h.delete('/rufus_jig_test')
@@ -26,7 +26,7 @@ class CtCouchDbTest < Test::Unit::TestCase
 
     h.close
 
-    @c = Rufus::Jig::Couch.new('127.0.0.1', 5984, 'rufus_jig_test')
+    @c = Rufus::Jig::Couch.new(couch_url, 'rufus_jig_test')
   end
 
   def teardown
@@ -46,7 +46,7 @@ class CtCouchDbTest < Test::Unit::TestCase
 
     assert_nil r
 
-    doc = Rufus::Jig::Http.new('127.0.0.1', 5984).get('/rufus_jig_test/coffee0')
+    doc = Rufus::Jig::Http.new(couch_url).get('/rufus_jig_test/coffee0')
 
     assert_not_nil doc['_rev']
   end
@@ -131,7 +131,7 @@ class CtCouchDbTest < Test::Unit::TestCase
     assert_nil r
 
     assert_nil(
-      Rufus::Jig::Http.new('127.0.0.1', 5984).get('/rufus_jig_test/coffee1'))
+      Rufus::Jig::Http.new(couch_url).get('/rufus_jig_test/coffee1'))
   end
 
   def test_delete_2_args
@@ -141,7 +141,7 @@ class CtCouchDbTest < Test::Unit::TestCase
     @c.delete(doc['_id'], doc['_rev'])
 
     assert_nil(
-      Rufus::Jig::Http.new('127.0.0.1', 5984).get('/rufus_jig_test/coffee1'))
+      Rufus::Jig::Http.new(couch_url).get('/rufus_jig_test/coffee1'))
   end
 
   def test_delete_conflict
@@ -196,7 +196,7 @@ class CtCouchDbTest < Test::Unit::TestCase
     assert_nil r
 
     doc =
-      Rufus::Jig::Http.new('127.0.0.1', 5984).get('/rufus_jig_test/コーヒー')
+      Rufus::Jig::Http.new(couch_url).get('/rufus_jig_test/コーヒー')
 
     assert_not_nil doc['_rev']
   end

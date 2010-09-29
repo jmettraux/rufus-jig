@@ -155,6 +155,11 @@ To test the em-http-request HTTP transport, make sure the sinatra server is runn
   ruby test/test.rb -- --em
 
 
+== known issues
+
+- the EM based client cannot deal with non-ASCII paths
+
+
 == mailing list
 
 On the rufus-ruby list :

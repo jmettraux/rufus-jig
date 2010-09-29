@@ -10,80 +10,89 @@ require File.join(File.dirname(__FILE__), 'base')
 
 class UtArgsTest < Test::Unit::TestCase
 
-  def test_extract_args
+  def test_simple_uri
 
-    # [ http, path, payload, opts ]
+    h = Rufus::Jig::Http.new('http://127.0.0.1:5984')
 
-    a = eh(false, 'http://127.0.0.1:5984')
-    assert_equal '127.0.0.1', a[0].host
-    assert_equal 5984, a[0].port
-    assert_equal '/', a[1]
-    assert_equal nil, a[2]
-    assert_equal '{}', a[3].inspect
-
-    a = eh(false, '127.0.0.1', 5984, '/')
-    assert_equal '127.0.0.1', a[0].host
-    assert_equal 5984, a[0].port
-    assert_equal '/', a[1]
-    assert_equal nil, a[2]
-    assert_equal '{}', a[3].inspect
-
-    a = eh(false, '127.0.0.1', 5984, '/', :option => true)
-    assert_equal '127.0.0.1', a[0].host
-    assert_equal 5984, a[0].port
-    assert_equal '/', a[1]
-    assert_equal nil, a[2]
-    assert_equal '{:option=>true}', a[3].inspect
+    assert_equal 'http', h.scheme
+    assert_equal '127.0.0.1', h.host
+    assert_equal 5984, h.port
+    assert_equal '', h._path
+    assert_equal nil, h._query
+    assert_equal nil, h.options[:basic_auth]
   end
 
-  def test_payload_expected
+  def test_uri_with_path_and_query
 
-    a = eh(true, 'http://127.0.0.1:5984', [ 1, 2, 3 ])
-    assert_equal '127.0.0.1', a[0].host
-    assert_equal 5984, a[0].port
-    assert_equal '/', a[1]
-    assert_equal [ 1, 2, 3 ], a[2]
-    assert_equal '{}', a[3].inspect
+    h = Rufus::Jig::Http.new('http://127.0.0.1:5984/nada?a=b&c=d')
 
-    assert_raise(ArgumentError) {
-      eh(true, 'http://127.0.0.1:5984', :nada, [ 1, 2, 3 ])
-    }
+    assert_equal 'http', h.scheme
+    assert_equal '127.0.0.1', h.host
+    assert_equal 5984, h.port
+    assert_equal '/nada', h._path
+    assert_equal 'a=b&c=d', h._query
+    assert_equal nil, h.options[:basic_auth]
   end
 
-  def test_payload_is_a_hash
+  def test_uri_with_basic_auth
 
-    a = eh(true, 'http://127.0.0.1:5984', { 'cheese' => 'burger' })
-    assert_equal '127.0.0.1', a[0].host
-    assert_equal 5984, a[0].port
-    assert_equal '/', a[1]
-    assert_equal '{"cheese"=>"burger"}', a[2].inspect
-    assert_equal '{}', a[3].inspect
+    h = Rufus::Jig::Http.new('http://u:p@127.0.0.1:5984')
 
-    a = eh(true, 'http://127.0.0.1:5984', { 'cheese' => 'burger' }, { :cache => true })
-    assert_equal '127.0.0.1', a[0].host
-    assert_equal 5984, a[0].port
-    assert_equal '/', a[1]
-    assert_equal '{"cheese"=>"burger"}', a[2].inspect
-    assert_equal '{:cache=>true}', a[3].inspect
+    assert_equal 'http', h.scheme
+    assert_equal '127.0.0.1', h.host
+    assert_equal 5984, h.port
+    assert_equal '', h._path
+    assert_equal nil, h._query
+    assert_equal %w[ u p ], h.options[:basic_auth]
   end
 
-  def test_with_http_instance
+  def test_host_port
 
     h = Rufus::Jig::Http.new('127.0.0.1', 5984)
 
-    a = eh(true, h, '/', { 'cheese' => 'burger' })
-    assert_equal '127.0.0.1', a[0].host
-    assert_equal 5984, a[0].port
-    assert_equal '/', a[1]
-    assert_equal '{"cheese"=>"burger"}', a[2].inspect
-    assert_equal '{}', a[3].inspect
+    assert_equal 'http', h.scheme
+    assert_equal '127.0.0.1', h.host
+    assert_equal 5984, h.port
+    assert_equal nil, h._path
+    assert_equal nil, h._query
+    assert_equal nil, h.options[:basic_auth]
   end
 
-  protected
+  def test_host_port_path
 
-  def eh (pe, *args)
+    h = Rufus::Jig::Http.new('127.0.0.1', 5984, '/banana')
 
-    Rufus::Jig::Http.extract_http(pe, *args)
+    assert_equal 'http', h.scheme
+    assert_equal '127.0.0.1', h.host
+    assert_equal 5984, h.port
+    assert_equal '/banana', h._path
+    assert_equal nil, h._query
+    assert_equal nil, h.options[:basic_auth]
+  end
+
+  def test_host_port_path_options
+
+    h = Rufus::Jig::Http.new(
+      '127.0.0.1', 5984, '/banana', :basic_auth => %w[ u p ])
+
+    assert_equal 'http', h.scheme
+    assert_equal '127.0.0.1', h.host
+    assert_equal 5984, h.port
+    assert_equal '/banana', h._path
+    assert_equal nil, h._query
+    assert_equal %w[ u p ], h.options[:basic_auth]
+  end
+
+  def test_uri_plus_path
+
+    h = Rufus::Jig::Http.new('http://127.0.0.1:5984', '/banana')
+
+    assert_equal 'http', h.scheme
+    assert_equal '127.0.0.1', h.host
+    assert_equal 5984, h.port
+    assert_equal '/banana', h._path
+    assert_equal nil, h._query
+    assert_equal nil, h.options[:basic_auth]
   end
 end
 

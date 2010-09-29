@@ -50,9 +50,9 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   require 'uri'
 
-  def initialize ( host, port, opts={} )
+  def initialize( *args )
 
-    super( host, port, opts )
+    super( *args )
 
     @options[:user_agent] ||= "#{self.class} #{Rufus::Jig::VERSION} (em)"
   end
@@ -63,7 +63,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   protected
 
-  def do_request ( method, path, data, opts )
+  def do_request( method, path, data, opts )
 
     args = {}
 
@@ -78,17 +78,18 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     end
 
     if auth = @options[:basic_auth]
-      args[:head] = { 'authorization' => auth }
+      args[:head].merge!( 'authorization' => auth )
     end
 
     em_response( em_request( path ).send( method, args ) )
   end
 
   def em_request( uri = '/' )
+
     uri = Rufus::Jig.parse_uri( uri )
     uri = URI::HTTP.build(
-      :host => ( uri.host || @host ),
-      :port => ( uri.port || @port ),
+      :host => uri.host || @host,
+      :port => uri.port || @port,
       :path => uri.path,
       :query => uri.query
     )
@@ -97,6 +98,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
   end
 
   def em_response( em_client )
+
     th = Thread.current
 
     timedout = false
@@ -122,6 +124,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
   end
 
   def request_headers( options )
+
     headers = { 'user-agent' => @options[:user_agent] }
 
     %w[ Accept If-None-Match Content-Type ].each do |k|

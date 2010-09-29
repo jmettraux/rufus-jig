@@ -40,9 +40,9 @@ module Rufus::Jig
 
     def initialize (*args)
 
-      @http, @path, payload, @opts = Rufus::Jig::Http.extract_http(false, *args)
+      @http = Rufus::Jig::Http.new(*args)
 
-      @path ||= '/'
+      @path = @http._path || '/'
     end
 
     def name
@@ -249,6 +249,7 @@ module Rufus::Jig
       query = {
         'feed' => 'continuous',
         'heartbeat' => opts[:heartbeat] || 20_000 }
+        #'since' => 0 } # that's already the default
       query['include_docs'] = true if block.arity > 2
       query = query.map { |k, v| "#{k}=#{v}" }.join('&')
 
@@ -265,6 +266,7 @@ module Rufus::Jig
 
       socket.print("GET /#{path}/_changes?#{query} HTTP/1.1\r\n")
       socket.print("User-Agent: rufus-jig #{Rufus::Jig::VERSION}\r\n")
+      #socket.print("Accept: application/json;charset=UTF-8\r\n")
       socket.print(auth)
       socket.print("\r\n")
 
