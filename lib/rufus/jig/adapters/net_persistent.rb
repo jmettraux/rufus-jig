@@ -26,6 +26,30 @@
 require 'rufus/jig/adapters/net_response'
 
 
+#
+# Re-opening Net::HTTP::Persistent to add a shutdown_in_all_threads method.
+#
+class Net::HTTP::Persistent
+
+  # Shuts down this instance's connection in all the threads.
+  #
+  # (to avoid too many open files issues).
+  #
+  def shutdown_in_all_threads
+
+    Thread.list.each do |t|
+
+      if cons = t[@connection_key]
+        cons.each { |_, connection| connection.finish rescue IOError }
+      end
+
+      t[@connection_key] = nil
+      t[@request_key] = nil
+    end
+  end
+end
+
+
 class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   def initialize (*args)
@@ -46,7 +70,8 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
   #
   def close
 
-    @http.shutdown
+    #@http.shutdown
+    @http.shutdown_in_all_threads
   end
 
   protected
