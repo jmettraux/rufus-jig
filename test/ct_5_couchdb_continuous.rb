@@ -84,7 +84,9 @@ class CtCouchDbContinuousTest < Test::Unit::TestCase
     sleep 0.154
     t.kill
 
-    assert_equal [["angel4", false], ["angel4", true]], stack
+    assert(
+      [["angel4", false], ["angel4", true]] == stack ||
+      [["angel4", true]] == stack)
   end
 end
 
