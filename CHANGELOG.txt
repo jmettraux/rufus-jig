@@ -2,7 +2,7 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 0.1.22    not yet released
+== rufus-jig - 0.1.22    released 2010/09/30
 
 - close methods are back
 - basic authentication added
