@@ -63,14 +63,14 @@ class UtHttpGetTest < Test::Unit::TestCase
       @h.get('/server_error')
     end
 
-    assert 500, @h.last_response.status
+    assert_equal 500, @h.last_response.status
   end
 
   def test_get_500_raw
 
     r = @h.get('/server_error', :raw => true)
 
-    assert 500, r.status
+    assert_equal 500, r.status
   end
 
   def test_get_with_accept
