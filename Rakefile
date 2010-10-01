@@ -46,6 +46,7 @@ Jeweler::Tasks.new do |gem|
   gem.add_development_dependency 'jeweler'
   gem.add_development_dependency 'patron'
   gem.add_development_dependency 'em-http-request'
+  gem.add_development_dependency 'net-http-persistent', '>= 1.4'
 
   # gemspec spec : http://www.rubygems.org/read/chapter/20
 end
@@ -54,20 +55,6 @@ Jeweler::GemcutterTasks.new
 
 #
 # DOC
-
-#begin
-#  require 'yard'
-#  YARD::Rake::YardocTask.new do |doc|
-#    doc.options = [
-#      '-o', 'html/rufus-jig', '--title',
-#      "rufus-jig #{Rufus::Jig::VERSION}"
-#    ]
-#  end
-#rescue LoadError
-#  task :yard do
-#    abort "YARD is not available : sudo gem install yard"
-#  end
-#end
 
 #
 # make sure to have rdoc 2.5.x to run that
@@ -84,7 +71,7 @@ end
 #
 # TO THE WEB
 
-task :upload_website => [ :clean, :rdoc ] do
+task :upload_rdoc => [ :clean, :rdoc ] do
 
   account = 'jmettraux@rubyforge.org'
   webdir = '/var/www/gforge-projects/rufus'

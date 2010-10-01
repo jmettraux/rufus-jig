@@ -4,6 +4,9 @@
 
 == rufus-jig - 0.1.23    not yet released
 
+- net-http-persistent 1.4 which contains the shutdown_in_all_threads patch
+  by Torsten Schoenebaum
+
 
 == rufus-jig - 0.1.22    released 2010/09/30
 
