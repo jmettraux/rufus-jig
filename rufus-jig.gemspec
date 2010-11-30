@@ -5,17 +5,17 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rufus-jig}
-  s.version = "0.1.23"
+  s.version = "1.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Mettraux", "Kenneth Kalmer"]
-  s.date = %q{2010-10-01}
+  s.date = %q{2010-11-30}
   s.description = %q{
     Json Interwebs Get.
 
     An HTTP client, greedy with JSON content, GETting conditionally.
 
-    Uses Patron and Yajl-ruby whenever possible.
+    Uses Yajl-ruby whenever possible.
   }
   s.email = %q{jmettraux@gmail.com}
   s.extra_rdoc_files = [
@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".gitignore",
+     ".rspec",
      "CHANGELOG.txt",
      "CREDITS.txt",
      "LICENSE.txt",
@@ -42,18 +43,21 @@ Gem::Specification.new do |s|
      "lib/rufus/jig/path.rb",
      "lib/rufus/jig/version.rb",
      "rufus-jig.gemspec",
+     "spec/couch/couch_attachements_spec.rb",
+     "spec/couch/couch_continuous.rb",
+     "spec/couch/couch_db_spec.rb",
+     "spec/couch/couch_spec.rb",
+     "spec/couch/couch_views_spec.rb",
+     "spec/couch/tweet.png",
+     "spec/couch_url.txt",
+     "spec/spec_helper.rb",
+     "spec/support/couch_helper.rb",
      "test/base.rb",
      "test/bm/bm0.rb",
      "test/bm/bm1.rb",
      "test/conc/put_vs_delete.rb",
      "test/couch_base.rb",
      "test/couch_url.txt",
-     "test/ct_0_couch.rb",
-     "test/ct_1_couchdb.rb",
-     "test/ct_2_couchdb_options.rb",
-     "test/ct_3_couchdb_views.rb",
-     "test/ct_4_attachments.rb",
-     "test/ct_5_couchdb_continuous.rb",
      "test/cut_0_auth_couch.rb",
      "test/server.rb",
      "test/test.rb",
@@ -74,10 +78,34 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{rufus}
-  s.rubygems_version = %q{1.3.6}
+  s.rubygems_version = %q{1.3.5}
   s.summary = %q{An HTTP client, greedy with JSON content, GETting conditionally.}
   s.test_files = [
-    "test/test.rb"
+    "spec/couch/couch_attachements_spec.rb",
+     "spec/couch/couch_continuous.rb",
+     "spec/couch/couch_db_spec.rb",
+     "spec/couch/couch_spec.rb",
+     "spec/couch/couch_views_spec.rb",
+     "spec/spec_helper.rb",
+     "spec/support/couch_helper.rb",
+     "test/base.rb",
+     "test/bm/bm0.rb",
+     "test/bm/bm1.rb",
+     "test/conc/put_vs_delete.rb",
+     "test/couch_base.rb",
+     "test/cut_0_auth_couch.rb",
+     "test/server.rb",
+     "test/test.rb",
+     "test/tt_0_get_timeout.rb",
+     "test/ut_0_http_get.rb",
+     "test/ut_1_http_post.rb",
+     "test/ut_2_http_delete.rb",
+     "test/ut_3_http_put.rb",
+     "test/ut_4_http_prefix.rb",
+     "test/ut_5_http_misc.rb",
+     "test/ut_6_args.rb",
+     "test/ut_7_parse_uri.rb",
+     "test/ut_8_auth.rb"
   ]
 
   if s.respond_to? :specification_version then
@@ -88,6 +116,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<rufus-lru>, [">= 0"])
       s.add_runtime_dependency(%q<rufus-json>, [">= 0.2.5"])
       s.add_development_dependency(%q<rake>, [">= 0"])
+      s.add_development_dependency(%q<rspec>, ["~> 2.2.0"])
       s.add_development_dependency(%q<yard>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<patron>, [">= 0"])
@@ -97,6 +126,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rufus-lru>, [">= 0"])
       s.add_dependency(%q<rufus-json>, [">= 0.2.5"])
       s.add_dependency(%q<rake>, [">= 0"])
+      s.add_dependency(%q<rspec>, ["~> 2.2.0"])
       s.add_dependency(%q<yard>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<patron>, [">= 0"])
@@ -107,6 +137,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rufus-lru>, [">= 0"])
     s.add_dependency(%q<rufus-json>, [">= 0.2.5"])
     s.add_dependency(%q<rake>, [">= 0"])
+    s.add_dependency(%q<rspec>, ["~> 2.2.0"])
     s.add_dependency(%q<yard>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<patron>, [">= 0"])

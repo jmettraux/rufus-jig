@@ -1,5 +1,4 @@
 
-
 require 'lib/rufus/jig/version.rb'
 
 require 'rubygems'
@@ -11,7 +10,17 @@ require 'rake'
 
 require 'rake/clean'
 CLEAN.include('pkg', 'tmp', 'html', 'rdoc')
-task :default => [ :clean ]
+
+#
+# SPEC / TEST
+
+#task :spec => :check_dependencies do
+task :spec do
+  sh 'rspec spec/'
+end
+task :test => :spec
+
+task :default => :spec
 
 
 #
@@ -30,18 +39,17 @@ Jeweler::Tasks.new do |gem|
 
     An HTTP client, greedy with JSON content, GETting conditionally.
 
-    Uses Patron and Yajl-ruby whenever possible.
+    Uses Yajl-ruby whenever possible.
   }
   gem.email = 'jmettraux@gmail.com'
   gem.homepage = 'http://github.com/jmettraux/rufus-jig/'
   gem.authors = [ 'John Mettraux', 'Kenneth Kalmer' ]
   gem.rubyforge_project = 'rufus'
 
-  gem.test_file = 'test/test.rb'
-
   gem.add_dependency 'rufus-lru'
   gem.add_dependency 'rufus-json', '>= 0.2.5'
   gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'rspec', '~> 2.2.0'
   gem.add_development_dependency 'yard'
   gem.add_development_dependency 'jeweler'
   gem.add_development_dependency 'patron'

@@ -30,3 +30,5 @@
 
 [ ] netp : close() impl
 
+[ ] views : couch#query(view, opts) ?
+
