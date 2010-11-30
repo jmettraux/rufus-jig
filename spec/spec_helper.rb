@@ -46,13 +46,10 @@ RSpec.configure do |config|
 
   config.include ServerHelper
   config.include CouchHelper
+end
 
-  config.before(:all) do
-    fork_server
-  end
-  config.after(:all) do
-    kill_server
-      # better safe than sorry
-  end
+unless $server
+  ServerHelper.fork_server
+  Kernel.at_exit { ServerHelper.kill_server }
 end
 

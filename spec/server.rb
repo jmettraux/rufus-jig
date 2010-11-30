@@ -1,5 +1,10 @@
 # encoding: utf-8
 
+log = File.open('server.log', 'wb')
+STDOUT.reopen(log)
+STDERR.reopen(log)
+
+
 # a test sinata server
 
 require 'rubygems'
