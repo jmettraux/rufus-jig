@@ -153,39 +153,12 @@ class UtHttpGetTest < Test::Unit::TestCase
     assert_equal 0, @h.cache.size
   end
 
-  def test_get_params
-
-    assert_equal(
-      {},
-      @h.get('/params'))
-    assert_equal(
-      { 'a' => 'b' },
-      @h.get('/params?a=b'))
-    assert_equal(
-      { 'a' => 'b', 'c' => 'd' },
-      @h.get('/params?a=b', :params => { :c => 'd' }))
-    assert_equal(
-      { 'a' => 'b', 'c' => 'd' },
-      @h.get('/params', :params => { 'a' => :b, :c => 'd' }))
-    assert_equal(
-      {},
-      @h.get('/params', :params => {}))
-  end
-
   def test_etag_but_missing
 
     b = @h.get('/document_with_etag', :etag => '"123456123456"')
 
     assert_equal 'Peugeot', b['car']
     assert_equal 200, @h.last_response.status
-  end
-
-  def test_get_utf8_uri
-
-    b = @h.get('/川崎')
-
-    assert_nil b
-    assert_equal 404, @h.last_response.status
   end
 end
 

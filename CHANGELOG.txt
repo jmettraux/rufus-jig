@@ -2,6 +2,12 @@
 = rufus-jig CHANGELOG.txt
 
 
+== rufus-jig - 1.0.0    not yet released
+
+- conditional GET on by default
+- switched from test/unit to rspec
+
+
 == rufus-jig - 0.1.23    released 2010/10/01
 
 - net-http-persistent 1.4 which contains the shutdown_in_all_threads patch

@@ -29,7 +29,7 @@ describe Rufus::Jig::Couch do
       h.close
 
       @c = Rufus::Jig::Couch.new(couch_url, 'rufus_jig_test')
-      @doc = @c.get('coffee1')
+      @doc = @c.get('coffee1', :cache => false)
     end
 
     after(:each) do
@@ -70,6 +70,21 @@ describe Rufus::Jig::Couch do
         @c.put('_id' => 'コーヒー', 'type' => 'espresso')
 
         @c.get('コーヒー')['type'].should == 'espresso'
+      end
+
+      it 'caches documents' do
+
+        @c.get('coffee1')
+        @c.http.cache.size.should == 1
+      end
+
+      it 'goes 200 then 304' do
+
+        @c.get('coffee1')
+        @c.http.last_response.status.should == 200
+
+        @c.get('coffee1')
+        @c.http.last_response.status.should == 304
       end
     end
 

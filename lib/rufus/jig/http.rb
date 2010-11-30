@@ -66,6 +66,11 @@ module Rufus::Jig
 
     attr_reader :status, :headers, :body
     attr_reader :original
+
+    def etag
+
+      headers['ETag'] || headers['Etag'] || headers['etag']
+    end
   end
 
   URI_REGEX = /(https?):\/\/([^@]+:[^@]+@)?([^\/]+)([^\?]*)(\?.+)?$/
@@ -205,28 +210,6 @@ module Rufus::Jig
 
     protected
 
-    def from_cache (path, opts)
-
-      if et = opts[:etag]
-
-        cached = @cache[path]
-
-        if cached && cached.first != et
-          #
-          # cached version is perhaps stale
-          #
-          cached = nil
-          opts.delete(:etag)
-        end
-
-        cached
-
-      else
-
-        nil
-      end
-    end
-
     def request (method, path, data, opts={})
 
       raw = raw_expected?(opts)
@@ -236,8 +219,16 @@ module Rufus::Jig
 
       path = '/' if path == ''
 
-      cached = from_cache(path, opts)
-      opts.delete(:etag) if (not cached) || method != :get
+      etag = opts[:etag]
+      cached = @cache[path]
+      if etag && cached && cached.first != etag
+        # cached version is probably stale
+        cached = nil
+        opts.delete(:etag)
+      end
+      if ( ! etag) && cached
+        opts[:etag] = cached.first
+      end
 
       opts = rehash_options(opts)
       data = repack_data(data, opts)
@@ -326,7 +317,6 @@ module Rufus::Jig
 
       return nil unless data
 
-
       data = if data.is_a?(String)
         data
       elsif (opts['Content-Type'] || '').match(/^application\/json/)
@@ -345,11 +335,18 @@ module Rufus::Jig
 
     def do_cache (method, path, response, body, opts)
 
-      if (method != :get) || (opts[:cache] == false)
+      etag = response.etag
+
+      if etag.nil? || opts[:cache] == false || method == :delete
         @cache.delete(path)
-      elsif et = response.headers['Etag']
-        @cache[path] = [ et, Rufus::Jig.marshal_copy(body) ]
+        return
       end
+      if method != :get && opts[:cache] != true
+        @cache.delete(path)
+        return
+      end
+
+      @cache[path] = [ etag, Rufus::Jig.marshal_copy(body) ]
     end
 
     def decode_body (response, opts)

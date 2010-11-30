@@ -89,10 +89,6 @@ module Rufus::Jig
       path = doc_or_path.is_a?(Hash) ? doc_or_path['_id'] : doc_or_path
       path = adjust(path)
 
-      if et = etag(path)
-        opts[:etag] = et
-      end
-
       @http.get(path, opts)
     end
 
@@ -137,15 +133,7 @@ module Rufus::Jig
 
     def post (path, doc)
 
-      path = adjust(path)
-
-      opts = { :content_type => :json }
-
-      if et = etag(path)
-        opts[:etag] = et
-      end
-
-      @http.post(path, doc, opts)
+      @http.post(adjust(path), doc, :content_type => :json)
     end
 
     # Attaches a file to a couch document.
@@ -323,15 +311,6 @@ module Rufus::Jig
         when /^\// then path
         else Rufus::Jig::Path.join(@path, path)
       end
-    end
-
-    # Fetches etag from http cache
-    #
-    def etag (path)
-
-      r = @http.cache[path]
-
-      r ? r.first : nil
     end
   end
 end

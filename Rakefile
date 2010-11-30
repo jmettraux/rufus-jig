@@ -9,7 +9,7 @@ require 'rake'
 # CLEAN
 
 require 'rake/clean'
-CLEAN.include('pkg', 'tmp', 'html', 'rdoc')
+CLEAN.include('pkg', 'tmp', 'html', 'rdoc', 'server.log')
 
 #
 # SPEC / TEST

@@ -45,6 +45,15 @@ RSpec.configure do |config|
   # config.mock_with :rr
   config.mock_with :rspec
 
+  config.include ServerHelper
   config.include CouchHelper
+
+  config.before(:all) do
+    fork_server
+  end
+  #config.after(:all) do
+  #  kill_server
+  #end
+    # no need, the child will get killed as the main process (rspec) exits
 end
 
