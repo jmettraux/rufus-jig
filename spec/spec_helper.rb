@@ -1,22 +1,21 @@
 
-
 # Our default
-transport_library = 'net/http'
+lib = ENV['JIG_LIB'] || 'net/http'
 
-if ARGV.include?( '--em' )
-  require 'openssl'
-  transport_library = 'em-http'
-elsif ARGV.include?( '--netp' )
-  transport_library = 'net/http/persistent'
-elsif ARGV.include?( '--patron' )
-  transport_library = 'patron'
+lib = case lib
+  when 'net' then 'net/http'
+  when 'em' then 'em-http'
+  when 'netp' then 'net/http/persisten'
+  when 'patron' then 'patron'
+  else lib
 end
 
-require transport_library
+require('openssl') if lib == 'em-http'
+require(lib)
 
 unless $advertised
   puts
-  puts "http lib is '#{transport_library}' (--net/--netp/--patron/--em)"
+  puts "JIG_LIB lib is '#{lib}' (net/netp/patron/em)"
   $advertised = true
 end
 

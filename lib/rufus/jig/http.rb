@@ -22,7 +22,6 @@
 # Made in Japan.
 #++
 
-require 'ostruct'
 
 require 'rufus/lru' # gem install rufus-lru
 
@@ -73,7 +72,11 @@ module Rufus::Jig
     end
   end
 
-  URI_REGEX = /(https?):\/\/([^@]+:[^@]+@)?([^\/]+)([^\?]*)(\?.+)?$/
+  URI_REGEX = /(https?):\/\/([^@]+:[^@]+@)?([^\/]+)(.*)?$/
+  PATH_REGEX = /([^\?#]*)(\?[^#]+)?(#[^#]+)?$/
+
+  Uri = Struct.new(
+    :scheme, :username, :password, :host, :port, :path, :query, :fragment)
 
   # The current URI lib is not UTF-8 friendly, so this is a workaround.
   # Temporary hopefully.
@@ -82,29 +85,29 @@ module Rufus::Jig
 
     m = URI_REGEX.match(s)
 
-    scheme, uname, pass, host, port, path, query = if m
+    scheme, uname, pass, host, port, tail = if m
 
       ho, po = m[3].split(':')
       po = (po || 80).to_i
 
-      query = m[5] ? m[5][1..-1] : nil
-
       un, pa = m[2] ? m[2][0..-2].split(':') : [ nil, nil ]
 
-      [ m[1], un, pa, ho, po, m[4], query ]
+      [ m[1], un, pa, ho, po, m[4] ]
 
     else
 
-      pa, qu = s.split('?')
-
-      [ nil, nil, nil, nil, nil, pa, qu ]
+      [ nil, nil, nil, nil, nil, s ]
     end
 
-    OpenStruct.new(
-      :scheme => scheme,
-      :host => host, :port => port,
-      :path => path, :query => query,
-      :username => uname, :password => pass)
+    m = PATH_REGEX.match(tail)
+
+    path, query, fragment = [ m[1], m[2], m[3] ]
+
+    port = 443 if scheme == 'https' && port == 80
+    query = query[1..-1] if query
+    fragment = fragment[1..-1] if fragment
+
+    Uri.new(scheme, uname, pass, host, port, path, query, fragment)
   end
 
   # The current URI lib is not UTF-8 friendly, so this is a workaround.

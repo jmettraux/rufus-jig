@@ -31,3 +31,5 @@
 [ ] views : couch#query(view, opts) ?
 [ ] caching
 
+[ ] digest auth (as for rufus-verbs) ?
+

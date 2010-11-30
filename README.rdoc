@@ -137,22 +137,27 @@ http://rufus.rubyforge.org/rufus-jig/
 
 == testing
 
-At first, make sure to start the tiny sinatra test server :
+  rake
 
-  ruby test/server.rb
+or
 
-then do
+  rspec spec/
 
-  ruby test/test.rb
+tests all (plain jig and CouchDB).
 
+  rspec spec/jig
 
-To test the CouchDB helpers, make you have a running Couch on http:/127.0.0.1:5984 then do
+only tests the plain jig stuff.
 
-  ruby test/test.rb --couch
+  rspec spec/couch
 
-To test the em-http-request HTTP transport, make sure the sinatra server is running and then do:
+only tests the CouchDB stuff.
 
-  ruby test/test.rb -- --em
+By default net/http is used. To test with another HTTP lib :
+
+  JIG_LIB=patron rspec spec/
+
+You can specify patron/em/netp/net. Netp corresponds to http://seattlerb.rubyforge.org/net-http-persistent/
 
 
 == known issues
