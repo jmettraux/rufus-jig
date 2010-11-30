@@ -50,9 +50,9 @@ RSpec.configure do |config|
   config.before(:all) do
     fork_server
   end
-  #config.after(:all) do
-  #  kill_server
-  #end
-    # no need, the child will get killed as the main process (rspec) exits
+  config.after(:all) do
+    kill_server
+      # better safe than sorry
+  end
 end
 

@@ -10,7 +10,7 @@ module ServerHelper
       exec "ruby #{server} > server.log 2>&1"
     end
 
-    sleep 0.250
+    sleep 1.0
 
     $SERVER
   end
@@ -22,7 +22,7 @@ module ServerHelper
 
   def kill_server
 
-    Process.kill(9, $SERVER) rescue nil
+    Process.kill(9, $SERVER) #rescue nil
     $SERVER = nil
 
     nil

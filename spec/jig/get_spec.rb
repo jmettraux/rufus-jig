@@ -22,96 +22,93 @@ describe Rufus::Jig do
   describe '.new' do
 
     after(:each) do
-      @h.close rescue nil
+      @http.close rescue nil
     end
 
     it 'connects to the server' do
 
-      @h = Rufus::Jig::Http.new('127.0.0.1', 4567)
+      @http = Rufus::Jig::Http.new('127.0.0.1', 4567)
 
       @h._path.should == nil
       lambda { @h.get('/') }.should_not raise_error
     end
   end
 
-  context 'with a connection' do
+  describe '#get' do
 
-    describe '#get' do
+    context 'by default' do
 
-      context 'by default' do
+      it 'decodes from JSON' do
 
-        it 'decodes from JSON' do
-
-          @h.get('/document').should == { 'car' => 'Mercedes-Benz' }
-        end
-
-        it 'returns nil in case of 404' do
-
-          @h.get('/nada').should == nil
-        end
-
-        it 'raises an error in case of server error' do
-
-          lambda {
-            @h.get('/server_error')
-          }.should raise_error(Rufus::Jig::HttpError)
-        end
-
-        it 'is OK with a non-ASCII URI' do
-
-          @h.get('/川崎').should == nil
-        end
+        @h.get('/document').should == { 'car' => 'Mercedes-Benz' }
       end
 
-      context 'with :raw => true' do
+      it 'returns nil in case of 404' do
 
-        it 'returns an HTTP response instance' do
-
-          r = @h.get('/document', :raw => true)
-
-          r.status.should == 200
-          r.body.should == "{\"car\":\"Mercedes-Benz\"}"
-        end
-
-        it "doesn't raise an error in case of server error" do
-
-          lambda {
-            @h.get('/server_error', :raw => true)
-          }.should_not raise_error
-        end
+        @h.get('/nada').should == nil
       end
 
-      context 'with :accept => mime_type' do
+      it 'raises an error in case of server error' do
 
-        it "returns the text/plain" do
-
-          @h.get('/document_accept', :accept => 'text/plain').should ==
-            '{"car":"Saab"}'
-        end
-
-        it "returns the application/json" do
-
-          @h.get('/document_accept', :accept => 'application/json').should == {
-             "car" => "Saab" }
-        end
-
-        it "returns JSON when :accept => :json" do
-
-          @h.get('/document_accept', :accept => :json).should == {
-             "car" => "Saab" }
-        end
+        lambda {
+          @h.get('/server_error')
+        }.should raise_error(Rufus::Jig::HttpError)
       end
 
-      context 'with :force_json => true' do
+      it 'is OK with a non-ASCII URI' do
 
-        it "returns JSON anyway" do
+        @h.get('/川崎').should == nil
+      end
+    end
 
-          @h.get('/document_accept', :accept => :json).should == {
-             "car" => "Saab" }
+    context 'with :raw => true' do
 
-          @h.get('/document_json_plain', :force_json => true).should == {
-             "car" => "Peugeot" }
-        end
+      it 'returns an HTTP response instance' do
+
+        r = @h.get('/document', :raw => true)
+
+        r.status.should == 200
+        r.body.should == "{\"car\":\"Mercedes-Benz\"}"
+      end
+
+      it "doesn't raise an error in case of server error" do
+
+        lambda {
+          @h.get('/server_error', :raw => true)
+        }.should_not raise_error
+      end
+    end
+
+    context 'with :accept => mime_type' do
+
+      it "returns the text/plain" do
+
+        @h.get('/document_accept', :accept => 'text/plain').should ==
+          '{"car":"Saab"}'
+      end
+
+      it "returns the application/json" do
+
+        @h.get('/document_accept', :accept => 'application/json').should == {
+           "car" => "Saab" }
+      end
+
+      it "returns JSON when :accept => :json" do
+
+        @h.get('/document_accept', :accept => :json).should == {
+           "car" => "Saab" }
+      end
+    end
+
+    context 'with :force_json => true' do
+
+      it "returns JSON anyway" do
+
+        @h.get('/document_accept', :accept => :json).should == {
+           "car" => "Saab" }
+
+        @h.get('/document_json_plain', :force_json => true).should == {
+           "car" => "Peugeot" }
       end
     end
   end

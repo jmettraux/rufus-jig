@@ -316,24 +316,24 @@ module Rufus::Jig
       path
     end
 
+    APP_JSON_REGEX = /^application\/json/
+
     def repack_data (data, opts)
 
-      return nil unless data
+      return nil if data == nil
+      return data if data.is_a?(String)
 
-      data = if data.is_a?(String)
-        data
-      elsif (opts['Content-Type'] || '').match(/^application\/json/)
-        Rufus::Json.encode(data)
-      else
-        data.to_s
+      ct = opts['Content-Type'] || ''
+
+      if APP_JSON_REGEX.match(ct)
+        return Rufus::Json.encode(data)
+      end
+      if ct == '' && (data.is_a?(Array) || data.is_a?(Hash))
+        opts['Content-Type'] = 'application/json'
+        return Rufus::Json.encode(data)
       end
 
-      #opts['Content-Length'] =
-      #  (data.respond_to?(:bytesize) ? data.bytesize : data.size).to_s
-        #
-        # Patron doesn't play well with custom lengths : "56, 56" issue
-
-      data
+      data.to_s
     end
 
     def do_cache (method, path, response, body, opts)
@@ -357,7 +357,7 @@ module Rufus::Jig
       b = response.body
       ct = response.headers['Content-Type']
 
-      if opts[:force_json] || (ct && ct.match(/^application\/json/))
+      if opts[:force_json] || (ct && APP_JSON_REGEX.match(ct))
         Rufus::Json.decode(b)
       else
         b
