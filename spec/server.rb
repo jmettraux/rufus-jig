@@ -12,6 +12,11 @@ require 'sinatra'
 require 'json'
 
 
+# change the port here if needed
+
+set :port, 4567
+
+
 #
 # BASIC
 #
