@@ -9,7 +9,7 @@
 require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
 
 
-describe Rufus::Jig do
+describe Rufus::Jig::Http do
 
   before(:each) do
     purge_server
