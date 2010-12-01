@@ -37,6 +37,10 @@ describe Rufus::Jig::Couch do
           'views' => {
             'my_view' => {
               'map' => "function(doc) { emit(doc['type'], null); }"
+            },
+            'my_reduced_view' => {
+              'map' => "function(doc) { emit(doc['type'], 1); }",
+              'reduce' => "_count"
             }
           }
         },
@@ -164,7 +168,24 @@ describe Rufus::Jig::Couch do
         ]
       end
 
-      it 'is OK with reduced views'
+      it 'is OK with reduced views' do
+
+        @c.query('my_test:my_reduced_view', :group => true).should == [
+          {"key"=>"capuccino", "value"=>1},
+          {"key"=>"espresso", "value"=>1},
+          {"key"=>"macchiato", "value"=>2},
+          {"key"=>"ristretto", "value"=>1}
+        ]
+      end
+
+      it 'is OK with reduced views and :key' do
+
+        @c.query(
+          'my_test:my_reduced_view', :key => 'macchiato', :group => true
+        ).should == [
+          { 'key' => 'macchiato', 'value' => 2 }
+        ]
+      end
 
       it 'uses POST when there is a :keys parameter' do
 
