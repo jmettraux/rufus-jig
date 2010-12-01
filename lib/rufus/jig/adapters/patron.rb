@@ -69,7 +69,11 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
     to = (opts[:timeout] || @options[:timeout])
     to = to.to_i if to
-    to = nil if to && to < 1
+    to = if to
+      to < 1 ? nil : to
+    else
+      5
+    end
 
     patron = Patron::Session.new
     patron.base_url = "#{@host}:#{@port}"

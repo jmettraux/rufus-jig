@@ -35,6 +35,14 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     name = [ 'jig', @host, @port.to_s ].join('|')
 
     @http = Net::HTTP::Persistent.new(name)
+
+    @http.open_timeout = 5
+      # connection timeout
+
+    @timeout = @options[:timeout]
+    @timeout = @timeout.to_i if @timeout
+
+    reset_timeout
   end
 
   def variant
@@ -63,13 +71,27 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     if auth = @options[:basic_auth]
       req.basic_auth(*auth)
     end
+    if to = opts[:timeout]
+      @http.read_timeout = to
+    end
 
     req.body = data ? data : ''
 
     begin
       Rufus::Jig::HttpResponse.new(@http.request(uri, req))
-    rescue Timeout::Error => te
-      raise Rufus::Jig::TimeoutError
+    rescue Net::HTTP::Persistent::Error => nhpe
+      raise Rufus::Jig::TimeoutError if nhpe.message.match(/Timeout::Error/)
+    ensure
+      reset_timeout
+    end
+  end
+
+  def reset_timeout
+
+    if @timeout
+      @http.read_timeout = (@timeout < 1) ? nil : @timeout
+    else
+      @http.read_timeout = 5 # like Patron
     end
   end
 end

@@ -31,7 +31,7 @@ describe Rufus::Jig::Http do
 
       @h.get('/later') rescue nil
 
-      (Time.now - t).should be < (@h.variant == :em ? 3.0 : 2.0)
+      (Time.now - t).should be < (@h.variant == :em ? 4.0 : 3.0)
     end
   end
 
@@ -41,9 +41,30 @@ describe Rufus::Jig::Http do
       @h = Rufus::Jig::Http.new('127.0.0.1', 4567, :timeout => -1)
     end
 
-    it 'never times out' do
+    it 'does not time out' do
 
       @h.get('/later').should == 'later'
+    end
+  end
+
+  context 'with the default timeout' do
+
+    before(:each) do
+      @h = Rufus::Jig::Http.new('127.0.0.1', 4567)
+    end
+
+    it 'times out' do
+
+      lambda { @h.get('/later') }.should raise_error(Rufus::Jig::TimeoutError)
+    end
+
+    it 'times out after 5s' do
+
+      t = Time.now
+
+      @h.get('/later') rescue nil
+
+      (Time.now - t).should be < (@h.variant == :em ? 7.0 : 6.0)
     end
   end
 
@@ -66,7 +87,7 @@ describe Rufus::Jig::Http do
 
       @h.get('/later', :timeout => 1) rescue nil
 
-      (Time.now - t).should be < (@h.variant == :em ? 3.0 : 2.0)
+      (Time.now - t).should be < (@h.variant == :em ? 4.0 : 3.0)
     end
   end
 end
