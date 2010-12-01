@@ -6,24 +6,6 @@ require 'rake'
 
 
 #
-# CLEAN
-
-require 'rake/clean'
-CLEAN.include('pkg', 'tmp', 'html', 'rdoc', 'server.log')
-
-#
-# SPEC / TEST
-
-#task :spec => :check_dependencies do
-task :spec do
-  sh 'rspec spec/'
-end
-task :test => :spec
-
-task :default => :spec
-
-
-#
 # GEM
 
 require 'jeweler'
@@ -59,6 +41,39 @@ Jeweler::Tasks.new do |gem|
   # gemspec spec : http://www.rubygems.org/read/chapter/20
 end
 Jeweler::GemcutterTasks.new
+
+
+#
+# CLEAN
+
+require 'rake/clean'
+CLEAN.include('pkg', 'tmp', 'html', 'rdoc', 'server.log')
+
+#
+# SPEC / TEST
+
+#task :spec => :check_dependencies do
+task :spec do
+  sh 'rspec spec/'
+end
+task :test => :spec
+
+task :default => :spec
+
+desc %{
+  runs the specs against net, netp, patron and em
+}
+task :specs do
+  puts; puts "-" * 80; puts
+  sh 'export JIG_LIB=net; rspec -f p spec/; exit 0'
+  puts; puts "-" * 80; puts
+  sh 'export JIG_LIB=netp; rspec -f p spec/; exit 0'
+  puts; puts "-" * 80; puts
+  sh 'export JIG_LIB=patron; rspec -f p spec/; exit 0'
+  puts; puts "-" * 80; puts
+  sh 'export JIG_LIB=em; rspec -f p spec/; exit 0'
+  puts; puts "-" * 80; puts
+end
 
 
 #
