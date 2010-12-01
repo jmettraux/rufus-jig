@@ -25,20 +25,20 @@
 
 class Rufus::Jig::HttpResponse
 
-  def initialize( em_client )
+  def initialize(em_client)
 
     @original = [ em_client, em_client.response ]
 
     @status = em_client.response_header.status
-    @headers = response_headers( em_client.response_header )
+    @headers = response_headers(em_client.response_header)
     @body = em_client.response
   end
 
   protected
 
-  def response_headers( hash )
+  def response_headers(hash)
 
-    hash.inject({}) do |headers, ( key, value )|
+    hash.inject({}) do |headers, (key, value)|
       key = key.downcase.split('_').map { |c| c.capitalize }.join( '-' )
       headers[ key ] = value
       headers
@@ -50,9 +50,9 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   require 'uri'
 
-  def initialize( *args )
+  def initialize(*args)
 
-    super( *args )
+    super(*args)
 
     @options[:user_agent] ||= "#{self.class} #{Rufus::Jig::VERSION} (em)"
   end
@@ -68,11 +68,11 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   protected
 
-  def do_request( method, path, data, opts )
+  def do_request(method, path, data, opts)
 
     args = {}
 
-    args[:head] = request_headers( opts )
+    args[:head] = request_headers(opts)
     args[:body] = data if data
 
     if to = (opts[:timeout] || @options[:timeout])
@@ -83,23 +83,23 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     end
 
     if auth = @options[:basic_auth]
-      args[:head].merge!( 'authorization' => auth )
+      args[:head].merge!('authorization' => auth)
     end
 
-    em_response( em_request( path ).send( method, args ) )
+    em_response(em_request(path).send(method, args))
   end
 
-  def em_request( uri = '/' )
+  def em_request(uri='/')
 
-    uri = Rufus::Jig.parse_uri( uri )
-    uri.scheme ||= ( @port == 443 ? 'https' : 'http' )
+    uri = Rufus::Jig.parse_uri(uri)
+    uri.scheme ||= (@port == 443 ? 'https' : 'http')
     uri.host ||= @host
     uri.port ||= @port
 
-    EventMachine::HttpRequest.new( uri.to_s )
+    EventMachine::HttpRequest.new(uri.to_s)
   end
 
-  def em_response( em_client )
+  def em_response(em_client)
 
     th = Thread.current
 
@@ -107,7 +107,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
     em_client.errback {
 
-      #th.raise( Rufus::Jig::TimeoutError.new )
+      #th.raise(Rufus::Jig::TimeoutError.new)
         # works with ruby < 1.9.x
       th.wakeup
     }
@@ -122,15 +122,15 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
     raise Rufus::Jig::TimeoutError if em_client.response_header.status == 0
 
-    Rufus::Jig::HttpResponse.new( em_client )
+    Rufus::Jig::HttpResponse.new(em_client)
   end
 
-  def request_headers( options )
+  def request_headers(options)
 
     headers = { 'user-agent' => @options[:user_agent] }
 
     %w[ Accept If-None-Match Content-Type ].each do |k|
-      headers[k] = options[k] if options.has_key?( k )
+      headers[k] = options[k] if options.has_key?(k)
     end
 
     headers

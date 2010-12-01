@@ -41,7 +41,7 @@ module Rufus::Jig
     #   p Rufus::Jig::Path.add_params('/toto', :q => 'nada', 'x' => 2)
     #     # => "/toto?q=nada&x=2"
     #
-    def self.add_params (path, h)
+    def self.add_params(path, h)
 
       params = h.collect { |k, v| "#{k}=#{v}" }.join('&')
 
@@ -55,7 +55,7 @@ module Rufus::Jig
     #   p Rufus::Jig::Path.join('division', 'customer', :restricted => true)
     #     # => '/division/customer?restricted=true'
     #
-    def self.join (*elts)
+    def self.join(*elts)
 
       elts, params = if elts.last.is_a?(Hash)
         [ elts[0..-2], elts.last ]
@@ -79,14 +79,14 @@ module Rufus::Jig
 
     # Makes sure there is a forward slash in the given string.
     #
-    def self.to_path (s)
+    def self.to_path(s)
 
       s.match(/^\//) ? s : "/#{s}"
     end
 
     # Removes any forward slashes at the beginning of the given string.
     #
-    def self.to_name (s)
+    def self.to_name(s)
 
       if m = s.match(/^\/+(.+)$/)
         m[1]

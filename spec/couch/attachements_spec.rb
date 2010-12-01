@@ -78,7 +78,7 @@ describe Rufus::Jig::Couch do
 
     describe '#detach' do
 
-      before (:each) do
+      before(:each) do
 
         r = @c.attach(
           'thedoc', @d['_rev'],

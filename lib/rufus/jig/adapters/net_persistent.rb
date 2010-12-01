@@ -25,7 +25,7 @@
 
 class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
-  def initialize (*args)
+  def initialize(*args)
 
     super(*args)
 
@@ -51,7 +51,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   protected
 
-  def do_request (method, path, data, opts)
+  def do_request(method, path, data, opts)
 
     path = '/' if path == ''
 

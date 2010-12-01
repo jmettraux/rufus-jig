@@ -27,7 +27,7 @@ require 'net/http'
 
 class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
-  def initialize (*args)
+  def initialize(*args)
 
     super(*args)
 
@@ -44,7 +44,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   protected
 
-  def get_http (opts)
+  def get_http(opts)
 
     http = Net::HTTP.new(@host, @port)
 
@@ -61,7 +61,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     http
   end
 
-  def do_request (method, path, data, opts)
+  def do_request(method, path, data, opts)
 
     path = '/' if path == ''
 

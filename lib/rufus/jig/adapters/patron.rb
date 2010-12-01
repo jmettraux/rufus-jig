@@ -30,7 +30,7 @@ class Rufus::Jig::HttpResponse
 
   NHR = /^Net::HTTP/
 
-  def initialize (res)
+  def initialize(res)
 
     if NHR.match(res.class.name)
       # for the couch#attach workaround :-( ...
@@ -47,7 +47,7 @@ end
 
 class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
-  def initialize (*args)
+  def initialize(*args)
 
     super(*args)
 
@@ -65,7 +65,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
   protected
 
-  def get_patron (opts)
+  def get_patron(opts)
 
     to = (opts[:timeout] || @options[:timeout])
     to = to.to_i if to
@@ -91,7 +91,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     patron
   end
 
-  def do_request (method, path, data, opts)
+  def do_request(method, path, data, opts)
 
     opts['Expect'] = '' if (method == :put) && ( ! @options[:expect])
 

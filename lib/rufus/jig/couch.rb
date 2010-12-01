@@ -38,7 +38,7 @@ module Rufus::Jig
     attr_reader :path
     attr_reader :http
 
-    def initialize (*args)
+    def initialize(*args)
 
       @http = Rufus::Jig::Http.new(*args)
 
@@ -55,7 +55,7 @@ module Rufus::Jig
       @http.close
     end
 
-    def put (doc_or_path, opts={})
+    def put(doc_or_path, opts={})
 
       path, payload = if doc_or_path.is_a?(String)
         [ doc_or_path, '' ]
@@ -84,7 +84,7 @@ module Rufus::Jig
       nil
     end
 
-    def get (doc_or_path, opts={})
+    def get(doc_or_path, opts={})
 
       path = doc_or_path.is_a?(Hash) ? doc_or_path['_id'] : doc_or_path
       path = adjust(path)
@@ -92,7 +92,7 @@ module Rufus::Jig
       @http.get(path, opts)
     end
 
-    def delete (doc_or_path, rev=nil)
+    def delete(doc_or_path, rev=nil)
 
       doc, path = if rev
         [ { '_id' => doc_or_path, '_rev' => rev }, doc_or_path ]
@@ -131,7 +131,7 @@ module Rufus::Jig
       end
     end
 
-    def post (path, doc)
+    def post(path, doc)
 
       @http.post(adjust(path), doc, :content_type => :json)
     end
@@ -148,7 +148,7 @@ module Rufus::Jig
     #     doc, 'my_picture', data,
     #     :content_type => 'image/jpeg')
     #
-    def attach (doc_id, doc_rev, attachment_name, data, opts=nil)
+    def attach(doc_id, doc_rev, attachment_name, data, opts=nil)
 
       if opts.nil?
         opts = data
@@ -205,7 +205,7 @@ module Rufus::Jig
     #
     #   couch.detach(doc, 'my_picture')
     #
-    def detach (doc_id, doc_rev, attachment_name=nil)
+    def detach(doc_id, doc_rev, attachment_name=nil)
 
       if attachment_name.nil?
         attachment_name = doc_rev
@@ -236,7 +236,7 @@ module Rufus::Jig
     # Note : doc inclusion (third parameter to the block) only works with
     # CouchDB >= 0.11.
     #
-    def on_change (opts={}, &block)
+    def on_change(opts={}, &block)
 
       query = {
         'feed' => 'continuous',
@@ -308,7 +308,7 @@ module Rufus::Jig
 
     protected
 
-    def adjust (path)
+    def adjust(path)
 
       case path
         when '.' then @path

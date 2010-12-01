@@ -33,7 +33,7 @@ module Rufus::Jig
   # The classical helper method, does a full copy of the given object.
   # Thanks Marshal.
   #
-  def self.marshal_copy (o)
+  def self.marshal_copy(o)
 
     Marshal.load(Marshal.dump(o))
   end
@@ -44,7 +44,7 @@ module Rufus::Jig
 
     attr_reader :status
 
-    def initialize (status, message)
+    def initialize(status, message)
 
       @status = status
       super(message)
@@ -55,7 +55,7 @@ module Rufus::Jig
   #
   class TimeoutError < RuntimeError
 
-    def initialize (message=nil)
+    def initialize(message=nil)
 
       super(message || 'timed out')
     end
@@ -69,7 +69,7 @@ module Rufus::Jig
     attr_reader :status, :headers, :body
     attr_reader :original
 
-    def initialize (res)
+    def initialize(res)
 
       net_http_init(res)
     end
@@ -102,7 +102,7 @@ module Rufus::Jig
     attr_accessor :host, :port
     attr_accessor :path, :query, :fragment
 
-    def initialize (sc, us, ps, ho, po, pa, qu, fr)
+    def initialize(sc, us, ps, ho, po, pa, qu, fr)
 
       @scheme = sc
       @username = us
@@ -142,7 +142,7 @@ module Rufus::Jig
   # The current URI lib is not UTF-8 friendly, so this is a workaround.
   # Temporary hopefully.
   #
-  def self.parse_uri (s)
+  def self.parse_uri(s)
 
     m = URI_REGEX.match(s)
 
@@ -174,7 +174,7 @@ module Rufus::Jig
   # The current URI lib is not UTF-8 friendly, so this is a workaround.
   # Temporary hopefully.
   #
-  def self.parse_host (s)
+  def self.parse_host(s)
 
     u = parse_uri(s)
 
@@ -211,7 +211,7 @@ module Rufus::Jig
     #
     attr_accessor :_path, :_query
 
-    def initialize (*args)
+    def initialize(*args)
 
       @options = args.last.is_a?(Hash) ? args.pop.dup : {}
 
@@ -252,29 +252,29 @@ module Rufus::Jig
       Uri.new(@scheme, nil, nil, @host, @port, nil, nil, nil)
     end
 
-    def get (path, opts={})
+    def get(path, opts={})
 
       request(:get, path, nil, opts)
     end
 
-    def post (path, data, opts={})
+    def post(path, data, opts={})
 
       request(:post, path, data, opts)
     end
 
-    def put (path, data, opts={})
+    def put(path, data, opts={})
 
       request(:put, path, data, opts)
     end
 
-    def delete (path, opts={})
+    def delete(path, opts={})
 
       request(:delete, path, nil, opts)
     end
 
     protected
 
-    def request (method, path, data, opts={})
+    def request(method, path, data, opts={})
 
       path = add_prefix(path, opts)
       path = add_params(path, opts)
@@ -300,7 +300,7 @@ module Rufus::Jig
       respond(method, path, opts, cached, res)
     end
 
-    def respond (method, path, opts, cached, res)
+    def respond(method, path, opts, cached, res)
 
       @last_response = res
 
@@ -328,7 +328,7 @@ module Rufus::Jig
 
     # Should work with GET and POST/PUT options
     #
-    def rehash_options (opts)
+    def rehash_options(opts)
 
       opts['Accept'] ||= (opts.delete(:accept) || 'application/json')
       opts['Accept'] = 'application/json' if opts['Accept'] == :json
@@ -347,7 +347,7 @@ module Rufus::Jig
       opts
     end
 
-    def add_prefix (path, opts)
+    def add_prefix(path, opts)
 
       host = Rufus::Jig.parse_host(path)
 
@@ -362,7 +362,7 @@ module Rufus::Jig
       Path.join(*elts)
     end
 
-    def add_params (path, opts)
+    def add_params(path, opts)
 
       if params = opts[:params]
 
@@ -380,7 +380,7 @@ module Rufus::Jig
 
     APP_JSON_REGEX = /^application\/json/
 
-    def repack_data (data, opts)
+    def repack_data(data, opts)
 
       return nil if data == nil
       return data if data.is_a?(String)
@@ -398,7 +398,7 @@ module Rufus::Jig
       data.to_s
     end
 
-    def do_cache (method, path, response, body, opts)
+    def do_cache(method, path, response, body, opts)
 
       etag = response.etag
 
@@ -414,7 +414,7 @@ module Rufus::Jig
       @cache[path] = [ etag, Rufus::Jig.marshal_copy(body) ]
     end
 
-    def decode_body (response, opts)
+    def decode_body(response, opts)
 
       b = response.body
       ct = response.headers['Content-Type']

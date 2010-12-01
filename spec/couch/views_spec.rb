@@ -36,7 +36,7 @@ describe Rufus::Jig::Couch do
           '_id' => '_design/my_test',
           'views' => {
             'my_view' => {
-              'map' => "function (doc) { emit(doc['type'], null); }"
+              'map' => "function(doc) { emit(doc['type'], null); }"
             }
           }
         },
