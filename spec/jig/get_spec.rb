@@ -29,7 +29,7 @@ describe Rufus::Jig::Http do
 
       @http = Rufus::Jig::Http.new('127.0.0.1', 4567)
 
-      @h._path.should == nil
+      @h._path.should == ''
       lambda { @h.get('/') }.should_not raise_error
     end
   end

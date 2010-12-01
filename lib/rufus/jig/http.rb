@@ -95,6 +95,9 @@ module Rufus::Jig
     end
   end
 
+  #
+  # Rufus::Jig.parse_uri returns instances of this class.
+  #
   class Uri
 
     attr_accessor :scheme
@@ -209,7 +212,7 @@ module Rufus::Jig
     # path, it is stored in @_path (and not used).
     # Rufus::Jig::Couch uses it though.
     #
-    attr_accessor :_path, :_query
+    attr_accessor :_path, :_query, :_fragment
 
     def initialize(*args)
 
@@ -231,12 +234,18 @@ module Rufus::Jig
         @options[:basic_auth] ||= [ u.username, u.password ] if u.username
 
         if args[1]
-          @_path, @_query = args[1].split('?')
+          uu = Rufus::Jig.parse_uri(args[1])
+          @_path = uu.path
+          @_query = uu.query
+          @_fragment = uu.fragment
         else
           @_path = u.path
           @_query = u.query
+          @_fragment = u.fragment
         end
       end
+
+      @_path ||= ''
 
       @cache = LruHash.new((@options[:cache_size] || 35).to_i)
 
