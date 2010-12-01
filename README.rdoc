@@ -157,7 +157,7 @@ By default net/http is used. To test with another HTTP lib :
 
   JIG_LIB=patron rspec spec/
 
-You can specify patron/em/netp/net. Netp corresponds to http://seattlerb.rubyforge.org/net-http-persistent/
+You can specify patron, em, netp or net. Netp corresponds to http://seattlerb.rubyforge.org/net-http-persistent/
 
 
 == known issues

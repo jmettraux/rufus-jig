@@ -23,7 +23,6 @@
 #++
 
 require 'net/http'
-require 'rufus/jig/adapters/net_response'
 
 
 class Rufus::Jig::Http < Rufus::Jig::HttpCore

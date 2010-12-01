@@ -171,23 +171,27 @@ module Rufus::Jig
       path = adjust("#{doc_id}/#{attachment_name}?rev=#{doc_rev}")
 
       if @http.variant == :patron
-        #
-        # patron, as of 0.4.5 has difficulties when PUTting attachements
+
+        # patron, as of 0.4.5 (~> 0.4.10), has difficulties when PUTting
+        # attachements
         # this is a fallback to net/http
-        #
+
         require 'net/http'
+
         http = Net::HTTP.new(@http.host, @http.port)
+
         req = Net::HTTP::Put.new(path)
         req['User-Agent'] =
-          "rufus-jig #{Rufus::Jig::VERSION} (patron 0.4.5 fallback to net/http)"
+          "rufus-jig #{Rufus::Jig::VERSION} (patron 0.4.x fallback to net/http)"
         req['Content-Type'] =
           opts[:content_type]
+        req['Accept'] =
+          'application/json'
         req.body = data
-        res = http.start { |h| h.request(req) }
-        status = res.code.to_i
-        raise Rufus::Jig::HttpError.new(status, res.body) \
-          unless [ 200, 201 ].include?(status)
-        return nil
+
+        res = Rufus::Jig::HttpResponse.new(http.start { |h| h.request(req) })
+
+        return @http.send(:respond, :put, path, opts, nil, res)
       end
 
       @http.put(path, data, opts)

@@ -23,14 +23,25 @@
 #++
 
 
+#
+# Re-opening to adapt to Patron
+#
 class Rufus::Jig::HttpResponse
 
-  def initialize (patron_res)
+  NHR = /^Net::HTTP/
 
-    @original = patron_res
-    @status = patron_res.status
-    @headers = patron_res.headers
-    @body = patron_res.body
+  def initialize (res)
+
+    if NHR.match(res.class.name)
+      # for the couch#attach workaround :-( ...
+      net_http_init(res)
+      return
+    end
+
+    @original = res
+    @status = res.status
+    @headers = res.headers
+    @body = res.body
   end
 end
 
@@ -90,7 +101,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     end
 
     begin
-      get_patron(opts).send(method, *args)
+      Rufus::Jig::HttpResponse.new(get_patron(opts).send(method, *args))
     rescue Patron::TimeoutError => te
       raise Rufus::Jig::TimeoutError
     end

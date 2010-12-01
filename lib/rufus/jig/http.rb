@@ -61,14 +61,37 @@ module Rufus::Jig
     end
   end
 
+  #
+  # a Rufus::Jig wrapper for the server response.
+  #
   class HttpResponse
 
     attr_reader :status, :headers, :body
     attr_reader :original
 
+    def initialize (res)
+
+      net_http_init(res)
+    end
+
     def etag
 
       headers['ETag'] || headers['Etag'] || headers['etag']
+    end
+
+    protected
+
+    # (leveraged by the patron adapter as well)
+    #
+    def net_http_init(net_http_response)
+
+      @original = net_http_response
+      @status = net_http_response.code.to_i
+      @body = net_http_response.body
+      @headers = {}
+      net_http_response.each { |k, v|
+        @headers[k.split('-').collect { |s| s.capitalize }.join('-')] = v
+      }
     end
   end
 
@@ -77,6 +100,7 @@ module Rufus::Jig
 
   Uri = Struct.new(
     :scheme, :username, :password, :host, :port, :path, :query, :fragment)
+
 
   # The current URI lib is not UTF-8 friendly, so this is a workaround.
   # Temporary hopefully.
@@ -188,7 +212,7 @@ module Rufus::Jig
 
     def uri
 
-      OpenStruct.new(:scheme => @scheme, :host => @host, :port => @port)
+      Uri.new(@scheme, nil, nil, @host, @port, nil, nil, nil)
     end
 
     def get (path, opts={})
@@ -215,8 +239,6 @@ module Rufus::Jig
 
     def request (method, path, data, opts={})
 
-      raw = raw_expected?(opts)
-
       path = add_prefix(path, opts)
       path = add_params(path, opts)
 
@@ -236,32 +258,34 @@ module Rufus::Jig
       opts = rehash_options(opts)
       data = repack_data(data, opts)
 
-      r = do_request(method, path, data, opts)
+      res = do_request(method, path, data, opts)
 
-      @last_response = r
+      respond(method, path, opts, cached, res)
+    end
+
+    def respond (method, path, opts, cached, res)
+
+      @last_response = res
+
+      raw = opts[:raw]
+      raw == false ? false : raw || @options[:raw]
 
       unless raw
 
-        return Rufus::Jig.marshal_copy(cached.last) if r.status == 304
-        return nil if method == :get && r.status == 404
-        return true if [ 404, 409 ].include?(r.status)
+        return Rufus::Jig.marshal_copy(cached.last) if res.status == 304
+        return nil if method == :get && res.status == 404
+        return true if [ 404, 409 ].include?(res.status)
 
-        raise @error_class.new(r.status, r.body) \
-          if r.status >= 400 && r.status < 600
+        if res.status >= 400 && res.status < 600
+          raise @error_class.new(res.status, res.body)
+        end
       end
 
-      b = decode_body(r, opts)
+      b = decode_body(res, opts)
 
-      do_cache(method, path, r, b, opts)
+      do_cache(method, path, res, b, opts)
 
-      raw ? r : b
-    end
-
-    def raw_expected? (opts)
-
-      raw = opts[:raw]
-
-      raw == false ? false : raw || @options[:raw]
+      raw ? res : b
     end
 
     # Should work with GET and POST/PUT options

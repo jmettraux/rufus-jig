@@ -5,7 +5,7 @@ lib = ENV['JIG_LIB'] || 'net/http'
 lib = case lib
   when 'net' then 'net/http'
   when 'em' then 'em-http'
-  when 'netp' then 'net/http/persisten'
+  when 'netp' then 'net/http/persistent'
   when 'patron' then 'patron'
   else lib
 end

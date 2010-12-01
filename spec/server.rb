@@ -135,7 +135,7 @@ put '/documents/:id' do
 
   if params[:mirror] || params[:etag]
     response['Etag'] = "\"#{params[:id]}\"" if params[:etag]
-    content_type request.content_type
+    content_type request.content_type || 'text/plain'
     doc
   else
     'created.'
