@@ -60,6 +60,17 @@ describe Rufus::Jig::Http do
         @h.last_response.status.should == 200
       end
     end
+
+    describe '#cache' do
+
+      it 'should be clearable' do
+
+        @h.get('/document_with_etag')
+        @h.cache.clear
+
+        @h.cache.size.should == 0
+      end
+    end
   end
 end
 
