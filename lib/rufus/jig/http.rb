@@ -95,12 +95,49 @@ module Rufus::Jig
     end
   end
 
+  class Uri
+
+    attr_accessor :scheme
+    attr_accessor :username, :password
+    attr_accessor :host, :port
+    attr_accessor :path, :query, :fragment
+
+    def initialize (sc, us, ps, ho, po, pa, qu, fr)
+
+      @scheme = sc
+      @username = us
+      @password = ps
+      @host = ho
+      @port = po
+      @path = pa
+      @query = qu
+      @fragment = fr
+    end
+
+    def to_s
+
+      tail = tail_to_s
+
+      return tail unless @host
+
+      up = ''
+      up = "#{@username}:#{password}@" if @username
+
+      "#{@scheme}://#{up}#{@host}:#{@port}#{tail}"
+    end
+
+    def tail_to_s
+
+      tail = @path
+      tail = "#{tail}?#{@query}" if @query
+      tail = "#{tail}##{@fragment}" if @fragment
+
+      tail
+    end
+  end
+
   URI_REGEX = /(https?):\/\/([^@]+:[^@]+@)?([^\/]+)(.*)?$/
   PATH_REGEX = /([^\?#]*)(\?[^#]+)?(#[^#]+)?$/
-
-  Uri = Struct.new(
-    :scheme, :username, :password, :host, :port, :path, :query, :fragment)
-
 
   # The current URI lib is not UTF-8 friendly, so this is a workaround.
   # Temporary hopefully.
@@ -277,6 +314,7 @@ module Rufus::Jig
         return true if [ 404, 409 ].include?(res.status)
 
         if res.status >= 400 && res.status < 600
+          #File.open('error.html', 'wb') { |f| f.puts(res.body) }
           raise @error_class.new(res.status, res.body)
         end
       end

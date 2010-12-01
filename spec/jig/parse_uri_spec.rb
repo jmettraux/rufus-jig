@@ -37,6 +37,12 @@ describe Rufus::Jig do
 
   describe '.parse_uri' do
 
+    it 'returns an instance of Rufus::Jig::Uri' do
+
+      Rufus::Jig.parse_uri('http://www.unifr.ch').class.should ==
+        Rufus::Jig::Uri
+    end
+
     it 'identifies the scheme correctly' do
 
       Rufus::Jig.parse_uri('http://www.unifr.ch').scheme.should == 'http'
@@ -113,6 +119,21 @@ describe Rufus::Jig do
       Rufus::Jig.parse_uri('http://a:b@example.ch:80/a').username.should == 'a'
       Rufus::Jig.parse_uri('http://a:b@example.ch:80/a').password.should == 'b'
     end
+  end
+end
+
+describe Rufus::Jig::Uri do
+
+  describe '#to_s' do
+
+    it "flips burgers" do
+
+      s = Rufus::Jig.parse_uri('http://example.ch:80/a').to_s.should ==
+        'http://example.ch:80/a'
+    end
+  end
+
+  describe '#tail_to_s' do
   end
 end
 

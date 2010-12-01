@@ -116,7 +116,7 @@ post '/documents' do
 
   if params[:mirror] || params[:etag]
     response['Etag'] = "\"#{did}\"" if params[:etag]
-    content_type request.content_type
+    content_type request.content_type || 'text/plain'
     doc
   else
     'created.'
@@ -153,7 +153,7 @@ get '/documents/:id' do
 
   if doc = DOCS[params[:id]]
 
-    content_type doc.first
+    content_type(doc.first || 'text/plain')
 
     doc.last
   else

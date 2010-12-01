@@ -92,12 +92,9 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
   def em_request( uri = '/' )
 
     uri = Rufus::Jig.parse_uri( uri )
-    uri = URI::HTTP.build(
-      :host => uri.host || @host,
-      :port => uri.port || @port,
-      :path => uri.path,
-      :query => uri.query
-    )
+    uri.scheme ||= ( @port == 443 ? 'https' : 'http' )
+    uri.host ||= @host
+    uri.port ||= @port
 
     EventMachine::HttpRequest.new( uri.to_s )
   end

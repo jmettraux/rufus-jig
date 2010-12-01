@@ -13,6 +13,11 @@ end
 require('openssl') if lib == 'em-http'
 require(lib)
 
+if lib == 'em-http'
+  Thread.new { EM.run {} }
+  Thread.pass until EM.reactor_running?
+end
+
 unless $advertised
   puts
   puts "JIG_LIB lib is '#{lib}' (net/netp/patron/em)"
