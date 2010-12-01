@@ -196,6 +196,46 @@ describe Rufus::Jig::Couch do
           {"id"=>"c1", "key"=>"ristretto", "value"=>nil}
         ]
       end
+
+      it 'caches in case of GET' do
+
+        @c.query('my_test:my_view')
+        s0 = @c.http.last_response.status
+        @c.query('my_test:my_view')
+        s1 = @c.http.last_response.status
+
+        s0.should == 200
+        s1.should == 304
+        @c.http.cache.size.should == 1
+      end
+
+      it 'caches in case of POST' do
+
+        @c.query('my_test:my_view', :keys => %w[ capuccino ristretto ])
+        s0 = @c.http.last_response.status
+        @c.query('my_test:my_view', :keys => %w[ capuccino ristretto ])
+        s1 = @c.http.last_response.status
+
+        s0.should == 200
+        s1.should == 304
+        @c.http.cache.size.should == 1
+      end
+
+      it 'does not cache if :cache => false (GET)' do
+
+        @c.query('my_test:my_view', :cache => false)
+
+        @c.http.cache.size.should == 0
+      end
+
+      it 'does not cache if :cache => false (POST)' do
+
+        @c.query(
+          'my_test:my_view',
+          :keys => %w[ capuccino ristretto ], :cache => false)
+
+        @c.http.cache.size.should == 0
+      end
     end
   end
 end

@@ -401,7 +401,6 @@ module Rufus::Jig
       end
       if ct == '' && (data.is_a?(Array) || data.is_a?(Hash))
         opts['Content-Type'] = 'application/json'
-        p :here
         return Rufus::Json.encode(data)
       end
 

@@ -340,6 +340,7 @@ module Rufus::Jig
       end
 
       res = if keys
+        opts[:cache] = true if opts[:cache].nil?
         @http.post(path, { 'keys' => keys }, opts)
       else
         @http.get(path, opts)
