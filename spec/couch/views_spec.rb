@@ -103,11 +103,6 @@ describe Rufus::Jig::Couch do
       end
     end
 
-    describe '#query' do
-
-      it 'flips burgers'
-    end
-
     describe '#nuke_design_documents' do
 
       it 'removes design documents from the db' do
@@ -115,6 +110,70 @@ describe Rufus::Jig::Couch do
         @c.nuke_design_documents
 
         @c.get('_design/my_test').should == nil
+      end
+    end
+
+    describe '#xxx' do
+
+      it 'gets a batch of documents'
+    end
+
+    describe '#query' do
+
+      it 'queries with the full path (_design/<id>/_view/<view>' do
+
+        @c.query('_design/my_test/_view/my_view').should == [
+          {"id"=>"c3", "key"=>"capuccino", "value"=>nil},
+          {"id"=>"c0", "key"=>"espresso", "value"=>nil},
+          {"id"=>"c2", "key"=>"macchiato", "value"=>nil},
+          {"id"=>"c4", "key"=>"macchiato", "value"=>nil},
+          {"id"=>"c1", "key"=>"ristretto", "value"=>nil}
+        ]
+      end
+
+      it 'queries with the short path (<id>:<view>)' do
+
+        @c.query('my_test:my_view').should == [
+          {"id"=>"c3", "key"=>"capuccino", "value"=>nil},
+          {"id"=>"c0", "key"=>"espresso", "value"=>nil},
+          {"id"=>"c2", "key"=>"macchiato", "value"=>nil},
+          {"id"=>"c4", "key"=>"macchiato", "value"=>nil},
+          {"id"=>"c1", "key"=>"ristretto", "value"=>nil}
+        ]
+      end
+
+      it 'returns the complete response on :raw => true' do
+
+        @c.query('my_test:my_view', :raw => true).should == {
+          "total_rows"=>5,
+          "offset"=>0,
+          "rows"=>
+           [{"id"=>"c3", "key"=>"capuccino", "value"=>nil},
+            {"id"=>"c0", "key"=>"espresso", "value"=>nil},
+            {"id"=>"c2", "key"=>"macchiato", "value"=>nil},
+            {"id"=>"c4", "key"=>"macchiato", "value"=>nil},
+            {"id"=>"c1", "key"=>"ristretto", "value"=>nil}]
+        }
+      end
+
+      it 'accepts parameters' do
+
+        @c.query('my_test:my_view', :limit => 2).should == [
+          {"id"=>"c3", "key"=>"capuccino", "value"=>nil},
+          {"id"=>"c0", "key"=>"espresso", "value"=>nil}
+        ]
+      end
+
+      it 'is OK with reduced views'
+
+      it 'uses POST when there is a :keys parameter' do
+
+        @c.query(
+          'my_test:my_view', :keys => %w[ capuccino ristretto ]
+        ).should == [
+          {"id"=>"c3", "key"=>"capuccino", "value"=>nil},
+          {"id"=>"c1", "key"=>"ristretto", "value"=>nil}
+        ]
       end
     end
   end

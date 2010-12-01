@@ -291,6 +291,8 @@ module Rufus::Jig
       on_change(opts, &block) if opts[:reconnect]
     end
 
+    DESIGN_PATH_REGEX = /^\_design\//
+
     # A development method. Removes all the design documents in this couch
     # database.
     #
@@ -301,9 +303,51 @@ module Rufus::Jig
 
       docs = get('_all_docs')['rows']
 
-      views = docs.select { |d| d['id'] && d['id'].match(/^\_design\//) }
+      views = docs.select { |d| d['id'] && DESIGN_PATH_REGEX.match(d['id']) }
 
       views.each { |v| delete(v['id'], v['value']['rev']) }
+    end
+
+    KEYS = [ :key, :startkey, :endkey ]
+
+    # TODO : document me !
+    #
+    def query(path, opts={})
+
+      raw = opts.delete(:raw)
+
+      path = if DESIGN_PATH_REGEX.match(path)
+        path
+      else
+        doc_id, view = path.split(':')
+        path = "_design/#{doc_id}/_view/#{view}"
+      end
+
+      path = adjust(path)
+
+      keys = opts.delete(:keys)
+
+      KEYS.each do |key|
+        if value = opts[key]
+          opts[key] = Rufus::Json.encode(value)
+        end
+      end
+
+      path = if opts.empty?
+        path
+      else
+        "#{path}?#{opts.collect { |k, v| "#{k}=#{v}" }.join('&') }"
+      end
+
+      res = if keys
+        @http.post(path, { 'keys' => keys }, opts)
+      else
+        @http.get(path, opts)
+      end
+
+      return res if raw
+
+      res.nil? ? res : res['rows']
     end
 
     protected
