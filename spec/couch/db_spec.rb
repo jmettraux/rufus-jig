@@ -88,6 +88,46 @@ describe Rufus::Jig::Couch do
       end
     end
 
+    describe '#all' do
+
+      before(:each) do
+        3.times { |i| @c.put({ '_id' => "tea#{i}" }) }
+      end
+
+      it 'gets many docs at once' do
+
+        docs = @c.all
+
+        docs.collect { |doc| doc.delete('_rev'); doc }.should == [
+          { '_id' => 'coffee1', 'type' => 'ristretto' },
+          { '_id' => 'tea0' }, { '_id' => 'tea1' }, { '_id' => 'tea2' }
+        ]
+      end
+
+      it 'accepts parameters like :limit' do
+
+        docs = @c.all(:skip => 1, :limit => 1)
+
+        docs.collect { |doc| doc.delete('_rev'); doc }.should == [
+          { '_id' => 'tea0' }
+        ]
+      end
+
+      it 'accepts the :keys parameters' do
+
+        docs = @c.all(:keys => %w[ tea1 tea2 ])
+
+        docs.collect { |doc| doc.delete('_rev'); doc }.should == [
+          { '_id' => 'tea1' }, { '_id' => 'tea2' }
+        ]
+      end
+    end
+
+    describe '#put_many / #bulk ?' do
+
+      it 'puts many docs in one go'
+    end
+
     describe '#delete(doc)' do
 
       it 'deletes a document' do

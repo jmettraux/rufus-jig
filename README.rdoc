@@ -112,7 +112,7 @@ put and delete return nil in case of success and true (conflict) or and exceptio
   c.detach('coffee0', '1-x-newrevision-whatever', 'picture')
 
 
-=== on_change
+=== Couch on_change
 
 Continuous feed with a 20s heartbeat :
 

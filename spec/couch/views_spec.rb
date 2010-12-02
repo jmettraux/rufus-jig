@@ -117,11 +117,6 @@ describe Rufus::Jig::Couch do
       end
     end
 
-    describe '#xxx' do
-
-      it 'gets a batch of documents'
-    end
-
     describe '#query' do
 
       it 'queries with the full path (_design/<id>/_view/<view>' do

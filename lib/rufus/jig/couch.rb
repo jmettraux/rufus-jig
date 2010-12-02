@@ -92,6 +92,25 @@ module Rufus::Jig
       @http.get(path, opts)
     end
 
+    def all(opts={})
+
+      path = adjust('_all_docs')
+
+      opts[:include_docs] = true
+
+      adjust_params(opts)
+
+      keys = opts.delete(:keys)
+
+      res = if keys
+        @http.post(path, { 'keys' => keys }, opts)
+      else
+        @http.get(path, opts)
+      end
+
+      res['rows'].collect { |row| row['doc'] }
+    end
+
     def delete(doc_or_path, rev=nil)
 
       doc, path = if rev
@@ -308,8 +327,6 @@ module Rufus::Jig
       views.each { |v| delete(v['id'], v['value']['rev']) }
     end
 
-    KEYS = [ :key, :startkey, :endkey ]
-
     # TODO : document me !
     #
     def query(path, opts={})
@@ -325,19 +342,9 @@ module Rufus::Jig
 
       path = adjust(path)
 
+      adjust_params(opts)
+
       keys = opts.delete(:keys)
-
-      KEYS.each do |key|
-        if value = opts[key]
-          opts[key] = Rufus::Json.encode(value)
-        end
-      end
-
-      path = if opts.empty?
-        path
-      else
-        "#{path}?#{opts.collect { |k, v| "#{k}=#{v}" }.join('&') }"
-      end
 
       res = if keys
         opts[:cache] = true if opts[:cache].nil?
@@ -360,6 +367,23 @@ module Rufus::Jig
         when /^\// then path
         else Rufus::Jig::Path.join(@path, path)
       end
+    end
+
+    COUCH_PARAMS = %w[
+      key startkey endkey descending group group_level limit skip include_docs
+    ].collect { |k| k.to_sym }
+
+    COUCH_KEYS = [ :key, :startkey, :endkey ]
+
+    def adjust_params(opts)
+
+      opts[:params] = opts.keys.inject({}) { |h, k|
+        if COUCH_PARAMS.include?(k)
+          v = opts.delete(k)
+          h[k] = COUCH_KEYS.include?(k) ? Rufus::Json.encode(v) : v
+        end
+        h
+      }
     end
   end
 end
