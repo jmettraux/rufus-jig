@@ -133,6 +133,30 @@ describe Rufus::Jig::Couch do
       end
     end
 
+    describe '#ids' do
+
+      before(:each) do
+        @c.put({
+          '_id' => '_design/my_test',
+          'views' => {
+            'my_view' => {
+              'map' => "function(doc) { emit(doc['type'], null); }"
+            }
+          }
+        })
+      end
+
+      it 'list all ids' do
+
+        @c.ids.should == %w[ _design/my_test coffee1 ]
+      end
+
+      it 'list all ids but :include_design_docs => false' do
+
+        @c.ids(:include_design_docs => false).should == %w[ coffee1 ]
+      end
+    end
+
     describe '#put_many / #bulk ?' do
 
       it 'puts many docs in one go'

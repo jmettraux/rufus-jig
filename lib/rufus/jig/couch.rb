@@ -137,6 +137,11 @@ module Rufus::Jig
       docs
     end
 
+    def ids(opts={})
+
+      all(opts).collect { |row| row['_id'] }
+    end
+
     def delete(doc_or_path, rev=nil)
 
       doc, path = if rev
