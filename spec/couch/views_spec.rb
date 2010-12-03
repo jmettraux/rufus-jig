@@ -182,6 +182,14 @@ describe Rufus::Jig::Couch do
         ]
       end
 
+      it 'is OK with complex keys (array for example' do
+
+        lambda {
+          @c.query(
+            'my_test:my_reduced_view', :key => [ "a", 2 ], :group => true)
+        }.should_not raise_error
+      end
+
       it 'uses POST when there is a :keys parameter' do
 
         @c.query(
