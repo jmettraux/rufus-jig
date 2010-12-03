@@ -92,6 +92,19 @@ module Rufus::Jig
       @http.get(path, opts)
     end
 
+    # Returns all the docs in the current database.
+    #
+    #   c = Rufus::Jig::Couch.new('http://127.0.0.1:5984, 'my_db')
+    #
+    #   docs = c.all
+    #   docs = c.all(:include_design_docs => false)
+    #
+    #   docs = c.all(:skip => 10, :limit => 10)
+    #
+    # It understands (passes) all the options for CouchDB view API :
+    #
+    #   http://wiki.apache.org/couchdb/HTTP_view_API#Querying_Options
+    #
     def all(opts={})
 
       path = adjust('_all_docs')
@@ -108,7 +121,13 @@ module Rufus::Jig
         @http.get(path, opts)
       end
 
-      res['rows'].collect { |row| row['doc'] }
+      docs = res['rows'].collect { |row| row['doc'] }
+
+      if opts[:include_design_docs] == false
+        docs = docs.reject { |doc| DESIGN_PATH_REGEX.match(doc['_id']) }
+      end
+
+      docs
     end
 
     def delete(doc_or_path, rev=nil)

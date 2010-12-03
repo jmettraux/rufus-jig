@@ -232,6 +232,23 @@ describe Rufus::Jig::Couch do
         @c.http.cache.size.should == 0
       end
     end
+
+    describe '#all' do
+
+      it 'includes design docs by default' do
+
+        @c.all.map { |d| d['_id'] }.should == [
+          '_design/my_test', 'c0', 'c1', 'c2', 'c3', 'c4'
+        ]
+      end
+
+      it 'does not list design docs if :include_design_docs => false' do
+
+        @c.all(:include_design_docs => false).map { |d| d['_id'] }.should == [
+          'c0', 'c1', 'c2', 'c3', 'c4'
+        ]
+      end
+    end
   end
 end
 
