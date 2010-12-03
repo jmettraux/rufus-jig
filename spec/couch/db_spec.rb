@@ -122,6 +122,15 @@ describe Rufus::Jig::Couch do
         ]
       end
 
+      it 'returns immediately [] if :keys => []' do
+
+        lroi = @c.http.last_response.object_id
+        docs = @c.all(:keys => [])
+
+        docs.should == []
+        @c.http.last_response.object_id.should == lroi
+      end
+
       it 'accepts :include_docs => false' do
 
         docs = @c.all(:include_docs => false)

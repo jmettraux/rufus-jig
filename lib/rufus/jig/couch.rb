@@ -116,6 +116,8 @@ module Rufus::Jig
 
       keys = opts.delete(:keys)
 
+      return [] if keys && keys.empty?
+
       res = if keys
         @http.post(path, { 'keys' => keys }, opts)
       else
