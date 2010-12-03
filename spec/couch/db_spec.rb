@@ -121,6 +121,16 @@ describe Rufus::Jig::Couch do
           { '_id' => 'tea1' }, { '_id' => 'tea2' }
         ]
       end
+
+      it 'accepts :include_docs => false' do
+
+        docs = @c.all(:include_docs => false)
+
+        docs.size.should == 4
+
+        docs.inject([]) { |a, doc| a.concat(doc.keys) }.uniq.sort.should ==
+          %w[ _id _rev ]
+      end
     end
 
     describe '#put_many / #bulk ?' do

@@ -248,6 +248,16 @@ describe Rufus::Jig::Couch do
           'c0', 'c1', 'c2', 'c3', 'c4'
         ]
       end
+
+      it 'does not list design doc ids when :include_docs => false' do
+
+        res = @c.all(:include_design_docs => false, :include_docs => false)
+
+        res.inject([]) { |a, row| a.concat(row.keys) }.uniq.sort.should ==
+          %w[ _id _rev ]
+
+        res.collect { |row| row['_id'] }.should_not include('_design/my_test')
+      end
     end
   end
 end

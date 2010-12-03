@@ -97,6 +97,7 @@ module Rufus::Jig
     #   c = Rufus::Jig::Couch.new('http://127.0.0.1:5984, 'my_db')
     #
     #   docs = c.all
+    #   docs = c.all(:include_docs => false)
     #   docs = c.all(:include_design_docs => false)
     #
     #   docs = c.all(:skip => 10, :limit => 10)
@@ -109,7 +110,7 @@ module Rufus::Jig
 
       path = adjust('_all_docs')
 
-      opts[:include_docs] = true
+      opts[:include_docs] = true if opts[:include_docs].nil?
 
       adjust_params(opts)
 
@@ -121,7 +122,13 @@ module Rufus::Jig
         @http.get(path, opts)
       end
 
-      docs = res['rows'].collect { |row| row['doc'] }
+      rows = res['rows']
+
+      docs = if opts[:params][:include_docs]
+        rows.map { |row| row['doc'] }
+      else
+        rows.map { |row| { '_id' => row['id'], '_rev' => row['value']['rev'] } }
+      end
 
       if opts[:include_design_docs] == false
         docs = docs.reject { |doc| DESIGN_PATH_REGEX.match(doc['_id']) }
