@@ -266,6 +266,13 @@ describe Rufus::Jig::Couch do
 
         res.collect { |row| row['_id'] }.should_not include('_design/my_test')
       end
+
+      it 'returns only the requested docs when passed a set of :keys' do
+
+        @c.all(:keys => %w[ c2 c3 ]).map { |d| d['_id'] }.should == [
+          'c2', 'c3'
+        ]
+      end
     end
   end
 end
