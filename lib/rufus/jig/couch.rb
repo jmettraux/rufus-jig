@@ -119,6 +119,7 @@ module Rufus::Jig
       return [] if keys && keys.empty?
 
       res = if keys
+        opts[:cache] = :with_body if opts[:cache].nil?
         @http.post(path, { 'keys' => keys }, opts)
       else
         @http.get(path, opts)
@@ -183,9 +184,9 @@ module Rufus::Jig
       end
     end
 
-    def post(path, doc)
+    def post(path, doc, opts={})
 
-      @http.post(adjust(path), doc, :content_type => :json)
+      @http.post(adjust(path), doc, opts.merge(:content_type => :json))
     end
 
     # Attaches a file to a couch document.
@@ -243,7 +244,7 @@ module Rufus::Jig
 
         res = Rufus::Jig::HttpResponse.new(http.start { |h| h.request(req) })
 
-        return @http.send(:respond, :put, path, opts, nil, res)
+        return @http.send(:respond, :put, path, nil, opts, nil, res)
       end
 
       @http.put(path, data, opts)
@@ -380,7 +381,7 @@ module Rufus::Jig
       keys = opts.delete(:keys)
 
       res = if keys
-        opts[:cache] = true if opts[:cache].nil?
+        opts[:cache] = :with_body if opts[:cache].nil?
         @http.post(path, { 'keys' => keys }, opts)
       else
         @http.get(path, opts)

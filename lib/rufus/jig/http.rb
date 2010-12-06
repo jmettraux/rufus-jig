@@ -285,31 +285,24 @@ module Rufus::Jig
 
     def request(method, path, data, opts={})
 
+      data_hash = data.hash
+
       path = add_prefix(path, opts)
       path = add_params(path, opts)
 
       path = '/' if path == ''
 
-      etag = opts[:etag]
-      cached = @cache[path]
-      if etag && cached && cached.first != etag
-        # cached version is probably stale
-        cached = nil
-        opts.delete(:etag)
-      end
-      if ( ! etag) && cached
-        opts[:etag] = cached.first
-      end
+      cached = from_cache(method, path, data_hash, opts)
 
       opts = rehash_options(opts)
       data = repack_data(data, opts)
 
       res = do_request(method, path, data, opts)
 
-      respond(method, path, opts, cached, res)
+      respond(method, path, data_hash, opts, cached, res)
     end
 
-    def respond(method, path, opts, cached, res)
+    def respond(method, path, data_hash, opts, cached, res)
 
       @last_response = res
 
@@ -330,7 +323,7 @@ module Rufus::Jig
 
       b = decode_body(res, opts)
 
-      do_cache(method, path, res, b, opts)
+      do_cache(method, path, data_hash, opts, res, b)
 
       raw ? res : b
     end
@@ -407,7 +400,36 @@ module Rufus::Jig
       data.to_s
     end
 
-    def do_cache(method, path, response, body, opts)
+    def from_cache(method, path, data_hash, opts)
+
+      path = if method == :post && opts[:cache] == :with_body
+        "#{path}//#{data_hash}"
+      else
+        path
+      end
+
+      etag = opts[:etag]
+      cached = @cache[path]
+
+      if etag && cached && cached.first != etag
+        # cached version is probably stale
+        cached = nil
+        opts.delete(:etag)
+      end
+      if ( ! etag) && cached
+        opts[:etag] = cached.first
+      end
+
+      cached
+    end
+
+    def do_cache(method, path, data_hash, opts, response, body)
+
+      path = if method == :post && opts[:cache] == :with_body
+        "#{path}//#{data_hash}"
+      else
+        path
+      end
 
       etag = response.etag
 
@@ -415,7 +437,7 @@ module Rufus::Jig
         @cache.delete(path)
         return
       end
-      if method != :get && opts[:cache] != true
+      if method != :get && ( ! opts[:cache])
         @cache.delete(path)
         return
       end
