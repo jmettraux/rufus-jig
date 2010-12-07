@@ -272,40 +272,6 @@ describe Rufus::Jig::Couch do
         docs.collect { |doc| doc['_id'] }.should == %w[ c2 c4 ]
       end
     end
-
-    describe '#all' do
-
-      it 'includes design docs by default' do
-
-        @c.all.map { |d| d['_id'] }.should == %w[
-          _design/my_test c0 c1 c2 c3 c4 c5
-        ]
-      end
-
-      it 'does not list design docs if :include_design_docs => false' do
-
-        @c.all(:include_design_docs => false).map { |d| d['_id'] }.should == %w[
-          c0 c1 c2 c3 c4 c5
-        ]
-      end
-
-      it 'does not list design doc ids when :include_docs => false' do
-
-        res = @c.all(:include_design_docs => false, :include_docs => false)
-
-        res.inject([]) { |a, row| a.concat(row.keys) }.uniq.sort.should ==
-          %w[ _id _rev ]
-
-        res.collect { |row| row['_id'] }.should_not include('_design/my_test')
-      end
-
-      it 'returns only the requested docs when passed a set of :keys' do
-
-        @c.all(:keys => %w[ c2 c3 ]).map { |d| d['_id'] }.should == [
-          'c2', 'c3'
-        ]
-      end
-    end
   end
 end
 

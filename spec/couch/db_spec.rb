@@ -88,89 +88,6 @@ describe Rufus::Jig::Couch do
       end
     end
 
-    describe '#all' do
-
-      before(:each) do
-        3.times { |i| @c.put({ '_id' => "tea#{i}" }) }
-      end
-
-      it 'gets many docs at once' do
-
-        docs = @c.all
-
-        docs.collect { |doc| doc.delete('_rev'); doc }.should == [
-          { '_id' => 'coffee1', 'type' => 'ristretto' },
-          { '_id' => 'tea0' }, { '_id' => 'tea1' }, { '_id' => 'tea2' }
-        ]
-      end
-
-      it 'accepts parameters like :limit' do
-
-        docs = @c.all(:skip => 1, :limit => 1)
-
-        docs.collect { |doc| doc.delete('_rev'); doc }.should == [
-          { '_id' => 'tea0' }
-        ]
-      end
-
-      it 'accepts the :keys parameters' do
-
-        docs = @c.all(:keys => %w[ tea1 tea2 ])
-
-        docs.collect { |doc| doc.delete('_rev'); doc }.should == [
-          { '_id' => 'tea1' }, { '_id' => 'tea2' }
-        ]
-      end
-
-      it 'returns immediately [] if :keys => []' do
-
-        lroi = @c.http.last_response.object_id
-        docs = @c.all(:keys => [])
-
-        docs.should == []
-        @c.http.last_response.object_id.should == lroi
-      end
-
-      it 'accepts :include_docs => false' do
-
-        docs = @c.all(:include_docs => false)
-
-        docs.size.should == 4
-
-        docs.inject([]) { |a, doc| a.concat(doc.keys) }.uniq.sort.should ==
-          %w[ _id _rev ]
-      end
-    end
-
-    describe '#ids' do
-
-      before(:each) do
-        @c.put({
-          '_id' => '_design/my_test',
-          'views' => {
-            'my_view' => {
-              'map' => "function(doc) { emit(doc['type'], null); }"
-            }
-          }
-        })
-      end
-
-      it 'list all ids' do
-
-        @c.ids.should == %w[ _design/my_test coffee1 ]
-      end
-
-      it 'list all ids but :include_design_docs => false' do
-
-        @c.ids(:include_design_docs => false).should == %w[ coffee1 ]
-      end
-    end
-
-    describe '#put_many / #bulk ?' do
-
-      it 'puts many docs in one go'
-    end
-
     describe '#delete(doc)' do
 
       it 'deletes a document' do
@@ -266,6 +183,114 @@ describe Rufus::Jig::Couch do
 
         @c.put('_id' => 'コーヒー', 'type' => 'espresso').should == nil
       end
+    end
+
+    describe '#all' do
+
+      before(:each) do
+
+        @c.put({
+          '_id' => '_design/my_test',
+          'views' => {
+            'my_view' => {
+              'map' => "function(doc) { emit(doc['type'], null); }"
+            }
+          }
+        })
+
+        3.times { |i| @c.put({ '_id' => "tea#{i}" }) }
+      end
+
+      it 'gets many docs at once' do
+
+        docs = @c.all
+
+        docs.collect { |doc| doc['_id'] }.should == %w[
+          _design/my_test coffee1 tea0 tea1 tea2
+        ]
+      end
+
+      it 'accepts parameters like :limit' do
+
+        docs = @c.all(:skip => 2, :limit => 1)
+
+        docs.collect { |doc| doc.delete('_rev'); doc }.should == [
+          { '_id' => 'tea0' }
+        ]
+      end
+
+      it 'accepts the :keys parameters' do
+
+        docs = @c.all(:keys => %w[ tea1 tea2 ])
+
+        docs.collect { |doc| doc.delete('_rev'); doc }.should == [
+          { '_id' => 'tea1' }, { '_id' => 'tea2' }
+        ]
+      end
+
+      it 'returns immediately [] if :keys => []' do
+
+        lroi = @c.http.last_response.object_id
+        docs = @c.all(:keys => [])
+
+        docs.should == []
+        @c.http.last_response.object_id.should == lroi
+      end
+
+      it 'accepts :include_docs => false' do
+
+        docs = @c.all(:include_docs => false)
+
+        docs.size.should == 5
+
+        docs.inject([]) { |a, doc| a.concat(doc.keys) }.uniq.sort.should ==
+          %w[ _id _rev ]
+      end
+
+      it "doesn't list design docs when :include_design_docs => false" do
+
+        @c.all(
+          :include_design_docs => false
+        ).collect { |d|
+          d['_id']
+        }.should == %w[
+          coffee1 tea0 tea1 tea2
+        ]
+      end
+    end
+
+    describe '#ids' do
+
+      before(:each) do
+        @c.put({
+          '_id' => '_design/my_test',
+          'views' => {
+            'my_view' => {
+              'map' => "function(doc) { emit(doc['type'], null); }"
+            }
+          }
+        })
+      end
+
+      it 'list all ids' do
+
+        @c.ids.should == %w[ _design/my_test coffee1 ]
+      end
+
+      it 'list all ids but :include_design_docs => false' do
+
+        @c.ids(:include_design_docs => false).should == %w[ coffee1 ]
+      end
+    end
+
+    describe '#put_many / #bulk ?' do
+
+      it 'puts many docs in one go'
+    end
+
+    describe '#delete_many / #delete_bulk ?' do
+
+      it 'flips burgers'
     end
   end
 end
