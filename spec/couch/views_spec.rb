@@ -168,6 +168,14 @@ describe Rufus::Jig::Couch do
         ]
       end
 
+      it 'is OK with nil parameters' do
+
+        @c.query('my_test:my_view', :skip => nil, :limit => 2).should == [
+          {"id"=>"c3", "key"=>"capuccino", "value"=>nil},
+          {"id"=>"c0", "key"=>"espresso", "value"=>nil}
+        ]
+      end
+
       it 'is OK with reduced views' do
 
         @c.query('my_test:my_reduced_view', :group => true).should == [

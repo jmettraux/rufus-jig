@@ -440,12 +440,16 @@ module Rufus::Jig
     def adjust_params(opts)
 
       opts[:params] = opts.keys.inject({}) { |h, k|
+
         if COUCH_PARAMS.include?(k)
           v = opts.delete(k)
-          h[k] = COUCH_KEYS.include?(k) ?
-            CGI.escape(Rufus::Json.encode(v)) :
-            v
+          if COUCH_KEYS.include?(k)
+            h[k] = CGI.escape(Rufus::Json.encode(v))
+          elsif v != nil
+            h[k] = v
+          end
         end
+
         h
       }
     end

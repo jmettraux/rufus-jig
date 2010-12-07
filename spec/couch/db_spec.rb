@@ -257,6 +257,13 @@ describe Rufus::Jig::Couch do
           coffee1 tea0 tea1 tea2
         ]
       end
+
+      it 'is OK with nil parameters' do
+
+        docs = @c.all(:skip => 3, :limit => nil)
+
+        docs.collect { |doc| doc['_id'] }.should == %w[ tea1 tea2 ]
+      end
     end
 
     describe '#ids' do
