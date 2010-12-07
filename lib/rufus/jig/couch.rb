@@ -417,7 +417,13 @@ module Rufus::Jig
 
       res = query(path, opts.merge(:include_docs => true))
 
-      opts[:raw] ? res : res.collect { |row| row['doc'] }.uniq
+      if res.nil?
+        nil
+      elsif opts[:raw]
+        res
+      else
+        res.collect { |row| row['doc'] }.uniq
+      end
     end
 
     # Creates or updates docs in bulk (could even delete).

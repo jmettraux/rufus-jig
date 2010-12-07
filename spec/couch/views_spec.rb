@@ -148,6 +148,11 @@ describe Rufus::Jig::Couch do
         ]
       end
 
+      it "returns nil when the view doesn't exist" do
+
+        @c.query('nemo:nada').should == nil
+      end
+
       it 'returns the complete response on :raw => true' do
 
         @c.query('my_test:my_view', :raw => true).should == {
@@ -286,6 +291,11 @@ describe Rufus::Jig::Couch do
       it "doesn't return twice the same doc" do
 
         @c.query_for_docs('my_test:my_double_view').size.should == 6
+      end
+
+      it "returns nil when the view doesn't exist" do
+
+        @c.query_for_docs('nemo:nada').should == nil
       end
     end
   end
