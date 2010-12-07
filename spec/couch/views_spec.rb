@@ -42,6 +42,9 @@ describe Rufus::Jig::Couch do
             'my_reduced_view' => {
               'map' => "function(doc) { emit(doc['type'], 1); }",
               'reduce' => "_count"
+            },
+            'my_double_view' => {
+              'map' => "function(doc) { emit(doc['type'], null); emit(doc['type'], null); }"
             }
           }
         },
@@ -278,6 +281,11 @@ describe Rufus::Jig::Couch do
         docs = @c.query_for_docs('my_test:my_view', :keys => %w[ macchiato ])
 
         docs.collect { |doc| doc['_id'] }.should == %w[ c2 c4 ]
+      end
+
+      it "doesn't return twice the same doc" do
+
+        @c.query_for_docs('my_test:my_double_view').size.should == 6
       end
     end
   end

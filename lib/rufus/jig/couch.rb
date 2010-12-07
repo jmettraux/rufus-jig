@@ -417,7 +417,7 @@ module Rufus::Jig
 
       res = query(path, opts.merge(:include_docs => true))
 
-      opts[:raw] ? res : res.collect { |row| row['doc'] }
+      opts[:raw] ? res : res.collect { |row| row['doc'] }.uniq
     end
 
     protected
