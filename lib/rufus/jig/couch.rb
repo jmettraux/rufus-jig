@@ -420,6 +420,19 @@ module Rufus::Jig
       opts[:raw] ? res : res.collect { |row| row['doc'] }.uniq
     end
 
+    # Creates or updates docs in bulk (could even delete).
+    #
+    # http://wiki.apache.org/couchdb/HTTP_Bulk_Document_API#Modify_Multiple_Documents_With_a_Single_Request
+    #
+    def bulk_put(docs, opts={})
+
+      res = @http.post(adjust('_bulk_docs'), { 'docs' => docs })
+
+      opts[:raw] ?
+        res :
+        res.collect { |row| { '_id' => row['id'], '_rev' => row['rev'] } }
+    end
+
     # Given an array of documents (at least { '_id' => x, '_rev' => y },
     # deletes them.
     #
@@ -432,11 +445,7 @@ module Rufus::Jig
         a
       }
 
-      res = @http.post(adjust('_bulk_docs'), { 'docs' => docs })
-
-      opts[:raw] ?
-        res :
-        res.collect { |row| { '_id' => row['id'], '_rev' => row['rev'] } }
+      bulk_put(docs, opts)
     end
 
     protected

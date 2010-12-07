@@ -290,9 +290,28 @@ describe Rufus::Jig::Couch do
       end
     end
 
-    describe '#put_many / #bulk ?' do
+    describe '#bulk_put' do
 
-      it 'puts many docs in one go'
+      it 'creates many docs at once' do
+
+        @c.bulk_put([
+          { '_id' => 'h0', 'msg' => 'ok' },
+          { '_id' => 'h1', 'msg' => 'not ok' }
+        ])
+
+        @c.ids.should == %w[ coffee1 h0 h1 ]
+      end
+
+      it "returns a list [ { '_id' => x, '_rev' => y } ]" do
+
+        res = @c.bulk_put([
+          { '_id' => 'h2', 'msg' => 'ok' },
+          { '_id' => 'h3', 'msg' => 'not ok' }
+        ])
+
+        res.collect { |row| row['_id'] }.should == %w[ h2 h3 ]
+        res.collect { |row| row.keys }.flatten.uniq.should == %w[ _id _rev ]
+      end
     end
 
     describe '#bulk_delete' do
