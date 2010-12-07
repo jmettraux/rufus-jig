@@ -295,9 +295,41 @@ describe Rufus::Jig::Couch do
       it 'puts many docs in one go'
     end
 
-    describe '#delete_many / #delete_bulk ?' do
+    describe '#bulk_delete' do
 
-      it 'flips burgers'
+      before(:each) do
+        3.times { |i| @c.put({ '_id' => "macha#{i}" }) }
+      end
+
+      it 'deletes in bulk' do
+
+        docs = @c.all(:keys => %w[ coffee1 macha1 ])
+
+        @c.bulk_delete(docs)
+
+        @c.ids.should == %w[ macha0 macha2 ]
+      end
+
+      it 'is OK with nil docs' do
+
+        docs = @c.all(:keys => %w[ nada macha1 ])
+
+        @c.bulk_delete(docs)
+
+        @c.ids.should == %w[ coffee1 macha0 macha2 ]
+      end
+
+      it 'returns the list of deleted docs' do
+
+        docs = @c.all(:keys => %w[ nada macha1 ])
+
+        res = @c.bulk_delete(docs)
+
+        res.collect { |doc| doc['_id'] }.should == %w[ macha1 ]
+
+        res.first['_rev'].should match(/^2-/)
+          # does it deserve its own spec ?
+      end
     end
   end
 end

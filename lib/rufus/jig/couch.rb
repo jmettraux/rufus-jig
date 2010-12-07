@@ -420,6 +420,25 @@ module Rufus::Jig
       opts[:raw] ? res : res.collect { |row| row['doc'] }.uniq
     end
 
+    # Given an array of documents (at least { '_id' => x, '_rev' => y },
+    # deletes them.
+    #
+    def bulk_delete(docs, opts={})
+
+      docs = docs.inject([]) { |a, doc|
+        a << {
+          '_id' => doc['_id'], '_rev' => doc['_rev'], '_deleted' => true
+        } if doc
+        a
+      }
+
+      res = @http.post(adjust('_bulk_docs'), { 'docs' => docs })
+
+      opts[:raw] ?
+        res :
+        res.collect { |row| { '_id' => row['id'], '_rev' => row['rev'] } }
+    end
+
     protected
 
     def adjust(path)
