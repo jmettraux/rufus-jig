@@ -361,7 +361,22 @@ module Rufus::Jig
       views.each { |v| delete(v['id'], v['value']['rev']) }
     end
 
-    # TODO : document me !
+    # Queries a view.
+    #
+    #   res = couch.query('_design/my_test/_view/my_view')
+    #     #
+    #     #   [ {"id"=>"c3", "key"=>"capuccino", "value"=>nil},
+    #     #     {"id"=>"c0", "key"=>"espresso", "value"=>nil},
+    #     #     {"id"=>"c2", "key"=>"macchiato", "value"=>nil},
+    #     #     {"id"=>"c4", "key"=>"macchiato", "value"=>nil},
+    #     #     {"id"=>"c1", "key"=>"ristretto", "value"=>nil} ]
+    #
+    #   # or simply :
+    #
+    #   res = couch.query('my_test:my_view')
+    #
+    # Accepts the usual couch parameters : limit, skip, descending, keys,
+    # startkey, endkey, ...
     #
     def query(path, opts={})
 
@@ -390,6 +405,17 @@ module Rufus::Jig
       return res if raw
 
       res.nil? ? res : res['rows']
+    end
+
+    # A shortcut for
+    #
+    #   query(path, :include_docs => true).collect { |row| row['doc'] }
+    #
+    def query_for_docs(path, opts={})
+
+      res = query(path, opts.merge(:include_docs => true))
+
+      opts[:raw] ? res : res.collect { |row| row['doc'] }
     end
 
     protected

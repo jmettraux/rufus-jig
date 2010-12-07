@@ -241,6 +241,25 @@ describe Rufus::Jig::Couch do
       end
     end
 
+    describe '#query_for_docs' do
+
+      it 'returns documents' do
+
+        docs = @c.query_for_docs('my_test:my_view')
+
+        docs.collect { |doc| doc['type'] }.should == %w[
+          capuccino espresso macchiato macchiato ristretto
+        ]
+      end
+
+      it 'accepts :keys' do
+
+        docs = @c.query_for_docs('my_test:my_view', :keys => %w[ macchiato ])
+
+        docs.collect { |doc| doc['_id'] }.should == %w[ c2 c4 ]
+      end
+    end
+
     describe '#all' do
 
       it 'includes design docs by default' do
