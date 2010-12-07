@@ -29,6 +29,7 @@ describe Rufus::Jig::Couch do
       h.put('/rufus_jig_test/c2', '{"_id":"c2","type":"macchiato"}')
       h.put('/rufus_jig_test/c3', '{"_id":"c3","type":"capuccino"}')
       h.put('/rufus_jig_test/c4', '{"_id":"c4","type":"macchiato"}')
+      h.put('/rufus_jig_test/c5', '{"_id":"c5","type":"veloce espresso"}')
 
       h.put(
         '/rufus_jig_test/_design/my_test',
@@ -61,14 +62,15 @@ describe Rufus::Jig::Couch do
       it 'returns the result set' do
 
         @c.get('_design/my_test/_view/my_view').should == {
-          "total_rows"=>5,
+          "total_rows"=>6,
           "offset"=>0,
           "rows"=> [
             {"id"=>"c3", "key"=>"capuccino", "value"=>nil},
             {"id"=>"c0", "key"=>"espresso", "value"=>nil},
             {"id"=>"c2", "key"=>"macchiato", "value"=>nil},
             {"id"=>"c4", "key"=>"macchiato", "value"=>nil},
-            {"id"=>"c1", "key"=>"ristretto", "value"=>nil}
+            {"id"=>"c1", "key"=>"ristretto", "value"=>nil},
+            {"id"=>"c5", "key"=>"veloce espresso", "value"=>nil}
           ]
         }
       end
@@ -82,7 +84,7 @@ describe Rufus::Jig::Couch do
           '_design/my_test/_view/my_view',
           { 'keys' => [ 'espresso', 'macchiato' ] }
         ).should == {
-          "total_rows"=>5,
+          "total_rows"=>6,
           "offset"=>1,
           "rows"=> [
             {"id"=>"c0", "key"=>"espresso", "value"=>nil},
@@ -98,7 +100,7 @@ describe Rufus::Jig::Couch do
           '_design/my_test/_view/my_view',
           { 'keys' => [ 'espresso', 'macha' ] }
         ).should == {
-          "total_rows"=>5,
+          "total_rows"=>6,
           "offset"=>1,
           "rows"=> [
             {"id"=>"c0", "key"=>"espresso", "value"=>nil}
@@ -126,7 +128,8 @@ describe Rufus::Jig::Couch do
           {"id"=>"c0", "key"=>"espresso", "value"=>nil},
           {"id"=>"c2", "key"=>"macchiato", "value"=>nil},
           {"id"=>"c4", "key"=>"macchiato", "value"=>nil},
-          {"id"=>"c1", "key"=>"ristretto", "value"=>nil}
+          {"id"=>"c1", "key"=>"ristretto", "value"=>nil},
+          {"id"=>"c5", "key"=>"veloce espresso", "value"=>nil}
         ]
       end
 
@@ -137,21 +140,23 @@ describe Rufus::Jig::Couch do
           {"id"=>"c0", "key"=>"espresso", "value"=>nil},
           {"id"=>"c2", "key"=>"macchiato", "value"=>nil},
           {"id"=>"c4", "key"=>"macchiato", "value"=>nil},
-          {"id"=>"c1", "key"=>"ristretto", "value"=>nil}
+          {"id"=>"c1", "key"=>"ristretto", "value"=>nil},
+          {"id"=>"c5", "key"=>"veloce espresso", "value"=>nil}
         ]
       end
 
       it 'returns the complete response on :raw => true' do
 
         @c.query('my_test:my_view', :raw => true).should == {
-          "total_rows"=>5,
+          "total_rows"=>6,
           "offset"=>0,
           "rows"=>
            [{"id"=>"c3", "key"=>"capuccino", "value"=>nil},
             {"id"=>"c0", "key"=>"espresso", "value"=>nil},
             {"id"=>"c2", "key"=>"macchiato", "value"=>nil},
             {"id"=>"c4", "key"=>"macchiato", "value"=>nil},
-            {"id"=>"c1", "key"=>"ristretto", "value"=>nil}]
+            {"id"=>"c1", "key"=>"ristretto", "value"=>nil},
+            {"id"=>"c5", "key"=>"veloce espresso", "value"=>nil}]
         }
       end
 
@@ -169,7 +174,8 @@ describe Rufus::Jig::Couch do
           {"key"=>"capuccino", "value"=>1},
           {"key"=>"espresso", "value"=>1},
           {"key"=>"macchiato", "value"=>2},
-          {"key"=>"ristretto", "value"=>1}
+          {"key"=>"ristretto", "value"=>1},
+          {"key"=>"veloce espresso", "value"=>1}
         ]
       end
 
@@ -239,6 +245,13 @@ describe Rufus::Jig::Couch do
 
         @c.http.cache.size.should == 0
       end
+
+      it 'escapes :key(s) in the URI' do
+
+        @c.query('my_test:my_view', :key => 'veloce espresso').should == [
+          { 'id' => 'c5', 'key' => 'veloce espresso', 'value' => nil }
+        ]
+      end
     end
 
     describe '#query_for_docs' do
@@ -249,7 +262,7 @@ describe Rufus::Jig::Couch do
 
         docs.collect { |doc| doc['type'] }.should == %w[
           capuccino espresso macchiato macchiato ristretto
-        ]
+        ] + [ 'veloce espresso' ]
       end
 
       it 'accepts :keys' do
@@ -264,15 +277,15 @@ describe Rufus::Jig::Couch do
 
       it 'includes design docs by default' do
 
-        @c.all.map { |d| d['_id'] }.should == [
-          '_design/my_test', 'c0', 'c1', 'c2', 'c3', 'c4'
+        @c.all.map { |d| d['_id'] }.should == %w[
+          _design/my_test c0 c1 c2 c3 c4 c5
         ]
       end
 
       it 'does not list design docs if :include_design_docs => false' do
 
-        @c.all(:include_design_docs => false).map { |d| d['_id'] }.should == [
-          'c0', 'c1', 'c2', 'c3', 'c4'
+        @c.all(:include_design_docs => false).map { |d| d['_id'] }.should == %w[
+          c0 c1 c2 c3 c4 c5
         ]
       end
 

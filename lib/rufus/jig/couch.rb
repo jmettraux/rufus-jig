@@ -22,6 +22,8 @@
 # Made in Japan.
 #++
 
+require 'cgi'
+
 require 'base64'
 require 'socket'
   # for #on_change
@@ -440,7 +442,9 @@ module Rufus::Jig
       opts[:params] = opts.keys.inject({}) { |h, k|
         if COUCH_PARAMS.include?(k)
           v = opts.delete(k)
-          h[k] = COUCH_KEYS.include?(k) ? Rufus::Json.encode(v) : v
+          h[k] = COUCH_KEYS.include?(k) ?
+            CGI.escape(Rufus::Json.encode(v)) :
+            v
         end
         h
       }
