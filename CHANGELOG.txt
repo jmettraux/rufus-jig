@@ -4,6 +4,7 @@
 
 == rufus-jig - 1.0.0    not yet released
 
+- Couch #all, #query, #query_for_docs, #bulk_put and #bulk_delete
 - Rufus::Jig.parse_uri now identifies the #fragment
 - conditional GET on by default
 - switched from test/unit to rspec
