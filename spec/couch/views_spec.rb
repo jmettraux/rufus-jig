@@ -268,6 +268,15 @@ describe Rufus::Jig::Couch do
           { 'id' => 'c5', 'key' => 'veloce espresso', 'value' => nil }
         ]
       end
+
+      it 'leaves the opts hash untouched' do
+
+        opts = { :skip => 3, :limit => nil }
+
+        @c.query('my_test:my_view', opts)
+
+        opts.should == { :skip => 3, :limit => nil }
+      end
     end
 
     describe '#query_for_docs' do
@@ -296,6 +305,15 @@ describe Rufus::Jig::Couch do
       it "returns nil when the view doesn't exist" do
 
         @c.query_for_docs('nemo:nada').should == nil
+      end
+
+      it 'leaves the opts hash untouched' do
+
+        opts = { :skip => 3, :limit => nil }
+
+        @c.query_for_docs('nemo:nada', opts)
+
+        opts.should == { :skip => 3, :limit => nil }
       end
     end
   end

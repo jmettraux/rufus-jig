@@ -264,6 +264,15 @@ describe Rufus::Jig::Couch do
 
         docs.collect { |doc| doc['_id'] }.should == %w[ tea1 tea2 ]
       end
+
+      it 'leaves the opts hash untouched' do
+
+        opts = { :skip => 3, :limit => nil }
+
+        @c.all(opts)
+
+        opts.should == { :skip => 3, :limit => nil }
+      end
     end
 
     describe '#ids' do

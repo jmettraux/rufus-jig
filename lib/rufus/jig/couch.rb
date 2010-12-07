@@ -110,6 +110,9 @@ module Rufus::Jig
     #
     def all(opts={})
 
+      opts = opts.dup
+        # don't touch the original
+
       path = adjust('_all_docs')
 
       opts[:include_docs] = true if opts[:include_docs].nil?
@@ -381,6 +384,9 @@ module Rufus::Jig
     # startkey, endkey, ...
     #
     def query(path, opts={})
+
+      opts = opts.dup
+        # don't touch the original
 
       raw = opts.delete(:raw)
 
