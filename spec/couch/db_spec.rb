@@ -318,8 +318,10 @@ describe Rufus::Jig::Couch do
           { '_id' => 'h3', 'msg' => 'not ok' }
         ])
 
-        res.collect { |row| row['_id'] }.should == %w[ h2 h3 ]
-        res.collect { |row| row.keys }.flatten.uniq.should == %w[ _id _rev ]
+        res.collect { |row| row['_id'] }.should ==
+          %w[ h2 h3 ]
+        res.collect { |row| row.keys }.flatten.uniq.sort.should ==
+          %w[ _id _rev ]
       end
     end
 

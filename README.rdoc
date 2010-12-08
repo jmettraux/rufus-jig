@@ -74,8 +74,6 @@ posting...
 For the real thing : http://github.com/couchrest/couchrest
 There is also the excellent : http://github.com/langalex/couch_potato
 
-Warning : rufus-jig >= 0.1.18 is meant for CouchDB >= 0.11.
-
 The class Rufus::Jig::Couch provides a get/put/delete trio that is couch-oriented. Json encoding/decoding is automatically handled as well as
 
 put and delete return nil in case of success and true (conflict) or and exception else.
@@ -110,6 +108,30 @@ put and delete return nil in case of success and true (conflict) or and exceptio
   picture = c.get('coffe0/picture')
 
   c.detach('coffee0', '1-x-newrevision-whatever', 'picture')
+
+there is also
+
+  c.all(:skip => 100, :limit => 100)
+  c.all(:keys => %w[ doc0 doc1 doc3 ])
+    # grabbing multiple docs in one go
+
+  c.query('_design/my_design_doc/_view/my_view')
+  c.query('my_design_doc:my_view')
+    # 'querying' a view
+
+  c.query_for_docs('my_design_doc:my_view')
+    # querying for documents
+
+bulk operations
+
+  docs = c.all(:keys => %w[ doc0 doc1 doc3 ])
+  c.bulk_delete(docs)
+    # deleting in one go
+
+  docs = c.all(:keys => %w[ doc0 doc1 doc3 ])
+  docs.each { |doc| doc['status'] = 'copied' }
+  c.bulk_put(docs)
+    # updating in one go
 
 
 === Couch on_change
@@ -159,6 +181,8 @@ By default net/http is used. To test with another HTTP lib :
 
 You can specify patron, em, netp or net. Netp corresponds to http://seattlerb.rubyforge.org/net-http-persistent/
 
+The specs require the json and sinatra gems. You can spot issues in the file server.log (created when running specs).
+
 
 == known issues
 
@@ -191,6 +215,7 @@ http://rufus.rubyforge.org
 
 * John Mettraux, http://jmettraux.wordpress.com/
 * Kenneth Kalmer, http://www.opensourcery.co.za/
+* Torsten Schoenebaum, http://github.com/tosch/
 
 
 == license

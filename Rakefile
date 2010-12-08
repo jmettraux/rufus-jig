@@ -1,4 +1,5 @@
 
+$:.unshift('.')
 require 'lib/rufus/jig/version.rb'
 
 require 'rubygems'
@@ -30,6 +31,7 @@ Jeweler::Tasks.new do |gem|
 
   gem.add_dependency 'rufus-lru'
   gem.add_dependency 'rufus-json', '>= 0.2.5'
+
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec', '~> 2.2.0'
   gem.add_development_dependency 'yard'

@@ -2,7 +2,7 @@
 = rufus-jig CHANGELOG.txt
 
 
-== rufus-jig - 1.0.0    not yet released
+== rufus-jig - 1.0.0    released 2010/12/08
 
 - Couch #all, #query, #query_for_docs, #bulk_put and #bulk_delete
 - Rufus::Jig.parse_uri now identifies the #fragment
