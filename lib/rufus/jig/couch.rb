@@ -410,6 +410,9 @@ module Rufus::Jig
         @http.get(path, opts)
       end
 
+      return nil if res == true
+        # POST and the view doesn't exist
+
       return res if raw
 
       res.nil? ? res : res['rows']

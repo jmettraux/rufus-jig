@@ -153,6 +153,11 @@ describe Rufus::Jig::Couch do
         @c.query('nemo:nada').should == nil
       end
 
+      it "returns nil when the view doesn't exist (and passing :keys)" do
+
+        @c.query('nemo:nada', :keys => %[ x y ]).should == nil
+      end
+
       it 'returns the complete response on :raw => true' do
 
         @c.query('my_test:my_view', :raw => true).should == {
