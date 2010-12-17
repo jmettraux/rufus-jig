@@ -1,14 +1,15 @@
 
 == authors
 
-John Mettraux - http://github.com/jmettraux
-Kenneth Kalmer - http://github.com/kennethkalmer
+John Mettraux - https://github.com/jmettraux
+Kenneth Kalmer - https://github.com/kennethkalmer
 
 == contributors
 
-Torsten Schoenebaum - http://github.com/tosch
+Torsten Schoenebaum - https://github.com/tosch
 
 == feedback
 
-gauched - http://github.com/gauched
+Sam Rowe - https://github.com/riddley
+gauched - https://github.com/gauched
 

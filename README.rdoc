@@ -44,29 +44,27 @@ getting...
 
   h = Rufus::Jig::Http.new('127.0.0.1', 4567)
 
-  p @h.get('/document/xyz.json')
+  p h.get('/document/xyz.json')
     #
     # => { "type" => "letter", "title" => "four birds" }
     #
     # if it's JSON, decodes it immediately
 
-  r = @h.get('/document/xyz.txt')
-  p [ r.status, r.body ]
+  p h.get('/document/xyz.txt')
     #
-    # => [ 200, "letter:\n\nfour birds" ]
+    # => "letter:\n\nfour birds"
 
-  j = @h.get('/document', :content_type => 'application/json')
-  j = @h.get('/document', :content_type => :json)
+  j = h.get('/document', :content_type => 'application/json')
+  j = h.get('/document', :content_type => :json)
     #
     # 'Accepts' JSON
 
 posting...
 
-  r = @h.post(
+  p h.post(
     '/documents', '<doc>four birds</doc>', :content_type => 'application/xml')
-  p [ r.status, r.body ]
     #
-    # => [ 201, "created." ]
+    # => "created."
 
 
 === Couch helpers
