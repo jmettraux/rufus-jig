@@ -5,7 +5,7 @@
 # Wed Dec  1 09:36:50 JST 2010
 #
 
-require File.join(File.dirname(__FILE__), '..', 'spec_helper.rb')
+require File.expand_path('../../spec_helper.rb', __FILE__)
 
 
 describe Rufus::Jig::Http do
