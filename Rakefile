@@ -1,65 +1,28 @@
 
-$:.unshift('.')
-require 'lib/rufus/jig/version.rb'
+$:.unshift('.') # 1.9.2
 
 require 'rubygems'
+require 'rubygems/user_interaction' if Gem::RubyGemsVersion == '1.5.0'
+
 require 'rake'
-
-
-#
-# GEM
-
-require 'jeweler'
-
-Jeweler::Tasks.new do |gem|
-
-  gem.version = Rufus::Jig::VERSION
-  gem.name = 'rufus-jig'
-  gem.summary = 'An HTTP client, greedy with JSON content, GETting conditionally.'
-
-  gem.description = %{
-    Json Interwebs Get.
-
-    An HTTP client, greedy with JSON content, GETting conditionally.
-
-    Uses Yajl-ruby whenever possible.
-  }
-  gem.email = 'jmettraux@gmail.com'
-  gem.homepage = 'http://github.com/jmettraux/rufus-jig/'
-  gem.authors = [ 'John Mettraux', 'Kenneth Kalmer' ]
-  gem.rubyforge_project = 'rufus'
-
-  gem.add_dependency 'rufus-lru'
-  gem.add_dependency 'rufus-json', '>= 0.2.5'
-
-  gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'rspec', '~> 2.2.0'
-  gem.add_development_dependency 'yard'
-  gem.add_development_dependency 'jeweler'
-  gem.add_development_dependency 'patron'
-  gem.add_development_dependency 'em-http-request'
-  gem.add_development_dependency 'net-http-persistent', '>= 1.4'
-
-  # gemspec spec : http://www.rubygems.org/read/chapter/20
-end
-Jeweler::GemcutterTasks.new
-
-
-#
-# CLEAN
-
 require 'rake/clean'
-CLEAN.include('pkg', 'tmp', 'html', 'rdoc', 'server.log')
+require 'rdoc/task'
+
+require 'rspec/core/rake_task'
+
 
 #
-# SPEC / TEST
+# clean
 
-#task :spec => :check_dependencies do
-task :spec do
-  sh 'rspec spec/'
-end
+CLEAN.include('pkg', 'rdoc')
+
+
+#
+# test / spec
+
+RSpec::Core::RakeTask.new
+
 task :test => :spec
-
 task :default => :spec
 
 desc %{
@@ -79,28 +42,59 @@ end
 
 
 #
-# DOC
+# gem
 
-#
-# make sure to have rdoc 2.5.x to run that
-#
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rd|
-  rd.main = 'README.rdoc'
-  rd.rdoc_dir = 'rdoc/rufus-jig'
-  rd.rdoc_files.include('README.rdoc', 'CHANGELOG.txt', 'lib/**/*.rb')
-  rd.title = "rufus-jig #{Rufus::Jig::VERSION}"
+GEMSPEC_FILE = Dir['*.gemspec'].first
+GEMSPEC = eval(File.read(GEMSPEC_FILE))
+GEMSPEC.validate
+
+
+desc %{
+  builds the gem and places it in pkg/
+}
+task :build do
+
+  sh "gem build #{GEMSPEC_FILE}"
+  sh "mkdir pkg" rescue nil
+  sh "mv #{GEMSPEC.name}-#{GEMSPEC.version}.gem pkg/"
+end
+
+desc %{
+  builds the gem and pushes it to rubygems.org
+}
+task :push => :build do
+
+  sh "gem push pkg/#{GEMSPEC.name}-#{GEMSPEC.version}.gem"
 end
 
 
 #
-# TO THE WEB
+# rdoc
+#
+# make sure to have rdoc 2.5.x to run that
 
+Rake::RDocTask.new do |rd|
+
+  rd.main = 'README.txt'
+  rd.rdoc_dir = "rdoc/#{GEMSPEC.name}"
+
+  rd.rdoc_files.include('README.mdown', 'CHANGELOG.txt', 'lib/**/*.rb')
+
+  rd.title = "#{GEMSPEC.name} #{GEMSPEC.version}"
+end
+
+
+#
+# upload_rdoc
+
+desc %{
+  upload the rdoc to rubyforge
+}
 task :upload_rdoc => [ :clean, :rdoc ] do
 
   account = 'jmettraux@rubyforge.org'
   webdir = '/var/www/gforge-projects/rufus'
 
-  sh "rsync -azv -e ssh rdoc/rufus-jig #{account}:#{webdir}/"
+  sh "rsync -azv -e ssh rdoc/#{GEMSPEC.name} #{account}:#{webdir}/"
 end
 
