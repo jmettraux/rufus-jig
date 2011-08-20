@@ -4,6 +4,8 @@
 
 == rufus-jig - 1.0.1    not yet released
 
+- couch #get('docname', :attchments => true)
+
 
 == rufus-jig - 1.0.0    released 2010/12/08
 

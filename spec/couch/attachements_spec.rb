@@ -108,6 +108,40 @@ describe Rufus::Jig::Couch do
         }.should raise_error
       end
     end
+
+    describe '#get' do
+
+      before(:each) do
+
+        r = @c.attach(
+          'thedoc', @d['_rev'],
+          'image', File.read(File.join(File.dirname(__FILE__), 'tweet.png')),
+          :content_type => 'image/png')
+        @d['_rev'] = r['rev']
+      end
+
+      context 'without :attachments => true' do
+
+        it 'returns the attachment as a stub' do
+
+          doc = @c.get('thedoc')
+
+          doc['_attachments']['image']['stub'].should == true
+          doc['_attachments']['image']['data'].should == nil
+        end
+      end
+
+      context 'with :attachments => true' do
+
+        it 'returns the attachment encoded in base64' do
+
+          doc = @c.get('thedoc', :attachments => true)
+
+          doc['_attachments']['image']['stub'].should == nil
+          doc['_attachments']['image']['data'].should_not == nil
+        end
+      end
+    end
   end
 end
 

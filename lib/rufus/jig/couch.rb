@@ -91,6 +91,10 @@ module Rufus::Jig
       path = doc_or_path.is_a?(Hash) ? doc_or_path['_id'] : doc_or_path
       path = adjust(path)
 
+      if opts.delete(:attachments) || opts.delete('attachments')
+        path = "#{path}?attachments=true"
+      end
+
       @http.get(path, opts)
     end
 
