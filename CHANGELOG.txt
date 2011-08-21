@@ -4,6 +4,7 @@
 
 == rufus-jig - 1.0.1    not yet released
 
+- couch #dump and #load
 - couch #put and #bulk_put OK with attachments
 - couch #get('docname', :attachments => true)
 

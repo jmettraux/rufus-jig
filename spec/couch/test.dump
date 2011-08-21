@@ -1,0 +1,3 @@
+{"msg":"oh hai","_id":"doc0"}
+{"msg":"oh hai again","_id":"doc1"}
+{"_id":"doc2","_attachments":{"msg":{"data":"aGVsbG8gd29ybGQ=","content_type":"text/plain"}}}

@@ -146,7 +146,11 @@ module Rufus::Jig
       docs
     end
 
+    # Lists all the document ids in the database.
+    #
     def ids(opts={})
+
+      opts[:include_docs] = false
 
       all(opts).collect { |row| row['_id'] }
     end
@@ -464,6 +468,90 @@ module Rufus::Jig
       }
 
       bulk_put(docs, opts)
+    end
+
+    #--
+    # dump and load
+    #++
+
+    # Dumps all of the database in a dump file. One document per line.
+    #
+    def dump(fname)
+
+      File.open(fname, 'wb') do |file|
+
+        ids.each do |id|
+
+          doc = get(id, :attachments => true)
+
+          doc.delete('_rev')
+          (doc['_attachments'] || {}).values.each { |att| att.delete('revpos') }
+
+          file.puts(Rufus::Json.encode(doc))
+        end
+      end
+    end
+
+    # Given a file produced by #dump, will load it into this database.
+    #
+    # If the :overwrite option is set to true, the database will be cleaned
+    # before the load operation.
+    #
+    # It will fail with an ArgumentError if the dump file is corrupted.
+    # It will fail as well if dump file contains an doc with an id aleady
+    # present.
+    #
+    # It fails before loading anything (or overwriting anything).
+    #
+    def load(fname, opts={})
+
+      # check before loading anything
+
+      ids_to_load = []
+
+      File.readlines(fname).each_with_index do |line, i|
+
+        doc = begin
+          Rufus::Json.decode(line)
+        rescue Rufus::Json::ParserError => pe
+          raise ArgumentError.new(
+            "dump file corrupted, line #{i + 1}, not [valid] json: #{line}")
+        end
+
+        fail ArgumentError.new(
+          "dump file corrupted, line #{i + 1}, not a hash: #{line}"
+        ) if doc.class != Hash
+
+        check_attachments(doc) # will fail if there is a 'stub' attachment
+
+        ids_to_load << doc['_id']
+      end
+
+      # clean db if :overwrite => true
+
+      if opts[:overwrite]
+        delete('.')
+        put('.')
+      end
+
+      # complain if there is already a doc with the same id as one of the docs
+      # we are about to load
+
+      in_common = ids & ids_to_load
+
+      fail ArgumentError.new(
+        "dump file contains already present ids : #{in_common.inspect}"
+      ) if in_common.any?
+
+      # load
+
+      File.readlines(fname).each do |line|
+
+        doc = Rufus::Json.decode(line)
+        check_attachments(doc) # to remove the 'revpos'
+
+        put(doc)
+      end
     end
 
     protected
