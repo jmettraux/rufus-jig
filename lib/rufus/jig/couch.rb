@@ -67,10 +67,7 @@ module Rufus::Jig
 
       pa = adjust(path)
 
-      #if @opts[:re_put_ok] == false && payload['_rev']
-      #  rr = delete(path, payload['_rev'])
-      #  return rr unless rr.nil?
-      #end
+      check_attachments(payload)
 
       r = @http.put(pa, payload, :content_type => :json, :cache => false)
 
@@ -445,6 +442,8 @@ module Rufus::Jig
     #
     def bulk_put(docs, opts={})
 
+      docs.each { |doc| check_attachments(doc) }
+
       res = @http.post(adjust('_bulk_docs'), { 'docs' => docs })
 
       opts[:raw] ?
@@ -499,6 +498,22 @@ module Rufus::Jig
 
         h
       }
+    end
+
+    # Will raise if there is an attachment with "stub: true", and will
+    # also make sure to remove any 'revpos' attribute (when this attribute
+    # is present, attachments get discarded at #put and #bulk_put.
+    #
+    def check_attachments(doc)
+
+      (doc['_attachments'] || {}).values.each do |att|
+
+        fail ArgumentError.new(
+          'cannot have attachments that are stubs (missing stub)'
+        ) if att['stub'] == true
+
+        att.delete('revpos') # else the attachment gets discarded
+      end
     end
   end
 end

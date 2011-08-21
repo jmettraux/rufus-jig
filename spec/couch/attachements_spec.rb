@@ -142,6 +142,76 @@ describe Rufus::Jig::Couch do
         end
       end
     end
+
+    describe '#put' do
+
+      it 'puts docs with the inline attachment' do
+
+        doc = Rufus::Json.load(
+          File.read(
+            File.join(File.dirname(__FILE__), 'tweet.json')))
+
+        doc.delete('_rev')
+
+        @c.put(doc)
+
+        doc = @c.get('thetweet', :attachments => true)
+
+        doc['_id'].should == 'thetweet'
+        doc['_attachments']['image']['stub'].should == nil
+        doc['_attachments']['image']['data'].should_not == nil
+      end
+
+      it 'raises if the attachment is a stub' do
+
+        doc = Rufus::Json.load(
+          File.read(
+            File.join(File.dirname(__FILE__), 'tweet.json')))
+
+        doc.delete('_rev')
+        doc['_attachments']['image']['stub'] = true
+        doc['_attachments']['image'].delete('data')
+
+        lambda {
+          @c.put(doc)
+        }.should raise_error(ArgumentError)
+      end
+    end
+
+    describe '#bulk_put' do
+
+      it 'puts docs with the inline attachment' do
+
+        doc = Rufus::Json.load(
+          File.read(
+            File.join(File.dirname(__FILE__), 'tweet.json')))
+
+        doc.delete('_rev')
+
+        @c.bulk_put([ doc ])
+
+        doc = @c.get('thetweet', :attachments => true)
+
+        doc['_id'].should == 'thetweet'
+        doc['_attachments']['image']['stub'].should == nil
+        doc['_attachments']['image']['data'].should_not == nil
+      end
+
+      it 'raises if the attachment is a stub' do
+
+        doc = Rufus::Json.load(
+          File.read(
+            File.join(File.dirname(__FILE__), 'tweet.json')))
+
+        doc.delete('_rev')
+        doc['_attachments']['image']['stub'] = true
+        doc['_attachments']['image'].delete('data')
+
+        lambda {
+          @c.bulk_put([ doc ])
+        }.should raise_error(ArgumentError)
+      end
+    end
   end
 end
 
