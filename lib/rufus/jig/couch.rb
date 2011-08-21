@@ -510,17 +510,17 @@ module Rufus::Jig
 
       ids_to_load = []
 
-      File.readlines(fname).each_with_index do |line, i|
+      readlines(fname) do |line, i|
 
         doc = begin
           Rufus::Json.decode(line)
         rescue Rufus::Json::ParserError => pe
           raise ArgumentError.new(
-            "dump file corrupted, line #{i + 1}, not [valid] json: #{line}")
+            "dump file corrupted, line #{i}, not [valid] json: #{line}")
         end
 
         fail ArgumentError.new(
-          "dump file corrupted, line #{i + 1}, not a hash: #{line}"
+          "dump file corrupted, line #{i}, not a hash: #{line}"
         ) if doc.class != Hash
 
         check_attachments(doc) # will fail if there is a 'stub' attachment
@@ -546,7 +546,7 @@ module Rufus::Jig
 
       # load
 
-      File.readlines(fname).each do |line|
+      readlines(fname) do |line, i|
 
         doc = Rufus::Json.decode(line)
         check_attachments(doc) # to remove the 'revpos'
@@ -610,6 +610,26 @@ module Rufus::Jig
       end
 
       doc['_attachments'].delete_if { |name, att| att['stub'] == true }
+    end
+
+    # A helper method, ensuring we're reading line by line (and not all the
+    # lines at once)
+    #
+    def readlines(fname, &block)
+
+      i = 0
+
+      File.open(fname, 'rb') do |file|
+
+        loop do
+
+          i = i + 1
+
+          line = file.gets || break
+
+          block.call(line, i)
+        end
+      end
     end
   end
 end
