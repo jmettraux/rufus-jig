@@ -162,7 +162,7 @@ describe Rufus::Jig::Couch do
         doc['_attachments']['image']['data'].should_not == nil
       end
 
-      it 'raises if the attachment is a stub' do
+      it 'puts without attachment if the attachment is a stub' do
 
         doc = Rufus::Json.load(
           File.read(
@@ -172,9 +172,9 @@ describe Rufus::Jig::Couch do
         doc['_attachments']['image']['stub'] = true
         doc['_attachments']['image'].delete('data')
 
-        lambda {
-          @c.put(doc)
-        }.should raise_error(ArgumentError)
+        r = @c.put(doc)
+
+        r.should == nil
       end
     end
 

@@ -67,7 +67,8 @@ module Rufus::Jig
 
       pa = adjust(path)
 
-      check_attachments(payload)
+      check_attachments(payload, false)
+        # false tells not to fail if there is a stub attachment
 
       r = @http.put(pa, payload, :content_type => :json, :cache => false)
 
@@ -592,16 +593,23 @@ module Rufus::Jig
     # also make sure to remove any 'revpos' attribute (when this attribute
     # is present, attachments get discarded at #put and #bulk_put.
     #
-    def check_attachments(doc)
+    # If fatal == false, no ArgumentError will be raised, but the stub
+    # attachments will get discarded.
+    #
+    def check_attachments(doc, fatal=true)
 
-      (doc['_attachments'] || {}).values.each do |att|
+      return unless doc['_attachments']
+
+      doc['_attachments'].values.each do |att|
 
         fail ArgumentError.new(
           'cannot have attachments that are stubs (missing stub)'
-        ) if att['stub'] == true
+        ) if fatal && att['stub'] == true
 
         att.delete('revpos') # else the attachment gets discarded
       end
+
+      doc['_attachments'].delete_if { |name, att| att['stub'] == true }
     end
   end
 end
