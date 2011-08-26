@@ -1,13 +1,12 @@
-# encoding: utf-8
-
-require File.join(File.dirname(__FILE__), 'lib/rufus/jig/version')
-  # bundler wants absolute path
-
 
 Gem::Specification.new do |s|
 
   s.name = 'rufus-jig'
-  s.version = Rufus::Jig::VERSION
+
+  s.version = File.read(
+    File.expand_path('../lib/rufus/jig/version.rb', __FILE__)
+  ).match(/VERSION *= *['"]([^'"]+)/)[1]
+
   s.platform = Gem::Platform::RUBY
   s.authors = [ 'John Mettraux', 'Kenneth Kalmer' ]
   s.email = %w[ jmettraux@gmail.com kenneth@clearplanet.co.za  ]
