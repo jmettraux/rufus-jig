@@ -467,6 +467,10 @@ if defined?(Net::HTTP::Persistent) # gem install net-http-persistent
 
   require 'rufus/jig/adapters/net_persistent'
 
+elsif defined?(Typhoeus) # gem install typhoeus
+
+  require 'rufus/jig/adapters/typhoeus'
+
 elsif defined?(Patron) # gem install patron
 
   require 'rufus/jig/adapters/patron'
