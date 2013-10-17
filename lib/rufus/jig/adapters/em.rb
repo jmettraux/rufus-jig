@@ -58,6 +58,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
   end
 
   def variant
+
     :em
   end
 
