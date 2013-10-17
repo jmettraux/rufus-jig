@@ -27,6 +27,11 @@ require 'net/http'
 
 class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
+  unless defined?(Net::ReadTimeout)
+    class Net::ReadTimeout < Timeout::Error
+    end
+  end
+
   def initialize(*args)
 
     super(*args)
@@ -79,7 +84,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     begin
       http = get_http(opts)
       Rufus::Jig::HttpResponse.new(http.start { |h| h.request(req) })
-    rescue Timeout::Error => te
+    rescue Timeout::Error, Net::ReadTimeout => te
       raise Rufus::Jig::TimeoutError
     ensure
       http.finish rescue nil
