@@ -76,7 +76,7 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
     end
 
     patron = Patron::Session.new
-    patron.base_url = "#{@host}:#{@port}"
+    patron.base_url = "#{@scheme}://#{@host}:#{@port}"
 
     #patron.connect_timeout = 1
       # connection timeout defaults to 1 second
