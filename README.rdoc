@@ -3,17 +3,20 @@
 
 A HTTP client, greedy with JSON content, GETting conditionally.
 
-Uses Patron (http://github.com/toland/patron) or em-http-request (http://github.com/igrigorik/em-http-request)
-and Yajl-ruby (http://github.com/brianmario/yajl-ruby) whenever possible.
+Uses Typhoeus (http://github.com/typhoeus/typhoeus) or Patron (http://github.com/toland/patron) or
+em-http-request (http://github.com/igrigorik/em-http-request) whenever possible, and falls back to
+Net::HTTP if that's all we have.
+
+It depends on rufus-json (https://github.com/jmettraux/rufus-json) for JSON parsing and dumping.
 
 This library also contains some CouchDB helpers.
 
 To select a HTTP transport layer for rufus-jig, just make sure you have loaded
 the library before loading rufus-jig.
 
-For net-http-persistent:
+For Typhoeus:
 
-  require 'net/http/persistent'
+  require 'typhoeus'
   require 'rufus/jig'
 
 For Patron:
@@ -26,9 +29,10 @@ For em-http-request:
   require 'em-http'
   require 'rufus/jig'
 
-Please not that em-http-request-0.2.2 and earlier don't support the PUT and DELETE
-verbs. Until a newer gem is released you'll need to build the em-http-request gem
-from source.
+For net-http-persistent:
+
+  require 'net/http/persistent'
+  require 'rufus/jig'
 
 == examples
 
@@ -38,8 +42,6 @@ Let's say we have an hypothetical document server.
 
 getting...
 
-  require 'net/http/persistent'
-  require 'yajl'
   require 'rufus/jig'
 
   h = Rufus::Jig::Http.new('127.0.0.1', 4567)
@@ -76,8 +78,6 @@ The class Rufus::Jig::Couch provides a get/put/delete trio that is couch-oriente
 
 put and delete return nil in case of success and true (conflict) or and exception else.
 
-  require 'net/http/persistent'
-  require 'yajl'
   require 'rufus/jig'
 
   c = Rufus::Jig::Couch.new('127.0.0.1', 5984, 'my_couch_db')
@@ -190,7 +190,7 @@ only tests the CouchDB stuff.
 
 By default net/http is used. To test with another HTTP lib :
 
-  JIG_LIB=patron rspec spec/
+  JIG_LIB=typhoeus rspec spec/
 
 You can specify patron, em, netp or net. Netp corresponds to http://seattlerb.rubyforge.org/net-http-persistent/
 
@@ -229,6 +229,7 @@ http://rufus.rubyforge.org
 * John Mettraux, http://jmettraux.wordpress.com/
 * Kenneth Kalmer, http://www.opensourcery.co.za/
 * Torsten Schoenebaum, http://github.com/tosch/
+* Marcello Barnaba, http://github.com/vjt/
 
 
 == license

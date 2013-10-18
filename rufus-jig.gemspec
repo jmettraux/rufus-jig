@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   ).match(/ VERSION *= *['"]([^'"]+)/)[1]
 
   s.platform = Gem::Platform::RUBY
-  s.authors = [ 'John Mettraux', 'Kenneth Kalmer' ]
-  s.email = %w[ jmettraux@gmail.com kenneth@clearplanet.co.za  ]
+  s.authors = [ 'John Mettraux', 'Kenneth Kalmer', 'Marcello Barnaba' ]
+  s.email = %w[ jmettraux@gmail.com kenneth@clearplanet.co.za vjt@openssl.it ]
   s.homepage = 'http://github.com/jmettraux/rufus-jig/'
   s.rubyforge_project = 'rufus'
   s.summary = 'An HTTP client, greedy with JSON content, GETting conditionally.'
