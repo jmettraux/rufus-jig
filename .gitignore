@@ -1,1 +1,4 @@
 *.swp
+*.metric
+out.dump
+server.log
