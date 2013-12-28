@@ -19,6 +19,10 @@ class Rufus::Jig::Http < Rufus::Jig::HttpCore
 
     super(*args)
 
+    # Reduce logging level as multiple calls to the /engine object will fill
+    # up your development logs easily.
+    Ethon.logger.level = Logger::INFO
+
     @options[:user_agent] ||= "#{self.class} #{Rufus::Jig::VERSION} (typhoeus)"
   end
 
